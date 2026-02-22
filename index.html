@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>どうぶつ ゲーム</title>
+  <style>
+    :root{--bg:#fff7fb;--ink:#222;--muted:#888;--accent:#ff4d6d;--ok:#22c55e;--ng:#f59e0b;--shadow:0 8px 30px rgba(0,0,0,.08);--radius:20px;}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+    body{font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;background:radial-gradient(circle at 20% 10%,#ffe3ef,transparent 45%),radial-gradient(circle at 80% 0%,#e7f3ff,transparent 45%),var(--bg);color:var(--ink);min-height:100dvh;}
+    .wrap{max-width:880px;margin:0 auto;padding:16px 14px 32px;}
+    .btn{border:0;border-radius:14px;padding:12px 18px;font-weight:800;font-size:15px;background:#f2f2f7;color:#1c1c1e;cursor:pointer;transition:transform .1s;}
+    .btn:active{transform:scale(.96);}
+    .btn.accent{background:var(--accent);color:#fff;font-size:22px;padding:20px 48px;border-radius:999px;box-shadow:0 6px 24px rgba(255,77,109,.3);}
+    .screen{display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;min-height:80dvh;text-align:center;animation:fadeIn .3s;}
+    .screen.active{display:flex;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+    /* ======== メニュー画面 ======== */
+    .menu-title{font-size:36px;font-weight:900;}
+    .menu-sub{font-size:16px;color:var(--muted);line-height:1.7;}
+    .game-cards{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin-top:10px;}
+    .game-card{background:#fff;border-radius:24px;box-shadow:0 10px 40px rgba(0,0,0,.10);padding:32px 28px;width:320px;cursor:pointer;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;align-items:center;gap:14px;border:3px solid transparent;}
+    .game-card:hover{transform:translateY(-4px);box-shadow:0 16px 50px rgba(0,0,0,.15);border-color:var(--accent);}
+    .game-card:active{transform:scale(.97);}
+    .game-card .card-icon{font-size:64px;}
+    .game-card .card-title{font-size:22px;font-weight:900;}
+    .game-card .card-desc{font-size:14px;color:var(--muted);line-height:1.6;}
+
+    /* ======== なまえあてゲーム (Game1) ======== */
+    .btn.lv{min-width:64px;}
+    .btn.lv.active{background:var(--accent);color:#fff;}
+    .start-title{font-size:32px;font-weight:900;}
+    .start-sub{font-size:14px;color:var(--muted);line-height:1.7;}
+    .level-select{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.7);padding:10px;border-radius:16px;box-shadow:var(--shadow);}
+    .animal-toggle-btn{font-size:13px;color:var(--muted);background:none;border:1px dashed #ccc;border-radius:12px;padding:8px 16px;cursor:pointer;}
+    .animal-select-wrap{display:none;flex-direction:column;align-items:center;gap:10px;width:100%;}
+    .animal-select-wrap.open{display:flex;}
+    .animal-select{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:600px;}
+    .animal-chip{display:flex;align-items:center;gap:6px;padding:6px 12px 6px 6px;border-radius:12px;border:2px solid #e0e0e0;background:#fff;cursor:pointer;transition:all .15s;font-size:14px;font-weight:700;}
+    .animal-chip.selected{border-color:var(--accent);background:#fff0f3;}
+    .animal-chip .chip-icon{width:36px;height:36px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+    .animal-chip .chip-icon img{width:100%;height:100%;object-fit:contain;}
+    #g1GameScreen{gap:14px;}
+    .game-header{display:flex;justify-content:space-between;align-items:center;width:100%;padding:0 4px;flex-wrap:wrap;gap:6px;}
+    .badge{font-weight:900;background:#fff;padding:8px 14px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.07);font-size:14px;white-space:nowrap;}
+    .streak-msg{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:36px;font-weight:900;color:var(--accent);pointer-events:none;opacity:0;transition:all .4s;z-index:100;text-shadow:0 4px 20px rgba(255,77,109,.3);}
+    .streak-msg.show{opacity:1;transform:translate(-50%,-60%);}
+    .game-main{display:flex;flex-direction:column;gap:14px;width:100%;}
+    .prompt-card{background:rgba(255,255,255,.85);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:280px;position:relative;overflow:hidden;}
+    .prompt-label{font-size:18px;font-weight:900;background:#fff;padding:8px 16px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.06);}
+    .big-icon{width:200px;height:200px;display:flex;align-items:center;justify-content:center;border-radius:24px;background:rgba(255,255,255,.9);box-shadow:inset 0 0 0 2px rgba(0,0,0,.05),var(--shadow);overflow:hidden;transition:filter .5s,transform .4s;}
+    .big-icon img{width:100%;height:100%;object-fit:contain;}
+    .big-icon.blurred{filter:blur(18px) brightness(.85);}
+    .big-icon.reveal{filter:none;}
+    .big-icon.bounce{animation:bounceAnim .6s ease;}
+    @keyframes bounceAnim{0%{transform:scale(1)}30%{transform:scale(1.25) rotate(-5deg)}50%{transform:scale(1.15) rotate(3deg)}70%{transform:scale(1.2) rotate(-2deg)}100%{transform:scale(1)}}
+    .hint-text{font-size:14px;color:var(--muted);text-align:center;}
+    .feedback-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;pointer-events:none;opacity:0;transform:scale(.9);transition:all .25s;}
+    .feedback-overlay.show{opacity:1;transform:scale(1);}
+    .fb-circle{width:140px;height:140px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:60px;font-weight:900;color:#fff;}
+    .fb-ok{background:var(--ok);box-shadow:0 10px 40px rgba(34,197,94,.3);}
+    .fb-ng{background:var(--ng);box-shadow:0 10px 40px rgba(245,158,11,.3);}
+    .fb-label{font-size:22px;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.2);}
+    .correct-reveal{font-size:16px;font-weight:800;color:var(--ok);opacity:0;transition:opacity .3s;text-align:center;}
+    .correct-reveal.show{opacity:1;}
+    .choices-card{background:rgba(255,255,255,.85);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:10px;}
+    .choices-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .choice{display:flex;align-items:center;gap:12px;width:100%;border:3px solid transparent;cursor:pointer;padding:14px;border-radius:18px;background:#fff;box-shadow:0 6px 20px rgba(0,0,0,.06);transition:transform .08s,border-color .2s;text-align:left;min-height:90px;}
+    .choice:active{transform:scale(.97);}
+    .choice.correct{border-color:var(--ok);background:#f0fdf4;}
+    .choice.wrong{border-color:var(--ng);background:#fffbeb;opacity:.7;}
+    .choice .mini{width:64px;height:64px;border-radius:14px;background:#f7f7fb;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;transition:filter .5s;}
+    .choice .mini img{width:100%;height:100%;object-fit:contain;}
+    .choice .mini.blurred{filter:blur(8px) brightness(.85);}
+    .choice .c-label{font-size:24px;font-weight:900;letter-spacing:.02em;}
+    .choice .sound-btn{margin-left:auto;background:none;border:none;font-size:24px;cursor:pointer;padding:4px 8px;flex:0 0 auto;}
+    .result-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:32px;text-align:center;max-width:400px;width:100%;}
+    .result-medal{font-size:80px;margin-bottom:8px;}
+    .result-score{font-size:48px;font-weight:900;color:var(--accent);}
+    .result-sub{font-size:18px;color:var(--muted);margin:8px 0 20px;}
+    .result-detail{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.8;}
+    .result-stars{font-size:32px;letter-spacing:4px;margin-bottom:16px;}
+    canvas#confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:200;}
+
+    /* ======== 列車ゲーム (Game2) ======== */
+    .g2-wrap{width:100%;max-width:980px;}
+    .g2-header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+    .g2-title h2{font-size:clamp(18px,3.2vw,26px);margin:0;line-height:1.1;}
+    .g2-subtitle{margin:0;color:var(--muted);font-size:13px;}
+    .g2-pill{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.06);padding:8px 10px;border-radius:999px;box-shadow:0 6px 16px rgba(0,0,0,.05);user-select:none;}
+    .g2-pill strong{font-size:14px;}.g2-pill small{color:var(--muted);}
+    .g2-iconBtn{border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.75);border-radius:999px;padding:10px 12px;cursor:pointer;box-shadow:0 10px 20px rgba(0,0,0,.06);font-weight:900;}
+    .g2-iconBtn:active{transform:translateY(1px);}
+    .g2-panel{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.06);overflow:hidden;width:100%;}
+    .g2-scene{padding:14px;display:flex;flex-direction:column;gap:12px;}
+    .g2-prompt{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .g2-prompt .q{font-size:clamp(18px,3vw,26px);margin:0;font-weight:900;}
+    .g2-prompt .hint{margin:0;color:var(--muted);font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+    .lane{position:relative;height:min(42vh,320px);min-height:220px;border-radius:16px;background:radial-gradient(1200px 220px at 50% 0%,rgba(37,99,235,.15),transparent 55%),linear-gradient(180deg,#fefefe,#f5f7ff);border:1px solid rgba(0,0,0,.06);overflow:hidden;}
+    .ground{position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(180deg,rgba(34,197,94,.18),rgba(34,197,94,.28));}
+    .track{position:absolute;left:0;right:0;bottom:22%;height:10px;background:rgba(0,0,0,.08);}
+    .track::before,.track::after{content:"";position:absolute;left:0;right:0;height:2px;background:rgba(0,0,0,.18);}
+    .track::before{top:1px;}.track::after{bottom:1px;}
+    .cloud{position:absolute;top:14%;width:120px;height:44px;background:rgba(255,255,255,.75);border:1px solid rgba(0,0,0,.06);border-radius:999px;animation:float 10s linear infinite;}
+    .cloud::before,.cloud::after{content:"";position:absolute;background:rgba(255,255,255,.75);border:1px solid rgba(0,0,0,.06);border-radius:999px;}
+    .cloud::before{width:50px;height:50px;left:14px;top:-18px;}.cloud::after{width:70px;height:70px;left:48px;top:-34px;}
+    @keyframes float{0%{transform:translateX(-160px)}100%{transform:translateX(calc(100% + 160px))}}
+    .train{position:absolute;bottom:26%;left:0;display:flex;gap:6px;align-items:flex-end;will-change:transform;transform:translateX(-30%);}
+    .engine,.car{width:clamp(60px,12vw,80px);height:clamp(56px,11vw,74px);border-radius:14px;background:#fff;border:1px solid rgba(0,0,0,.08);box-shadow:0 6px 14px rgba(0,0,0,.10);position:relative;display:flex;align-items:center;justify-content:center;user-select:none;}
+    .engine{background:linear-gradient(180deg,rgba(37,99,235,.18),rgba(37,99,235,.06));}
+    .engine .label{position:absolute;top:4px;left:6px;font-size:10px;color:rgba(37,99,235,.85);font-weight:900;letter-spacing:.02em;}
+    .wheel{position:absolute;bottom:-8px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.75);box-shadow:inset 0 0 0 2px rgba(255,255,255,.16);}
+    .wheel.w1{left:8px;}.wheel.w2{left:30px;}.wheel.w3{right:8px;}
+    .animal{width:clamp(36px,9vw,50px);height:clamp(36px,9vw,50px);cursor:pointer;filter:drop-shadow(0 4px 4px rgba(0,0,0,.10));transform:translateY(-2px);border-radius:8px;overflow:hidden;}
+    .animal img{width:100%;height:100%;object-fit:contain;}
+    .animal.tap{animation:pop .18s ease-out;}
+    @keyframes pop{0%{transform:translateY(-2px) scale(1)}60%{transform:translateY(-4px) scale(1.12)}100%{transform:translateY(-2px) scale(1)}}
+    .station{position:absolute;right:16px;bottom:23%;width:134px;height:148px;border-radius:18px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.07);box-shadow:0 12px 24px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;color:var(--muted);font-weight:900;}
+    .station span{display:block;font-size:12px;}.station strong{display:block;font-size:14px;color:var(--ink);margin-top:4px;}
+    .g2-answers{padding:12px 12px 14px;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+    .g2-btn{border:0;border-radius:14px;padding:10px 6px;font-size:clamp(18px,3.5vw,26px);font-weight:900;background:rgba(37,99,235,.10);color:var(--ink);box-shadow:0 6px 16px rgba(0,0,0,.08);border:1px solid rgba(37,99,235,.18);cursor:pointer;user-select:none;}
+    .g2-btn:active{transform:translateY(1px);}.g2-btn[disabled]{opacity:.55;cursor:not-allowed;}
+    .g2-footerRow{padding:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;border-top:1px solid rgba(0,0,0,.06);background:rgba(249,250,251,.7);}
+    .g2-progress{display:flex;align-items:center;gap:10px;flex:1;min-width:240px;}
+    .g2-bar{height:12px;flex:1;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;border:1px solid rgba(0,0,0,.06);}
+    .g2-bar>i{display:block;height:100%;width:0%;background:rgba(22,163,74,.75);}
+    .g2-mini{display:flex;gap:8px;align-items:center;justify-content:flex-end;min-width:240px;flex-wrap:wrap;}
+    .g2-smallBtn{border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.75);padding:10px 12px;border-radius:14px;font-weight:900;cursor:pointer;box-shadow:0 10px 20px rgba(0,0,0,.06);white-space:nowrap;}
+    .g2-smallBtn:active{transform:translateY(1px);}
+    .g2-book{padding:12px 12px 14px;border-top:1px solid rgba(0,0,0,.06);background:rgba(255,255,255,.55);display:flex;flex-direction:column;gap:10px;}
+    .g2-bookTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+    .g2-bookTitle{font-weight:900;display:flex;align-items:center;gap:8px;}
+    .g2-animalShelf{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .g2-chip{padding:6px 10px;border-radius:999px;background:rgba(37,99,235,.08);border:1px solid rgba(0,0,0,.06);font-weight:900;color:var(--muted);}
+    .g2-stickers{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;}
+    .g2-slot{height:34px;border-radius:10px;border:1px dashed rgba(0,0,0,.16);background:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;font-size:18px;user-select:none;}
+    .g2-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(17,24,39,.92);color:#fff;padding:10px 14px;border-radius:999px;font-weight:900;box-shadow:0 14px 30px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .18s ease;max-width:min(92vw,520px);text-align:center;z-index:80;}
+    .g2-toast.show{opacity:1;}
+    .g2-confetti{position:fixed;inset:0;pointer-events:none;z-index:90;overflow:hidden;}
+    .g2-confetti i{position:absolute;top:-10px;width:10px;height:14px;border-radius:3px;opacity:.9;animation:g2fall 950ms linear forwards;}
+    @keyframes g2fall{to{transform:translateY(calc(100vh + 30px)) rotate(540deg);opacity:.95;}}
+    .g2-modalBg{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:14px;z-index:100;}
+    .g2-modalBg.show{display:flex;}
+    .g2-modal{width:min(620px,96vw);background:rgba(255,255,255,.96);border:1px solid rgba(0,0,0,.08);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.22);overflow:hidden;}
+    .g2-modalHeader{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,.06);font-weight:900;}
+    .g2-modalBody{padding:14px;display:flex;flex-direction:column;gap:12px;}
+    .g2-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 12px;border:1px solid rgba(0,0,0,.06);background:rgba(249,250,251,.7);border-radius:14px;}
+    .g2-row label{font-weight:900;}.g2-row small{color:var(--muted);display:block;margin-top:2px;}
+    .g2-modalFooter{padding:12px 14px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid rgba(0,0,0,.06);background:rgba(249,250,251,.7);}
+
+    /* 戻るボタン */
+    .back-btn{position:fixed;top:14px;left:14px;z-index:50;background:rgba(255,255,255,.85);border:1px solid rgba(0,0,0,.1);border-radius:999px;padding:8px 16px;font-weight:900;font-size:14px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.08);display:none;}
+    .back-btn.visible{display:block;}
+
+    @media(max-width:600px){
+      .choices-grid{gap:10px;}
+      .choice{padding:16px 12px;min-height:80px;}
+      .choice .mini{width:56px;height:56px;}
+      .choice .c-label{font-size:22px;}
+      .big-icon{width:180px;height:180px;}
+      .prompt-card{min-height:240px;padding:16px;}
+      .start-title{font-size:26px;}
+      .btn.accent{font-size:20px;padding:18px 40px;}
+      .game-cards{flex-direction:column;align-items:center;}
+      .game-card{width:100%;max-width:340px;}
+      .station{display:none;}
+      .g2-mini{min-width:unset;width:100%;justify-content:space-between;}
+      .g2-progress{width:100%;}
+      .g2-stickers{grid-template-columns:repeat(5,1fr);}
+    }
+  </style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<button class="back-btn" id="backBtn" onclick="goHome()">← もどる</button>
+
+<div class="wrap">
+  <!-- ======== メニュー画面 ======== -->
+  <div class="screen active" id="menuScreen">
+    <div class="menu-title">🐾 どうぶつ ゲーム</div>
+    <div class="menu-sub">あそびたい ゲームを えらんでね！</div>
+    <div class="game-cards">
+      <div class="game-card" onclick="startGame1()">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">なまえ あてゲーム</div>
+        <div class="card-desc">どうぶつの えを みて<br>なまえを あてよう！</div>
+      </div>
+      <div class="game-card" onclick="startGame2()">
+        <div class="card-icon">🚂</div>
+        <div class="card-title">どうぶつ列車</div>
+        <div class="card-desc">れっしゃに のった どうぶつを<br>かぞえよう！</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== Game1: なまえあてゲーム ======== -->
+  <div class="screen" id="g1StartScreen">
+    <div class="start-title">🎯 なまえ あてゲーム</div>
+    <div class="start-sub">どうぶつの えを みて、なまえを あてよう！<br>ぜんぶで 5もん だよ</div>
+    <div class="level-select">
+      <button class="btn lv active" data-lv="1">Lv1 かんたん</button>
+      <button class="btn lv" data-lv="2">Lv2 むずかしい</button>
+    </div>
+    <div class="start-sub" style="font-size:12px;">Lv1=えをみて4つからえらぶ　Lv2=ヒントで4つからえらぶ</div>
+    <button class="btn accent" id="g1StartBtn">🎵 あそぶ！</button>
+    <button class="animal-toggle-btn" id="animalToggleBtn">🔧 でてくる どうぶつを えらぶ ▼</button>
+    <div class="animal-select-wrap" id="animalSelectWrap">
+      <div class="animal-select" id="animalSelect"></div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn" onclick="g1ToggleAll(true)">ぜんぶ えらぶ</button>
+        <button class="btn" onclick="g1ToggleAll(false)">ぜんぶ はずす</button>
+      </div>
+    </div>
+  </div>
+  <div class="screen" id="g1GameScreen">
+    <div class="game-header">
+      <div class="badge" id="roundBadge">🐾 1/5</div>
+      <div class="badge" id="scoreBadge">⭐ 0</div>
+      <div class="badge" id="lvBadge">Lv1</div>
+    </div>
+    <div class="game-main">
+      <div class="prompt-card">
+        <div class="prompt-label" id="promptLabel">この どうぶつは なに？</div>
+        <div class="big-icon" id="bigIcon"></div>
+        <div class="correct-reveal" id="correctReveal"></div>
+        <div class="hint-text" id="hintText">こたえを タップしてね</div>
+        <div class="feedback-overlay" id="feedback"><div class="fb-circle" id="fbCircle"></div><div class="fb-label" id="fbLabel"></div></div>
+      </div>
+      <div class="choices-card"><div class="choices-grid" id="choicesGrid"></div></div>
+    </div>
+  </div>
+  <div class="screen" id="g1ResultScreen">
+    <div class="result-card">
+      <div class="result-medal" id="resultMedal"></div>
+      <div class="result-stars" id="resultStars"></div>
+      <div class="result-score" id="resultScore"></div>
+      <div class="result-sub" id="resultSub"></div>
+      <div class="result-detail" id="resultDetail"></div>
+      <button class="btn accent" id="g1RetryBtn">🎵 もういちど あそぶ！</button>
+    </div>
+  </div>
+
+  <!-- ======== Game2: どうぶつ列車 ======== -->
+  <div class="screen" id="g2Screen">
+    <div class="g2-wrap">
+      <div class="g2-header" style="margin-bottom:12px;">
+        <div>
+          <h2 style="font-size:clamp(18px,3.2vw,26px);margin:0;">🚂 どうぶつ列車</h2>
+          <p class="g2-subtitle">どうぶつをタップすると数えるよ（「ぜんぶ かぞえる」でもOK）</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="g2-pill"><div><strong id="g2LevelText">Lv 1</strong><br/><small id="g2ModeText">モード: 3さい</small></div></div>
+          <button class="g2-iconBtn" id="g2OpenSettings">⚙</button>
+        </div>
+      </div>
+      <section class="g2-panel">
+        <div class="g2-scene">
+          <div class="g2-prompt">
+            <p class="q">いくつ？</p>
+            <p class="hint"><span id="g2HintRange">（1〜3）</span><span id="g2HintVoice">・こえ: ON</span><span id="g2HintPractice">・れんしゅう: OFF</span></p>
+          </div>
+          <div class="lane" id="lane">
+            <div class="cloud" style="left:-160px;animation-duration:11s;top:12%;"></div>
+            <div class="cloud" style="left:-240px;animation-duration:15s;top:22%;transform:scale(.8);"></div>
+            <div class="ground"></div><div class="track"></div>
+            <div class="station"><span>えきで</span><strong id="g2StationText">ピンポン！</strong><span style="margin-top:8px;">のったり</span><span>おりたり</span></div>
+            <div class="train" id="train"></div>
+          </div>
+        </div>
+        <div class="g2-answers" id="g2Answers"></div>
+        <div class="g2-footerRow">
+          <div class="g2-progress"><span style="font-weight:900;">スタンプ</span><div class="g2-bar"><i id="g2BarFill"></i></div><span id="g2StampText" style="font-weight:900;">0/5</span></div>
+          <div class="g2-mini">
+            <button class="g2-smallBtn" id="g2SpeakBtn">「いくつ？」</button>
+            <button class="g2-smallBtn" id="g2CountAllBtn">ぜんぶ かぞえる</button>
+            <button class="g2-smallBtn" id="g2ResetBtn">リセット</button>
+          </div>
+        </div>
+        <div class="g2-book">
+          <div class="g2-bookTop"><div class="g2-bookTitle">📘 シールちょう</div><div class="g2-animalShelf" id="g2AnimalShelf"></div></div>
+          <div class="g2-stickers" id="g2StickerGrid"></div>
+          <div style="color:var(--muted);font-size:12px;">※ せいかいで ⭐ が1こ。10こで 1ページ！</div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<div class="streak-msg" id="streakMsg"></div>
+<div class="g2-toast" id="g2Toast"></div>
+<div class="g2-confetti" id="g2Confetti"></div>
+
+<!-- Game2 Settings Modal -->
+<div class="g2-modalBg" id="g2ModalBg">
+  <div class="g2-modal">
+    <div class="g2-modalHeader"><div>せってい</div><button class="g2-iconBtn" id="g2CloseSettings">✕</button></div>
+    <div class="g2-modalBody">
+      <div class="g2-row"><div><label for="g2AgeMode">かずの はんい</label><small>こたえの さいだいすう</small></div><select id="g2AgeMode"><option value="2">1〜2</option><option value="3">1〜3</option><option value="5">1〜5</option><option value="7">1〜7</option><option value="10">1〜10</option></select></div>
+      <div class="g2-row"><div><label for="g2VoiceOn">こえ（読み上げ）</label><small>数字・正解/不正解・かぞえる</small></div><input id="g2VoiceOn" type="checkbox"/></div>
+      <div class="g2-row"><div><label for="g2AutoEase">やさしく自動調整</label><small>つまずいたら 1〜2 に寄せる</small></div><input id="g2AutoEase" type="checkbox"/></div>
+      <div class="g2-row"><div><label for="g2PracticeMode">れんしゅうモード</label><small>同じ数を 3回くり返す</small></div><input id="g2PracticeMode" type="checkbox"/></div>
+      <div class="g2-row"><div><label for="g2StationChange">えきで のる/おりる</label><small>ピンポンの後、+1 / -1 が起きる</small></div><input id="g2StationChange" type="checkbox"/></div>
+      <div class="g2-row"><div><label for="g2FancyRewards">ごほうび演出</label><small>紙吹雪・シールちょう</small></div><input id="g2FancyRewards" type="checkbox"/></div>
+    </div>
+    <div class="g2-modalFooter"><button class="g2-smallBtn" id="g2ApplySettings">OK</button></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  共通
+// ============================================================
+const allScreens=['menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g2Screen'];
+function showScreen(id){allScreens.forEach(s=>document.getElementById(s).classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('backBtn').classList.toggle('visible',id!=='menuScreen');}
+function goHome(){showScreen('menuScreen');if(typeof g2Stop==='function')g2Stop();}
+function startGame1(){showScreen('g1StartScreen');g1RenderAnimalSelect();}
+function startGame2(){showScreen('g2Screen');g2Init();}
+
+// 共通音声 (ニューラル音声優先 → Google TTS フォールバック)
+let _ttsMode='google';
+let _nativeVoice=null;
+let _ttsAudio=null;
+(function _initTTS(){
+  if(!('speechSynthesis' in window))return;
+  function pick(){
+    const v=speechSynthesis.getVoices();
+    const ja=v.filter(x=>x.lang&&x.lang.startsWith('ja'));
+    const neural=ja.find(x=>/natural|neural/i.test(x.name));
+    const online=ja.find(x=>/online/i.test(x.name)&&!/desktop/i.test(x.name));
+    const google=ja.find(x=>/google/i.test(x.name));
+    const remote=ja.find(x=>!x.localService);
+    const best=neural||online||google||remote;
+    if(best){_nativeVoice=best;_ttsMode='native';}
+  }
+  speechSynthesis.onvoiceschanged=pick;pick();
+})();
+function speak(text,cb){
+  try{
+    if(_ttsMode==='native'&&_nativeVoice){
+      speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text);
+      u.voice=_nativeVoice;u.lang='ja-JP';u.rate=0.85;u.pitch=1.1;u.volume=1.0;
+      if(cb)u.onend=cb;u.onerror=function(){if(cb)cb();};
+      speechSynthesis.speak(u);
+    }else{
+      if(_ttsAudio){_ttsAudio.pause();_ttsAudio=null;}
+      const url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ja&q="+encodeURIComponent(text);
+      _ttsAudio=new Audio(url);_ttsAudio.volume=1.0;
+      if(cb)_ttsAudio.onended=cb;
+      _ttsAudio.onerror=function(){if(cb)cb();};
+      _ttsAudio.play().catch(()=>{if(cb)cb();});
+    }
+  }catch(e){if(cb)cb();}
+}
+
+// 効果音
+const AudioCtx=window.AudioContext||window.webkitAudioContext;
+let audioCtx=null;
+function getAudioCtx(){if(!audioCtx)audioCtx=new AudioCtx();return audioCtx;}
+function playCorrectSound(){try{const c=getAudioCtx();[523.25,659.25,783.99].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0.15,c.currentTime);g.gain.exponentialRampToValueAtTime(0.01,c.currentTime+0.6);o.connect(g);g.connect(c.destination);o.start(c.currentTime+i*0.1);o.stop(c.currentTime+0.7+i*0.1);});}catch(e){}}
+function playWrongSound(){try{const c=getAudioCtx();const o=c.createOscillator(),g=c.createGain();o.type='square';o.frequency.value=200;g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.01,c.currentTime+0.4);o.connect(g);g.connect(c.destination);o.start(c.currentTime);o.stop(c.currentTime+0.4);}catch(e){}}
+
+// 紙吹雪 (Game1用)
+const cnv=document.getElementById('confetti'),cCtx=cnv.getContext('2d');
+let confettiParts=[],confettiAnim=null;
+function resizeCanvas(){cnv.width=innerWidth;cnv.height=innerHeight;}
+addEventListener('resize',resizeCanvas);resizeCanvas();
+function launchConfetti(){confettiParts=[];const colors=['#ff4d6d','#ffd166','#06d6a0','#118ab2','#ef476f','#ffc43d','#1b9aaa','#ff6b6b'];for(let i=0;i<120;i++)confettiParts.push({x:Math.random()*cnv.width,y:Math.random()*cnv.height*-1,w:Math.random()*8+4,h:Math.random()*6+3,color:colors[i%colors.length],vx:(Math.random()-.5)*3,vy:Math.random()*4+2,rot:Math.random()*360,vr:(Math.random()-.5)*10,life:1});if(confettiAnim)cancelAnimationFrame(confettiAnim);animConfetti();}
+function animConfetti(){cCtx.clearRect(0,0,cnv.width,cnv.height);let alive=false;confettiParts.forEach(p=>{if(p.life<=0)return;alive=true;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.life-=.005;cCtx.save();cCtx.translate(p.x,p.y);cCtx.rotate(p.rot*Math.PI/180);cCtx.globalAlpha=Math.max(0,p.life);cCtx.fillStyle=p.color;cCtx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cCtx.restore();});if(alive)confettiAnim=requestAnimationFrame(animConfetti);else cCtx.clearRect(0,0,cnv.width,cnv.height);}
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+// ============================================================
+//  Game1: なまえあてゲーム
+// ============================================================
+(function(){
+  function animalImg(key){return '<img src="'+key+'.png" alt="'+key+'" draggable="false">';}
+  const animals=[
+    {key:"inu",name:"いぬ",hint:"ワンワン！と なくよ",cry:"ワンワン！"},
+    {key:"neko",name:"ねこ",hint:"ニャーと なくよ",cry:"ニャー！"},
+    {key:"kuma",name:"くま",hint:"もりに すんでいるよ",cry:"ガオー！"},
+    {key:"zou",name:"ぞう",hint:"ながい はなが あるよ",cry:"パオーン！"},
+    {key:"raion",name:"らいおん",hint:"たてがみが かっこいい！",cry:"ガオー！"},
+    {key:"pengin",name:"ぺんぎん",hint:"こおりの うえを あるくよ",cry:"ぺぺぺっ！"},
+    {key:"kirin",name:"きりん",hint:"せが とっても たかいよ",cry:"もぐもぐ"},
+    {key:"hitsuji",name:"ひつじ",hint:"もこもこの けが あるよ",cry:"メェー！"},
+    {key:"buta",name:"ぶた",hint:"ブーブー！はなが まるいよ",cry:"ブーブー！"},
+    {key:"koara",name:"コアラ",hint:"ユーカリの きに いるよ",cry:"すやすや"},
+  ];
+  const ROUNDS=5;
+  let level=1,score=0,round=0,streak=0,current=null,choices=[],locked=false,usedKeys=[],roundResults=[];
+  let selectedKeys=new Set(animals.map(a=>a.key));
+
+  const $=id=>document.getElementById(id);
+  const elBig=$('bigIcon'),elGrid=$('choicesGrid'),elFeedback=$('feedback'),elFbCircle=$('fbCircle'),elFbLabel=$('fbLabel');
+  const elRound=$('roundBadge'),elScore=$('scoreBadge'),elLv=$('lvBadge');
+  const elPrompt=$('promptLabel'),elHint=$('hintText'),elReveal=$('correctReveal');
+  const elStreak=$('streakMsg');
+
+  const STREAK_MSGS={3:'すごい！🔥',4:'いいね！✨',5:'てんさい！🌟'};
+  let streakTimer=null;
+  function showStreak(n){const msg=STREAK_MSGS[n];if(!msg)return;elStreak.textContent=msg;elStreak.classList.add('show');if(streakTimer)clearTimeout(streakTimer);streakTimer=setTimeout(()=>elStreak.classList.remove('show'),1200);}
+
+  window.g1RenderAnimalSelect=function(){
+    const cont=$('animalSelect');cont.innerHTML='';
+    animals.forEach(a=>{
+      const chip=document.createElement('div');
+      chip.className='animal-chip'+(selectedKeys.has(a.key)?' selected':'');
+      chip.innerHTML='<div class="chip-icon">'+animalImg(a.key)+'</div><span>'+a.name+'</span>';
+      chip.onclick=()=>{if(selectedKeys.has(a.key))selectedKeys.delete(a.key);else selectedKeys.add(a.key);chip.classList.toggle('selected',selectedKeys.has(a.key));};
+      cont.appendChild(chip);
+    });
+  };
+  window.g1ToggleAll=function(on){if(on)animals.forEach(a=>selectedKeys.add(a.key));else selectedKeys.clear();g1RenderAnimalSelect();};
+
+  $('animalToggleBtn').addEventListener('click',()=>{
+    const wrap=$('animalSelectWrap');const isOpen=wrap.classList.contains('open');
+    wrap.classList.toggle('open',!isOpen);
+    $('animalToggleBtn').textContent=isOpen?'🔧 でてくる どうぶつを えらぶ ▼':'🔧 とじる ▲';
+  });
+
+  function getPool(){return animals.filter(a=>selectedKeys.has(a.key));}
+
+  function g1Start(){
+    const pool=getPool();
+    if(pool.length<4){alert('4しゅるい いじょう えらんでね！');return;}
+    score=0;round=0;streak=0;usedKeys=[];roundResults=[];
+    updateHUD();showScreen('g1GameScreen');nextRound();
+  }
+
+  function nextRound(){
+    round++;if(round>ROUNDS){showResult();return;}
+    locked=false;
+    elReveal.classList.remove('show');elReveal.textContent='';
+    elFeedback.classList.remove('show');elBig.classList.remove('bounce');
+    const pool=getPool();
+    let available=pool.filter(a=>!usedKeys.includes(a.key));
+    if(!available.length)available=[...pool];
+    current=available[Math.floor(Math.random()*available.length)];
+    usedKeys.push(current.key);
+    const others=shuffle(pool.filter(a=>a.key!==current.key)).slice(0,3);
+    choices=shuffle([current,...others]);
+    renderQuestion();updateHUD();
+    if(level===2)speak(current.hint);
+    else speak('この どうぶつは だれかな？');
+  }
+
+  function updateHUD(){
+    elRound.textContent='🐾 '+Math.min(round,ROUNDS)+'/'+ROUNDS;
+    elScore.textContent='⭐ '+score;
+    elLv.textContent='Lv'+level;
+  }
+
+  function renderQuestion(){
+    if(level===2){
+      elBig.innerHTML='<div style="font-size:56px;">❓</div>';
+      elBig.className='big-icon';
+      elPrompt.textContent='ヒントで あててね！';
+      elHint.textContent=current.hint;
+    }else{
+      elBig.innerHTML=animalImg(current.key);
+      elBig.className='big-icon';
+      elPrompt.textContent='この どうぶつは なに？';
+      elHint.textContent='こたえを タップしてね';
+    }
+    elGrid.innerHTML='';
+    choices.forEach(item=>{
+      const btn=document.createElement('button');btn.className='choice';btn.type='button';
+      const mini=document.createElement('div');mini.className='mini';
+      const lab=document.createElement('div');lab.className='c-label';lab.textContent=item.name;
+      const soundBtn=document.createElement('button');soundBtn.className='sound-btn';soundBtn.type='button';
+      soundBtn.textContent='🔊';soundBtn.addEventListener('click',(e)=>{e.stopPropagation();speak(item.name);});
+      if(level===1){mini.innerHTML=animalImg(item.key);}
+      else{mini.style.background='#f2f2f7';mini.innerHTML='<span style="font-size:24px;">？</span>';}
+      btn.appendChild(mini);btn.appendChild(lab);btn.appendChild(soundBtn);
+      btn.addEventListener('click',()=>onAnswer(item.key,btn));
+      elGrid.appendChild(btn);
+    });
+  }
+
+  function onAnswer(key,btnEl){
+    if(locked)return;
+    const ok=key===current.key;
+    locked=true;
+    document.querySelectorAll('.choice').forEach(b=>{
+      const isThis=b===btnEl;
+      const isCorrect=b.querySelector('.c-label').textContent===current.name;
+      if(isCorrect)b.classList.add('correct');
+      else if(isThis)b.classList.add('wrong');
+    });
+    if(level===2){elBig.innerHTML=animalImg(current.key);}
+    if(ok){
+      score++;streak++;
+      playCorrectSound();
+      elFbCircle.className='fb-circle fb-ok';elFbCircle.textContent='🎉';
+      elFbLabel.textContent='すごい！';
+      elBig.classList.add('bounce');
+      speak('せいかい！ '+current.name+'！ '+current.cry);
+      if(streak>=3)showStreak(streak);
+      roundResults.push({correct:true,animal:current.name});
+    }else{
+      streak=0;
+      playWrongSound();
+      elFbCircle.className='fb-circle fb-ng';elFbCircle.textContent='💡';
+      elFbLabel.textContent='おしい！';
+      elReveal.textContent='こたえは「'+current.name+'」だよ！ '+current.cry;elReveal.classList.add('show');
+      speak('おしい！こたえは '+current.name+' だよ。'+current.cry);
+      roundResults.push({correct:false,animal:current.name});
+    }
+    elFeedback.classList.add('show');updateHUD();
+    const delay=ok?1500:4000;
+    setTimeout(()=>{elFeedback.classList.remove('show');elBig.classList.remove('reveal','bounce');nextRound();},delay);
+  }
+
+  function showResult(){
+    showScreen('g1ResultScreen');
+    const pct=Math.round(score/ROUNDS*100);
+    let medal,title;
+    if(score===ROUNDS){medal='👑';title='パーフェクト！！';}
+    else if(pct>=80){medal='🥇';title='すばらしい！';}
+    else if(pct>=60){medal='🥈';title='がんばったね！';}
+    else if(pct>=40){medal='🥉';title='おしい！';}
+    else{medal='💪';title='つぎは がんばろう！';}
+    $('resultMedal').textContent=medal;$('resultScore').textContent=score+' / '+ROUNDS;
+    $('resultSub').textContent=title;$('resultStars').textContent='⭐'.repeat(score)+'☆'.repeat(ROUNDS-score);
+    let detail='';roundResults.forEach((r,i)=>{detail+=(r.correct?'⭕':'❌')+' '+(i+1)+'もんめ: '+r.animal+'\n';});
+    $('resultDetail').textContent=detail;
+    if(score===ROUNDS){launchConfetti();speak('パーフェクト！すごいね！');}
+    else if(pct>=60)speak(score+'もん せいかい！'+title);
+    else speak(score+'もん せいかい。'+title);
+  }
+
+  document.querySelectorAll('.btn[data-lv]').forEach(b=>b.addEventListener('click',()=>{level=Number(b.dataset.lv);document.querySelectorAll('.btn[data-lv]').forEach(x=>x.classList.toggle('active',x===b));}));
+  $('g1StartBtn').addEventListener('click',g1Start);
+  $('g1RetryBtn').addEventListener('click',()=>{showScreen('g1StartScreen');g1RenderAnimalSelect();});
+})();
+
+// ============================================================
+//  Game2: どうぶつ列車
+// ============================================================
+(function(){
+  const ALL_ANIMALS=["inu","neko","kuma","zou","raion","pengin","kirin","hitsuji","buta","koara"];
+  const ALL_NAMES={"inu":"いぬ","neko":"ねこ","kuma":"くま","zou":"ぞう","raion":"らいおん","pengin":"ぺんぎん","kirin":"きりん","hitsuji":"ひつじ","buta":"ぶた","koara":"コアラ"};
+  const STORAGE_KEY="animal_train_v5";
+  const VALID_MODES=[2,3,5,7,10];
+  function parseAgeMode(v){const n=Number(v);return VALID_MODES.includes(n)?n:3;}
+  let state=loadState();
+  let currentCount=1,currentAnimal="inu",isLocked=false;
+  let practiceTarget=null,practiceRemaining=0;
+  let forcedNextCount=null,lastStationDelta=0;
+  let initialized=false;
+
+  const $=id=>document.getElementById(id);
+  const trainEl=$('train'),toastEl=$('g2Toast'),confettiEl=$('g2Confetti');
+  const barFill=$('g2BarFill'),stampText=$('g2StampText'),levelText=$('g2LevelText'),modeText=$('g2ModeText');
+  const hintRange=$('g2HintRange'),hintVoice=$('g2HintVoice'),hintPractice=$('g2HintPractice'),stationText=$('g2StationText');
+  const answersEl=$('g2Answers'),animalShelf=$('g2AnimalShelf'),stickerGrid=$('g2StickerGrid');
+  const modalBg=$('g2ModalBg');
+
+  const NUM_WORD={1:"いち",2:"に",3:"さん",4:"よん",5:"ご",6:"ろく",7:"なな",8:"はち",9:"きゅう",10:"じゅう"};
+  function speakJA(text){if(!state.voiceOn)return;speak(text);}
+  function toast(msg){toastEl.textContent=msg;toastEl.classList.add("show");clearTimeout(toastEl._t);toastEl._t=setTimeout(()=>toastEl.classList.remove("show"),1100);}
+  function setButtonsEnabled(on){[...answersEl.querySelectorAll(".g2-btn")].forEach(b=>b.disabled=!on);}
+  function clamp(n,lo,hi){return Math.max(lo,Math.min(hi,n));}
+
+  function updateHUD(){
+    barFill.style.width=Math.min(100,(state.stamps%5)/5*100)+"%";
+    stampText.textContent=(state.stamps%5)+"/5";
+    levelText.textContent="Lv "+state.level;
+    modeText.textContent="はんい: 1〜"+state.ageMode;
+    hintRange.textContent="（1〜"+getMaxCount()+"）";
+    hintVoice.textContent="・こえ: "+(state.voiceOn?"ON":"OFF");
+    hintPractice.textContent="・れんしゅう: "+(state.practiceMode?"ON":"OFF");
+    if(!state.stationChange)stationText.textContent="ピンポン！";
+    else{if(lastStationDelta===1)stationText.textContent="+1 のった！";else if(lastStationDelta===-1)stationText.textContent="-1 おりた！";else stationText.textContent="ピンポン！";}
+    renderAnswerButtons();renderBook();
+  }
+  function renderAnswerButtons(){
+    answersEl.innerHTML="";const max=getMaxCount();
+    const cols=max<=3?max:max<=5?5:5;
+    answersEl.style.gridTemplateColumns="repeat("+cols+",1fr)";
+    for(let n=1;n<=max;n++){const btn=document.createElement("button");btn.className="g2-btn";btn.dataset.n=String(n);btn.textContent=String(n);btn.addEventListener("pointerdown",()=>onAnswer(n),{passive:true});answersEl.appendChild(btn);}
+  }
+  function renderBook(){
+    animalShelf.innerHTML="";ALL_ANIMALS.slice(0,state.unlockedCount).forEach(a=>{const s=document.createElement("span");s.className="g2-chip";s.style.display="inline-flex";s.style.alignItems="center";s.style.gap="4px";s.innerHTML='<img src="'+a+'.png" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;" alt="'+a+'"> '+(ALL_NAMES[a]||a);animalShelf.appendChild(s);});
+    stickerGrid.innerHTML="";const page=state.stickers%10;for(let i=0;i<10;i++){const slot=document.createElement("div");slot.className="g2-slot";slot.textContent=i<page?"⭐":"";stickerGrid.appendChild(slot);}
+  }
+  function confettiBurst(){if(!state.fancyRewards)return;confettiEl.innerHTML="";for(let i=0;i<26;i++){const p=document.createElement("i");p.style.left=Math.random()*100+"vw";p.style.animationDuration=(850+Math.random()*450)+"ms";const w=8+Math.floor(Math.random()*10),h=10+Math.floor(Math.random()*14);p.style.width=w+"px";p.style.height=h+"px";p.style.background="hsl("+Math.floor(Math.random()*360)+" 85% 60%)";confettiEl.appendChild(p);}setTimeout(()=>{confettiEl.innerHTML="";},1200);}
+
+  function buildTrain(count,animal){
+    trainEl.innerHTML="";
+    const engine=document.createElement("div");engine.className="engine";
+    engine.innerHTML='<div class="label">TRAIN</div><div class="wheel w1"></div><div class="wheel w2"></div><div class="wheel w3"></div>';
+    trainEl.appendChild(engine);
+    for(let i=0;i<count;i++){
+      const car=document.createElement("div");car.className="car";
+      car.innerHTML='<div class="wheel w1"></div><div class="wheel w2"></div><div class="wheel w3"></div><div class="animal" role="button"><img src="'+animal+'.png" alt="'+animal+'" draggable="false"></div>';
+      trainEl.appendChild(car);
+    }
+    [...trainEl.querySelectorAll(".animal")].forEach((a,idx)=>{a.addEventListener("pointerdown",()=>{a.classList.remove("tap");void a.offsetWidth;a.classList.add("tap");speakJA(String(idx+1));},{passive:true});});
+  }
+  function animateTrainIn(){trainEl.style.transition="none";trainEl.style.transform="translateX(-35%)";void trainEl.offsetWidth;trainEl.style.transition="transform 900ms cubic-bezier(.2,.9,.2,1)";trainEl.style.transform="translateX(10%)";}
+  function animateTrainOut(cb){trainEl.style.transition="transform 650ms cubic-bezier(.2,.9,.2,1)";trainEl.style.transform="translateX(120%)";setTimeout(cb,700);}
+
+  function pickAnimal(){const pool=ALL_ANIMALS.slice(0,state.unlockedCount);return pool[Math.floor(Math.random()*pool.length)];}
+  function getMaxCount(){const m=state.ageMode;if(state.autoEase&&state.missStreak>=2)return Math.max(2,Math.floor(m/2));return m;}
+  function pickCount(){return 1+Math.floor(Math.random()*getMaxCount());}
+  function startPractice(){practiceTarget=pickCount();practiceRemaining=3;}
+  function decideStationChange(base){lastStationDelta=0;forcedNextCount=null;if(!state.stationChange)return null;const max=getMaxCount();const deltas=[];if(base-1>=1)deltas.push(-1);if(base+1<=max)deltas.push(1);if(!deltas.length)return null;const d=deltas[Math.floor(Math.random()*deltas.length)];lastStationDelta=d;forcedNextCount=clamp(base+d,1,max);return forcedNextCount;}
+
+  function newRound(){
+    if(state.practiceMode){if(practiceRemaining<=0||practiceTarget==null)startPractice();currentCount=practiceTarget;practiceRemaining=Math.max(0,practiceRemaining-1);}
+    else{practiceTarget=null;practiceRemaining=0;if(forcedNextCount!=null){currentCount=forcedNextCount;forcedNextCount=null;}else{currentCount=pickCount();}}
+    currentAnimal=pickAnimal();buildTrain(currentCount,currentAnimal);animateTrainIn();setButtonsEnabled(true);isLocked=false;updateHUD();
+  }
+  function correct(){
+    toast("ピンポン！🎉");speakJA("せいかい！");if(state.fancyRewards)confettiBurst();
+    state.stamps+=1;state.stickers+=1;state.totalCorrect=(state.totalCorrect||0)+1;state.streak=(state.streak||0)+1;state.missStreak=0;
+    if(state.totalCorrect%10===0){state.level=Math.min(9,state.level+1);toast("レベルアップ！ Lv"+state.level+" ✨");speakJA("レベルアップ！");if(state.fancyRewards)confettiBurst();}
+    if(state.stamps%5===0){state.unlockedCount=Math.min(ALL_ANIMALS.length,state.unlockedCount+1);toast("あたらしい どうぶつ！🧡");speakJA("あたらしいどうぶつ！");if(state.fancyRewards)confettiBurst();}
+    if(!state.practiceMode)decideStationChange(currentCount);else{lastStationDelta=0;forcedNextCount=null;}
+    saveState(state);updateHUD();isLocked=true;setButtonsEnabled(false);animateTrainOut(()=>newRound());
+  }
+  function wrong(){
+    toast("おしい！もういっかい 😊");speakJA("おしい。");state.streak=0;state.missStreak=(state.missStreak||0)+1;
+    if(state.practiceMode)practiceRemaining=Math.min(3,practiceRemaining+1);
+    saveState(state);updateHUD();isLocked=true;setButtonsEnabled(false);
+    animateTrainOut(()=>{buildTrain(currentCount,currentAnimal);animateTrainIn();setTimeout(()=>{setButtonsEnabled(true);isLocked=false;},250);});
+  }
+  function onAnswer(n){if(isLocked)return;speakJA(NUM_WORD[n]||String(n));(n===currentCount)?correct():wrong();}
+  async function countAll(){if(isLocked)return;for(let i=1;i<=currentCount;i++){speakJA(String(i));await new Promise(r=>setTimeout(r,420));}}
+
+  // Events
+  $('g2SpeakBtn').addEventListener("click",()=>speakJA("いくつ？"));
+  $('g2CountAllBtn').addEventListener("click",countAll);
+  $('g2ResetBtn').addEventListener("click",()=>{if(!confirm("スタンプ・レベル・シールをリセットする？"))return;localStorage.removeItem(STORAGE_KEY);location.reload();});
+
+  $('g2OpenSettings').addEventListener("click",()=>{
+    $('g2AgeMode').value=String(state.ageMode);$('g2VoiceOn').checked=!!state.voiceOn;$('g2AutoEase').checked=!!state.autoEase;
+    $('g2PracticeMode').checked=!!state.practiceMode;$('g2StationChange').checked=!!state.stationChange;$('g2FancyRewards').checked=!!state.fancyRewards;
+    modalBg.classList.add("show");
+  });
+  $('g2CloseSettings').addEventListener("click",()=>modalBg.classList.remove("show"));
+  modalBg.addEventListener("click",(e)=>{if(e.target===modalBg)modalBg.classList.remove("show");});
+  $('g2ApplySettings').addEventListener("click",()=>{
+    state.ageMode=parseAgeMode($('g2AgeMode').value);state.voiceOn=!!$('g2VoiceOn').checked;state.autoEase=!!$('g2AutoEase').checked;
+    state.practiceMode=!!$('g2PracticeMode').checked;state.stationChange=!!$('g2StationChange').checked;state.fancyRewards=!!$('g2FancyRewards').checked;
+    state.missStreak=0;lastStationDelta=0;forcedNextCount=null;practiceTarget=null;practiceRemaining=0;
+    saveState(state);updateHUD();modalBg.classList.remove("show");toast("OK！");speakJA("オーケー！");
+    isLocked=true;setButtonsEnabled(false);animateTrainOut(()=>newRound());
+  });
+
+  function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw){const s=JSON.parse(raw);return{stamps:Number(s.stamps||0),stickers:Number(s.stickers||0),unlockedCount:Math.max(3,Math.min(ALL_ANIMALS.length,Number(s.unlockedCount||3))),level:Math.max(1,Math.min(9,Number(s.level||1))),totalCorrect:Number(s.totalCorrect||0),ageMode:parseAgeMode(s.ageMode),voiceOn:s.voiceOn===undefined?true:!!s.voiceOn,autoEase:s.autoEase===undefined?true:!!s.autoEase,practiceMode:s.practiceMode===undefined?false:!!s.practiceMode,stationChange:s.stationChange===undefined?true:!!s.stationChange,fancyRewards:s.fancyRewards===undefined?true:!!s.fancyRewards,streak:Number(s.streak||0),missStreak:Number(s.missStreak||0)};}}catch(e){}return{stamps:0,stickers:0,unlockedCount:3,level:1,totalCorrect:0,ageMode:10,voiceOn:true,autoEase:true,practiceMode:false,stationChange:true,fancyRewards:true,streak:0,missStreak:0};}
+  function saveState(s){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s));}catch(e){}}
+
+  window.g2Init=function(){if(!initialized){initialized=true;updateHUD();newRound();}};
+  window.g2Stop=function(){isLocked=true;};
+})();
+</script>
+</body>
+</html>
