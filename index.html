@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>どうぶつ ゲーム</title>
+  <title>キッズ ゲーム</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&display=swap">
   <style>
     :root{--bg:#fff7fb;--ink:#222;--muted:#888;--accent:#ff4d6d;--ok:#22c55e;--ng:#f59e0b;--shadow:0 8px 30px rgba(0,0,0,.08);--radius:20px;}
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
@@ -12,7 +13,7 @@
     .btn{border:0;border-radius:14px;padding:12px 18px;font-weight:800;font-size:15px;background:#f2f2f7;color:#1c1c1e;cursor:pointer;transition:transform .1s;}
     .btn:active{transform:scale(.96);}
     .btn.accent{background:var(--accent);color:#fff;font-size:22px;padding:20px 48px;border-radius:999px;box-shadow:0 6px 24px rgba(255,77,109,.3);}
-    .screen{display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;min-height:80dvh;text-align:center;animation:fadeIn .3s;}
+    .screen{display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;min-height:auto;text-align:center;animation:fadeIn .3s;}
     .screen.active{display:flex;}
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
@@ -20,7 +21,7 @@
     .menu-title{font-size:36px;font-weight:900;}
     .menu-sub{font-size:16px;color:var(--muted);line-height:1.7;}
     .game-cards{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin-top:10px;}
-    .game-card{background:#fff;border-radius:24px;box-shadow:0 10px 40px rgba(0,0,0,.10);padding:32px 28px;width:320px;cursor:pointer;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;align-items:center;gap:14px;border:3px solid transparent;}
+    .game-card{background:#fff;border-radius:24px;box-shadow:0 10px 40px rgba(0,0,0,.10);padding:28px 24px;width:260px;cursor:pointer;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;align-items:center;gap:14px;border:3px solid transparent;}
     .game-card:hover{transform:translateY(-4px);box-shadow:0 16px 50px rgba(0,0,0,.15);border-color:var(--accent);}
     .game-card:active{transform:scale(.97);}
     .game-card .card-icon{font-size:64px;}
@@ -149,6 +150,43 @@
     .g2-row label{font-weight:900;}.g2-row small{color:var(--muted);display:block;margin-top:2px;}
     .g2-modalFooter{padding:12px 14px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid rgba(0,0,0,.06);background:rgba(249,250,251,.7);}
 
+    /* ======== ひらがなゲーム (Game3) ======== */
+    .g3-wrap{width:100%;max-width:500px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+    .g3-modeRow{display:flex;gap:10px;}
+    .g3-modeBtn{padding:8px 20px;border-radius:50px;border:3px solid var(--accent);font-family:'Zen Maru Gothic',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;background:#fff;color:var(--accent);}
+    .g3-modeBtn.active{background:var(--accent);color:#fff;transform:scale(1.05);box-shadow:0 4px 12px rgba(255,77,109,.3);}
+    .g3-card{width:min(340px,90vw);background:#fff;border-radius:32px;padding:32px 24px 28px;box-shadow:0 8px 30px rgba(0,0,0,.12);display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;transition:transform .15s;animation:fadeIn .3s;position:relative;overflow:hidden;}
+    .g3-card::before{content:'';position:absolute;top:0;left:0;right:0;height:8px;border-radius:32px 32px 0 0;}
+    .g3-card:active{transform:scale(.97);}
+    .g3-emoji{font-size:72px;line-height:1;animation:g3bounce 2s ease-in-out infinite;}
+    @keyframes g3bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .g3-hira{font-size:96px;font-weight:900;line-height:1;color:#333;font-family:'Zen Maru Gothic',sans-serif;text-shadow:3px 3px 0 rgba(0,0,0,.06);}
+    .g3-romaji{font-size:28px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:3px;}
+    .g3-word{font-size:20px;font-weight:700;color:#555;background:#f5f5f5;padding:6px 16px;border-radius:50px;}
+    .g3-tapHint{font-size:13px;color:#ccc;}
+    .g3-navRow{display:flex;align-items:center;gap:20px;}
+    .g3-navBtn{width:56px;height:56px;border-radius:50%;border:none;font-size:24px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.15);}
+    .g3-navBtn:active{transform:scale(.9);}
+    .g3-navPrev{background:#ffd93d;}.g3-navNext{background:#6bcb77;}
+    .g3-progInfo{font-size:18px;font-weight:700;color:#666;min-width:60px;text-align:center;}
+    .g3-dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:340px;}
+    .g3-dot{width:10px;height:10px;border-radius:50%;background:#e0e0e0;transition:all .3s;}
+    .g3-dot.seen{background:#4ecdc4;}.g3-dot.current{background:var(--accent);transform:scale(1.4);}
+    .g3-quizWrap{display:flex;flex-direction:column;align-items:center;gap:20px;width:100%;}
+    .g3-scoreBadge{background:linear-gradient(135deg,#ffd93d,#ff9a3c);border-radius:50px;padding:8px 24px;font-size:18px;font-weight:700;color:#fff;box-shadow:0 4px 12px rgba(255,154,60,.4);}
+    .g3-question{font-size:80px;font-weight:900;background:#fff;border-radius:28px;width:min(200px,55vw);height:min(200px,55vw);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.1);animation:fadeIn .3s;}
+    .g3-instruction{font-size:18px;font-weight:700;color:#666;text-align:center;}
+    .g3-options{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:min(340px,90vw);}
+    .g3-opt{background:#fff;border:4px solid transparent;border-radius:24px;font-size:52px;font-weight:900;font-family:'Zen Maru Gothic',sans-serif;height:100px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;box-shadow:0 4px 16px rgba(0,0,0,.08);}
+    .g3-opt:active{transform:scale(.95);}
+    .g3-opt.correct{background:#6bcb77;border-color:#6bcb77;color:#fff;animation:g3pop .4s cubic-bezier(.34,1.56,.64,1);}
+    .g3-opt.wrong{background:var(--accent);border-color:var(--accent);color:#fff;animation:g3shake .4s ease;}
+    @keyframes g3pop{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+    @keyframes g3shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+    .g3-celeb{position:fixed;inset:0;pointer-events:none;z-index:100;display:flex;align-items:center;justify-content:center;}
+    .g3-celebText{font-size:64px;font-weight:900;animation:g3celebPop 1s cubic-bezier(.34,1.56,.64,1) forwards;opacity:0;filter:drop-shadow(0 4px 12px rgba(0,0,0,.2));}
+    @keyframes g3celebPop{0%{transform:scale(0);opacity:0}40%{transform:scale(1.3);opacity:1}70%{transform:scale(.95);opacity:1}85%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:0}}
+
     /* 戻るボタン */
     .back-btn{position:fixed;top:14px;left:14px;z-index:50;background:rgba(255,255,255,.85);border:1px solid rgba(0,0,0,.1);border-radius:999px;padding:8px 16px;font-weight:900;font-size:14px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.08);display:none;}
     .back-btn.visible{display:block;}
@@ -178,7 +216,7 @@
 <div class="wrap">
   <!-- ======== メニュー画面 ======== -->
   <div class="screen active" id="menuScreen">
-    <div class="menu-title">🐾 どうぶつ ゲーム</div>
+    <div class="menu-title">🎮 キッズ ゲーム</div>
     <div class="menu-sub">あそびたい ゲームを えらんでね！</div>
     <div class="game-cards">
       <div class="game-card" onclick="startGame1()">
@@ -190,6 +228,11 @@
         <div class="card-icon">🚂</div>
         <div class="card-title">どうぶつ列車</div>
         <div class="card-desc">れっしゃに のった どうぶつを<br>かぞえよう！</div>
+      </div>
+      <div class="game-card" onclick="startGame3()">
+        <div class="card-icon">✏️</div>
+        <div class="card-title">ひらがな おぼえよう</div>
+        <div class="card-desc">ひらがなの カードを みたり<br>クイズで あそぼう！</div>
       </div>
     </div>
   </div>
@@ -285,7 +328,43 @@
       </section>
     </div>
   </div>
+  <!-- ======== Game3: ひらがな おぼえよう ======== -->
+  <div class="screen" id="g3Screen">
+    <div class="g3-wrap">
+      <div style="font-size:26px;font-weight:900;font-family:'Zen Maru Gothic',sans-serif;">✏️ ひらがな おぼえよう！</div>
+      <div class="g3-modeRow">
+        <button class="g3-modeBtn active" id="g3FlashBtn">📖 みる</button>
+        <button class="g3-modeBtn" id="g3QuizBtn">🎯 クイズ</button>
+      </div>
+      <!-- Flashcard -->
+      <div id="g3Flashcard">
+        <div class="g3-card" id="g3Card" style="margin-bottom:12px;">
+          <div class="g3-emoji" id="g3Emoji">🐜</div>
+          <div class="g3-hira" id="g3Hira">あ</div>
+          <div class="g3-romaji" id="g3Romaji">A</div>
+          <div class="g3-word" id="g3Word">あり</div>
+          <div class="g3-tapHint">タップで よんでくれるよ！</div>
+        </div>
+        <div class="g3-navRow">
+          <button class="g3-navBtn g3-navPrev" id="g3Prev">◀</button>
+          <div class="g3-progInfo" id="g3Prog">1 / 46</div>
+          <button class="g3-navBtn g3-navNext" id="g3Next">▶</button>
+        </div>
+        <div class="g3-dots" id="g3Dots" style="margin-top:12px;"></div>
+      </div>
+      <!-- Quiz -->
+      <div id="g3Quiz" style="display:none;">
+        <div class="g3-quizWrap">
+          <div class="g3-scoreBadge" id="g3Score">⭐ 0 もん せいかい！</div>
+          <div class="g3-question" id="g3QEmoji">🐜</div>
+          <div class="g3-instruction" id="g3QText">「あり」の さいしょの もじは どれ？</div>
+          <div class="g3-options" id="g3Opts"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+<div class="g3-celeb" id="g3Celeb"></div>
 <div class="streak-msg" id="streakMsg"></div>
 <div class="g2-toast" id="g2Toast"></div>
 <div class="g2-confetti" id="g2Confetti"></div>
@@ -295,7 +374,7 @@
   <div class="g2-modal">
     <div class="g2-modalHeader"><div>せってい</div><button class="g2-iconBtn" id="g2CloseSettings">✕</button></div>
     <div class="g2-modalBody">
-      <div class="g2-row"><div><label for="g2AgeMode">かずの はんい</label><small>こたえの さいだいすう</small></div><select id="g2AgeMode"><option value="2">1〜2</option><option value="3">1〜3</option><option value="5">1〜5</option><option value="7">1〜7</option><option value="10">1〜10</option></select></div>
+      <div class="g2-row"><div><label for="g2AgeMode">かずの はんい</label><small>こたえの さいだいすう</small></div><select id="g2AgeMode"><option value="2">1〜2</option><option value="3">1〜3</option><option value="5">1〜5</option></select></div>
       <div class="g2-row"><div><label for="g2VoiceOn">こえ（読み上げ）</label><small>数字・正解/不正解・かぞえる</small></div><input id="g2VoiceOn" type="checkbox"/></div>
       <div class="g2-row"><div><label for="g2AutoEase">やさしく自動調整</label><small>つまずいたら 1〜2 に寄せる</small></div><input id="g2AutoEase" type="checkbox"/></div>
       <div class="g2-row"><div><label for="g2PracticeMode">れんしゅうモード</label><small>同じ数を 3回くり返す</small></div><input id="g2PracticeMode" type="checkbox"/></div>
@@ -310,11 +389,12 @@
 // ============================================================
 //  共通
 // ============================================================
-const allScreens=['menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g2Screen'];
+const allScreens=['menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g2Screen','g3Screen'];
 function showScreen(id){allScreens.forEach(s=>document.getElementById(s).classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('backBtn').classList.toggle('visible',id!=='menuScreen');}
 function goHome(){showScreen('menuScreen');if(typeof g2Stop==='function')g2Stop();}
 function startGame1(){showScreen('g1StartScreen');g1RenderAnimalSelect();}
 function startGame2(){showScreen('g2Screen');g2Init();}
+function startGame3(){showScreen('g3Screen');if(typeof g3Init==='function')g3Init();}
 
 // 共通音声 (ニューラル音声優先 → Google TTS フォールバック)
 let _ttsMode='google';
@@ -542,8 +622,8 @@ function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.fl
   const ALL_ANIMALS=["inu","neko","kuma","zou","raion","pengin","kirin","hitsuji","buta","koara"];
   const ALL_NAMES={"inu":"いぬ","neko":"ねこ","kuma":"くま","zou":"ぞう","raion":"らいおん","pengin":"ぺんぎん","kirin":"きりん","hitsuji":"ひつじ","buta":"ぶた","koara":"コアラ"};
   const STORAGE_KEY="animal_train_v5";
-  const VALID_MODES=[2,3,5,7,10];
-  function parseAgeMode(v){const n=Number(v);return VALID_MODES.includes(n)?n:3;}
+  const VALID_MODES=[2,3,5];
+  function parseAgeMode(v){const n=Number(v);return VALID_MODES.includes(n)?n:5;}
   let state=loadState();
   let currentCount=1,currentAnimal="inu",isLocked=false;
   let practiceTarget=null,practiceRemaining=0;
@@ -599,7 +679,7 @@ function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.fl
     }
     [...trainEl.querySelectorAll(".animal")].forEach((a,idx)=>{a.addEventListener("pointerdown",()=>{a.classList.remove("tap");void a.offsetWidth;a.classList.add("tap");speakJA(String(idx+1));},{passive:true});});
   }
-  function animateTrainIn(){trainEl.style.transition="none";trainEl.style.transform="translateX(-35%)";void trainEl.offsetWidth;trainEl.style.transition="transform 900ms cubic-bezier(.2,.9,.2,1)";trainEl.style.transform="translateX(10%)";}
+  function animateTrainIn(){trainEl.style.transition="none";trainEl.style.transform="translateX(-40%)";void trainEl.offsetWidth;trainEl.style.transition="transform 900ms cubic-bezier(.2,.9,.2,1)";trainEl.style.transform="translateX(4%)";}
   function animateTrainOut(cb){trainEl.style.transition="transform 650ms cubic-bezier(.2,.9,.2,1)";trainEl.style.transform="translateX(120%)";setTimeout(cb,700);}
 
   function pickAnimal(){const pool=ALL_ANIMALS.slice(0,state.unlockedCount);return pool[Math.floor(Math.random()*pool.length)];}
@@ -650,11 +730,112 @@ function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.fl
     isLocked=true;setButtonsEnabled(false);animateTrainOut(()=>newRound());
   });
 
-  function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw){const s=JSON.parse(raw);return{stamps:Number(s.stamps||0),stickers:Number(s.stickers||0),unlockedCount:Math.max(3,Math.min(ALL_ANIMALS.length,Number(s.unlockedCount||3))),level:Math.max(1,Math.min(9,Number(s.level||1))),totalCorrect:Number(s.totalCorrect||0),ageMode:parseAgeMode(s.ageMode),voiceOn:s.voiceOn===undefined?true:!!s.voiceOn,autoEase:s.autoEase===undefined?true:!!s.autoEase,practiceMode:s.practiceMode===undefined?false:!!s.practiceMode,stationChange:s.stationChange===undefined?true:!!s.stationChange,fancyRewards:s.fancyRewards===undefined?true:!!s.fancyRewards,streak:Number(s.streak||0),missStreak:Number(s.missStreak||0)};}}catch(e){}return{stamps:0,stickers:0,unlockedCount:3,level:1,totalCorrect:0,ageMode:10,voiceOn:true,autoEase:true,practiceMode:false,stationChange:true,fancyRewards:true,streak:0,missStreak:0};}
+  function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw){const s=JSON.parse(raw);return{stamps:Number(s.stamps||0),stickers:Number(s.stickers||0),unlockedCount:Math.max(3,Math.min(ALL_ANIMALS.length,Number(s.unlockedCount||3))),level:Math.max(1,Math.min(9,Number(s.level||1))),totalCorrect:Number(s.totalCorrect||0),ageMode:parseAgeMode(s.ageMode),voiceOn:s.voiceOn===undefined?true:!!s.voiceOn,autoEase:s.autoEase===undefined?true:!!s.autoEase,practiceMode:s.practiceMode===undefined?false:!!s.practiceMode,stationChange:s.stationChange===undefined?true:!!s.stationChange,fancyRewards:s.fancyRewards===undefined?true:!!s.fancyRewards,streak:Number(s.streak||0),missStreak:Number(s.missStreak||0)};}}catch(e){}return{stamps:0,stickers:0,unlockedCount:3,level:1,totalCorrect:0,ageMode:5,voiceOn:true,autoEase:true,practiceMode:false,stationChange:true,fancyRewards:true,streak:0,missStreak:0};}
   function saveState(s){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s));}catch(e){}}
 
   window.g2Init=function(){if(!initialized){initialized=true;updateHUD();newRound();}};
   window.g2Stop=function(){isLocked=true;};
+})();
+
+// ============================================================
+//  Game3: ひらがな おぼえよう
+// ============================================================
+(function(){
+  const H=[
+    {h:'あ',r:'A',word:'あり',emoji:'🐜'},{h:'い',r:'I',word:'いぬ',emoji:'🐕'},
+    {h:'う',r:'U',word:'うみ',emoji:'🌊'},{h:'え',r:'E',word:'えき',emoji:'🚉'},
+    {h:'お',r:'O',word:'おに',emoji:'👹'},{h:'か',r:'KA',word:'かに',emoji:'🦀'},
+    {h:'き',r:'KI',word:'きつね',emoji:'🦊'},{h:'く',r:'KU',word:'くも',emoji:'☁️'},
+    {h:'け',r:'KE',word:'けむし',emoji:'🐛'},{h:'こ',r:'KO',word:'こい',emoji:'🐟'},
+    {h:'さ',r:'SA',word:'さかな',emoji:'🐠'},{h:'し',r:'SHI',word:'しまうま',emoji:'🦓'},
+    {h:'す',r:'SU',word:'すいか',emoji:'🍉'},{h:'せ',r:'SE',word:'せみ',emoji:'🦟'},
+    {h:'そ',r:'SO',word:'そら',emoji:'🌤'},{h:'た',r:'TA',word:'たこ',emoji:'🐙'},
+    {h:'ち',r:'CHI',word:'ちょう',emoji:'🦋'},{h:'つ',r:'TSU',word:'つき',emoji:'🌙'},
+    {h:'て',r:'TE',word:'てんし',emoji:'👼'},{h:'と',r:'TO',word:'とり',emoji:'🐦'},
+    {h:'な',r:'NA',word:'なす',emoji:'🍆'},{h:'に',r:'NI',word:'にじ',emoji:'🌈'},
+    {h:'ぬ',r:'NU',word:'ぬいぐるみ',emoji:'🧸'},{h:'ね',r:'NE',word:'ねこ',emoji:'🐱'},
+    {h:'の',r:'NO',word:'のり',emoji:'🌿'},{h:'は',r:'HA',word:'はな',emoji:'🌸'},
+    {h:'ひ',r:'HI',word:'ひよこ',emoji:'🐥'},{h:'ふ',r:'FU',word:'ふね',emoji:'⛵'},
+    {h:'へ',r:'HE',word:'へび',emoji:'🐍'},{h:'ほ',r:'HO',word:'ほし',emoji:'⭐'},
+    {h:'ま',r:'MA',word:'まめ',emoji:'🫘'},{h:'み',r:'MI',word:'みかん',emoji:'🍊'},
+    {h:'む',r:'MU',word:'むし',emoji:'🐞'},{h:'め',r:'ME',word:'めだか',emoji:'🐟'},
+    {h:'も',r:'MO',word:'もも',emoji:'🍑'},{h:'や',r:'YA',word:'やぎ',emoji:'🐐'},
+    {h:'ゆ',r:'YU',word:'ゆき',emoji:'❄️'},{h:'よ',r:'YO',word:'よる',emoji:'🌃'},
+    {h:'ら',r:'RA',word:'らいおん',emoji:'🦁'},{h:'り',r:'RI',word:'りんご',emoji:'🍎'},
+    {h:'る',r:'RU',word:'るびー',emoji:'💎'},{h:'れ',r:'RE',word:'れもん',emoji:'🍋'},
+    {h:'ろ',r:'RO',word:'ろぼっと',emoji:'🤖'},{h:'わ',r:'WA',word:'わに',emoji:'🐊'},
+    {h:'を',r:'WO',word:'をか',emoji:'🏔'},{h:'ん',r:'N',word:'ん〜？',emoji:'🤔'},
+  ];
+  const $=id=>document.getElementById(id);
+  let idx=0,mode='flash',seen=new Set(),qScore=0,qAnswered=false,initialized=false;
+  const colors=['#ff4d6d','#ff9a3c','#4ecdc4','#9b5de5','#6bcb77'];
+
+  function updateCard(){
+    const it=H[idx];seen.add(idx);
+    $('g3Emoji').textContent=it.emoji;
+    $('g3Hira').textContent=it.h;
+    $('g3Romaji').textContent=it.r;
+    $('g3Word').textContent=it.word;
+    $('g3Prog').textContent=(idx+1)+' / '+H.length;
+    $('g3Card').style.setProperty('--card-accent',colors[idx%colors.length]);
+    $('g3Card').style.animation='none';$('g3Card').offsetHeight;$('g3Card').style.animation='';
+    buildDots();
+  }
+  function buildDots(){
+    const row=$('g3Dots');row.innerHTML='';
+    H.forEach((_,i)=>{const d=document.createElement('div');d.className='g3-dot'+(seen.has(i)?' seen':'')+(i===idx?' current':'');row.appendChild(d);});
+  }
+  function speakCard(){const it=H[idx];speak(it.h+'、'+it.word);}
+  function next(){idx=(idx+1)%H.length;updateCard();speakCard();}
+  function prev(){idx=(idx-1+H.length)%H.length;updateCard();speakCard();}
+
+  function genQuiz(){
+    qAnswered=false;
+    const ci=Math.floor(Math.random()*H.length);
+    const correct=H[ci];
+    let ws=new Set([ci]),wrongs=[];
+    while(wrongs.length<3){const r=Math.floor(Math.random()*H.length);if(!ws.has(r)){ws.add(r);wrongs.push(r);}}
+    const opts=[ci,...wrongs].sort(()=>Math.random()-.5);
+    $('g3QEmoji').textContent=correct.emoji;
+    $('g3QText').textContent='「'+correct.word+'」の さいしょの もじは どれ？';
+    const cont=$('g3Opts');cont.innerHTML='';
+    opts.forEach(oi=>{
+      const btn=document.createElement('button');btn.className='g3-opt';btn.textContent=H[oi].h;
+      btn.onclick=()=>{
+        if(qAnswered)return;qAnswered=true;
+        if(oi===ci){
+          btn.classList.add('correct');qScore++;
+          $('g3Score').textContent='⭐ '+qScore+' もん せいかい！';
+          showCeleb('🎉 せいかい！');playCorrectSound();speak('やったー！せいかい！');
+        }else{
+          btn.classList.add('wrong');
+          cont.querySelectorAll('.g3-opt').forEach(b=>{if(b.textContent===correct.h)b.classList.add('correct');});
+          playWrongSound();speak('ざんねん！「'+correct.h+'」だよ！');
+        }
+        setTimeout(genQuiz,2000);
+      };
+      cont.appendChild(btn);
+    });
+    speak('「'+correct.word+'」の さいしょの もじは？');
+  }
+  function showCeleb(text){const el=$('g3Celeb');el.innerHTML='<div class="g3-celebText">'+text+'</div>';setTimeout(()=>{el.innerHTML='';},1200);}
+
+  function setMode(m){
+    mode=m;
+    $('g3FlashBtn').classList.toggle('active',m==='flash');
+    $('g3QuizBtn').classList.toggle('active',m==='quiz');
+    $('g3Flashcard').style.display=m==='flash'?'block':'none';
+    $('g3Quiz').style.display=m==='quiz'?'block':'none';
+    if(m==='quiz'){qScore=0;$('g3Score').textContent='⭐ 0 もん せいかい！';genQuiz();}
+  }
+
+  $('g3FlashBtn').addEventListener('click',()=>setMode('flash'));
+  $('g3QuizBtn').addEventListener('click',()=>setMode('quiz'));
+  $('g3Card').addEventListener('click',speakCard);
+  $('g3Prev').addEventListener('click',prev);
+  $('g3Next').addEventListener('click',next);
+
+  window.g3Init=function(){if(!initialized){initialized=true;updateCard();speakCard();}};
 })();
 </script>
 </body>
