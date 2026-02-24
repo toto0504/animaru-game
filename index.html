@@ -518,6 +518,8 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     {key:"niwatori",name:"にわとり",hint:"たまごを うむよ！",cry:"コケコッコー！",fact:"にわとりは あさ コケコッコー と なくよ。たまごを うんでくれるんだ！",soundFile:"音声/niwatori.mp3"},
     {key:"ookami",name:"おおかみ",hint:"もりに すんでいて つきに ほえるよ",cry:"アオーン！",fact:"おおかみは むれで くらすよ。なかまと こえで はなしするんだ！",soundFile:"音声/ookami.mp3"},
     {key:"uma",name:"うま",hint:"ひひーん！と なくよ",cry:"ヒヒーン！",fact:"うまは はしるのが とくい！1にちに 60km いじょう はしれるよ！",soundFile:"音声/uma.mp3"},
+    {key:"yagi",name:"やぎ",hint:"もこもこで メーと なくよ",cry:"メェー！",fact:"やぎは いろんな ものを たべるよ。かみのけが ふわふわ！",soundFile:"音声/yagi.mp3"},
+    {key:"ushi",name:"うし",hint:"モーと なくよ",cry:"モー！",fact:"うしは ミルクや バターを わたしてくれるよ。のんびりやさんだね！",soundFile:"音声/ushi.mp3"},
   ];
   let ROUNDS=5,level=1,score=0,round=0,streak=0,current=null,choices=[],locked=false,usedKeys=[],roundResults=[];
   let selectedKeys=new Set(animals.map(a=>a.key));
@@ -646,8 +648,8 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
 //  Game2: どうぶつ列車
 // ============================================================
 (function(){
-  const ALL_ANIMALS=["inu","neko","kuma","zou","raion","pengin","kirin","hitsuji","buta","koara","hiyoko","karasu","niwatori","ookami","uma"];
-  const ALL_NAMES={"inu":"いぬ","neko":"ねこ","kuma":"くま","zou":"ぞう","raion":"らいおん","pengin":"ぺんぎん","kirin":"きりん","hitsuji":"ひつじ","buta":"ぶた","koara":"コアラ","hiyoko":"ひよこ","karasu":"からす","niwatori":"にわとり","ookami":"おおかみ","uma":"うま"};
+  const ALL_ANIMALS=["inu","neko","kuma","zou","raion","pengin","kirin","hitsuji","buta","koara","hiyoko","karasu","niwatori","ookami","uma","yagi","ushi"];
+  const ALL_NAMES={"inu":"いぬ","neko":"ねこ","kuma":"くま","zou":"ぞう","raion":"らいおん","pengin":"ぺんぎん","kirin":"きりん","hitsuji":"ひつじ","buta":"ぶた","koara":"コアラ","hiyoko":"ひよこ","karasu":"からす","niwatori":"にわとり","ookami":"おおかみ","uma":"うま","yagi":"やぎ","ushi":"うし"};
   const STORAGE_KEY="animal_train_v6";
   const VALID_MODES=[2,3,5];
   const TRAIN_COLORS=[
