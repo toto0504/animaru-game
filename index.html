@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src https://translate.google.com; connect-src https://translate.google.com;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self' https://translate.google.com; connect-src https://translate.google.com;" />
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()" />
   <title>キッズ ゲーム</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&display=swap">
@@ -503,23 +503,29 @@ function resizeCanvas(){cnv.width=innerWidth;cnv.height=innerHeight;}addEventLis
 function launchConfetti(){confettiParts=[];const colors=['#ff4d6d','#ffd166','#06d6a0','#118ab2','#ef476f','#ffc43d','#1b9aaa','#ff6b6b'];for(let i=0;i<120;i++)confettiParts.push({x:Math.random()*cnv.width,y:Math.random()*cnv.height*-1,w:Math.random()*8+4,h:Math.random()*6+3,color:colors[i%colors.length],vx:(Math.random()-.5)*3,vy:Math.random()*4+2,rot:Math.random()*360,vr:(Math.random()-.5)*10,life:1});if(confettiAnim)cancelAnimationFrame(confettiAnim);animConfetti();}
 function animConfetti(){cCtx.clearRect(0,0,cnv.width,cnv.height);let alive=false;confettiParts.forEach(p=>{if(p.life<=0)return;alive=true;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.life-=.005;cCtx.save();cCtx.translate(p.x,p.y);cCtx.rotate(p.rot*Math.PI/180);cCtx.globalAlpha=Math.max(0,p.life);cCtx.fillStyle=p.color;cCtx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cCtx.restore();});if(alive)confettiAnim=requestAnimationFrame(animConfetti);else cCtx.clearRect(0,0,cnv.width,cnv.height);}
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
-function mkImg(key){const img=document.createElement('img');img.src=key+'.png';img.alt=key;img.draggable=false;return img;}
+function mkImg(key){const img=document.createElement('img');img.src='イラスト/'+key+'.png';img.alt=key;img.draggable=false;return img;}
+function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundFile);a.volume=1.0;if(cb)a.onended=cb;a.onerror=function(){speak(animal.cry,cb);};a.play().catch(()=>{speak(animal.cry,cb);});}else{speak(animal.cry,cb);}}
 
 // ============================================================
 //  Game1: なまえあてゲーム
 // ============================================================
 (function(){
   const animals=[
-    {key:"inu",name:"いぬ",hint:"ワンワン！と なくよ",cry:"ワンワン！",fact:"いぬは にんげんの いちばんの ともだち。はなが とてもいいよ！"},
-    {key:"neko",name:"ねこ",hint:"ニャーと なくよ",cry:"ニャー！",fact:"ねこは 1にちに 16じかんも ねるよ。ひげで はばを はかるんだ！"},
+    {key:"inu",name:"いぬ",hint:"ワンワン！と なくよ",cry:"ワンワン！",fact:"いぬは にんげんの いちばんの ともだち。はなが とてもいいよ！",soundFile:"音声/犬の鳴き声1.mp3"},
+    {key:"neko",name:"ねこ",hint:"ニャーと なくよ",cry:"ニャー！",fact:"ねこは 1にちに 16じかんも ねるよ。ひげで はばを はかるんだ！",soundFile:"音声/猫の鳴き声1.mp3"},
     {key:"kuma",name:"くま",hint:"もりに すんでいるよ",cry:"ガオー！",fact:"くまは ふゆに とうみんするよ。はちみつが だいすき！"},
-    {key:"zou",name:"ぞう",hint:"ながい はなが あるよ",cry:"パオーン！",fact:"ぞうは りくの どうぶつで いちばん おおきいよ。きおくりょくが すごい！"},
-    {key:"raion",name:"らいおん",hint:"たてがみが かっこいい！",cry:"ガオー！",fact:"らいおんは 「ひゃくじゅうの おう」。1にちに 20じかん ねることも！"},
+    {key:"zou",name:"ぞう",hint:"ながい はなが あるよ",cry:"パオーン！",fact:"ぞうは りくの どうぶつで いちばん おおきいよ。きおくりょくが すごい！",soundFile:"音声/ゾウの鳴き声1.mp3"},
+    {key:"raion",name:"らいおん",hint:"たてがみが かっこいい！",cry:"ガオー！",fact:"らいおんは 「ひゃくじゅうの おう」。1にちに 20じかん ねることも！",soundFile:"音声/ライオンの鳴き声1.mp3"},
     {key:"pengin",name:"ぺんぎん",hint:"こおりの うえを あるくよ",cry:"ぺぺぺっ！",fact:"ぺんぎんは とべないけど およぎが とくい。じそく 36km！"},
     {key:"kirin",name:"きりん",hint:"せが とっても たかいよ",cry:"もぐもぐ",fact:"きりんは せが 5メートル いじょう。したが 50センチも あるよ！"},
     {key:"hitsuji",name:"ひつじ",hint:"もこもこの けが あるよ",cry:"メェー！",fact:"ひつじの けは セーターに なるよ。かおを おぼえるのが とくい！"},
-    {key:"buta",name:"ぶた",hint:"ブーブー！はなが まるいよ",cry:"ブーブー！",fact:"ぶたは とても あたまが いいよ。きれいずきで すなぶろが すき！"},
+    {key:"buta",name:"ぶた",hint:"ブーブー！はなが まるいよ",cry:"ブーブー！",fact:"ぶたは とても あたまが いいよ。きれいずきで すなぶろが すき！",soundFile:"音声/ブタの鳴き声1.mp3"},
     {key:"koara",name:"コアラ",hint:"ユーカリの きに いるよ",cry:"すやすや",fact:"コアラは 1にちに 22じかん ねるよ。ユーカリの はっぱだけ たべるんだ！"},
+    {key:"hiyoko",name:"ひよこ",hint:"たまごから うまれたよ！",cry:"ぴよぴよ！",fact:"ひよこは にわとりの あかちゃんだよ。ぴよぴよ なくよ！",soundFile:"音声/ヒヨコの鳴き声.mp3"},
+    {key:"karasu",name:"からす",hint:"くろくて かーかー なくよ",cry:"カーカー！",fact:"からすは とても あたまが いいよ。どうぐを つかうことも できるんだ！",soundFile:"音声/カラスが鳴く夕方.mp3"},
+    {key:"niwatori",name:"にわとり",hint:"たまごを うむよ！",cry:"コケコッコー！",fact:"にわとりは あさ コケコッコー と なくよ。たまごを うんでくれるんだ！",soundFile:"音声/ニワトリの鳴き声1.mp3"},
+    {key:"ookami",name:"おおかみ",hint:"もりに すんでいて つきに ほえるよ",cry:"アオーン！",fact:"おおかみは むれで くらすよ。なかまと こえで はなしするんだ！",soundFile:"音声/オオカミの遠吠え.mp3"},
+    {key:"uma",name:"うま",hint:"ひひーん！と なくよ",cry:"ヒヒーン！",fact:"うまは はしるのが とくい！1にちに 60km いじょう はしれるよ！",soundFile:"音声/馬の鳴き声2.mp3"},
   ];
   let ROUNDS=5,level=1,score=0,round=0,streak=0,current=null,choices=[],locked=false,usedKeys=[],roundResults=[];
   let selectedKeys=new Set(animals.map(a=>a.key));
@@ -553,7 +559,7 @@ function mkImg(key){const img=document.createElement('img');img.src=key+'.png';i
   });
 
   // Cry button
-  $('cryBtn').addEventListener('click',()=>{if(current)speak(current.cry);});
+  $('cryBtn').addEventListener('click',()=>{if(current)playCry(current);});
 
   function nextRound(){
     round++;if(round>ROUNDS){showResult();return;}locked=false;
@@ -648,8 +654,8 @@ function mkImg(key){const img=document.createElement('img');img.src=key+'.png';i
 //  Game2: どうぶつ列車
 // ============================================================
 (function(){
-  const ALL_ANIMALS=["inu","neko","kuma","zou","raion","pengin","kirin","hitsuji","buta","koara"];
-  const ALL_NAMES={"inu":"いぬ","neko":"ねこ","kuma":"くま","zou":"ぞう","raion":"らいおん","pengin":"ぺんぎん","kirin":"きりん","hitsuji":"ひつじ","buta":"ぶた","koara":"コアラ"};
+  const ALL_ANIMALS=["inu","neko","kuma","zou","raion","pengin","kirin","hitsuji","buta","koara","hiyoko","karasu","niwatori","ookami","uma"];
+  const ALL_NAMES={"inu":"いぬ","neko":"ねこ","kuma":"くま","zou":"ぞう","raion":"らいおん","pengin":"ぺんぎん","kirin":"きりん","hitsuji":"ひつじ","buta":"ぶた","koara":"コアラ","hiyoko":"ひよこ","karasu":"からす","niwatori":"にわとり","ookami":"おおかみ","uma":"うま"};
   const STORAGE_KEY="animal_train_v6";
   const VALID_MODES=[2,3,5];
   const TRAIN_COLORS=[
