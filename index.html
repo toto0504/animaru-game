@@ -927,7 +927,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   $('g3Next').addEventListener('click',()=>{idx=(idx+1)%curData.length;updateCard();speakCard();});
 
   function resetQuiz(wo){wrongOnlyMode=!!wo;$('g3WrongOnlyBtn').classList.toggle('active',wrongOnlyMode);$('g3WrongOnlyBtn').textContent=wrongOnlyMode?'✅ まちがいのみ':'❌ まちがいのみ';qScore=0;quizCount=0;$('g3QuizMain').style.display='';$('g3QuizResult').style.display='none';genQuiz();}
-  document.querySelectorAll('.g3-qTotalBtn').forEach(b=>b.addEventListener('click',()=>{quizTotal=Number(b.dataset.total);document.querySelectorAll('.g3-qTotalBtn').forEach(x=>x.classList.toggle('active',x===b));if(mode==='quiz')resetQuiz(wrongOnlyMode);}));
+  document.querySelectorAll('.g3-qTotalBtn').forEach(b=>b.addEventListener('click',()=>{quizTotal=Number(b.dataset.total);document.querySelectorAll('.g3-qTotalBtn').forEach(x=>x.classList.toggle('active',x===b));if(mode==='quiz'&&(quizCount===0||quizCount>=quizTotal))resetQuiz(wrongOnlyMode);}));
   $('g3WrongOnlyBtn').addEventListener('click',()=>{if(!wrongOnlyMode&&wrongList.length<4){speak('まちがいが たりないよ');return;}resetQuiz(!wrongOnlyMode);});
   $('g3QuizRetry').addEventListener('click',()=>resetQuiz(false));
   $('g3QuizRetryWrong').addEventListener('click',()=>resetQuiz(true));
