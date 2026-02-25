@@ -409,10 +409,26 @@
       </div>
       <div id="g3Quiz" style="display:none;">
         <div class="g3-quizWrap">
-          <div class="g3-scoreBadge" id="g3Score">⭐ 0 もん せいかい！</div>
-          <div class="g3-question" id="g3QEmoji">🐜</div>
-          <div class="g3-instruction" id="g3QText"></div>
-          <div class="g3-options" id="g3Opts"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+            <button class="g3-charBtn g3-qTotalBtn" data-total="5">5もん</button>
+            <button class="g3-charBtn g3-qTotalBtn active" data-total="10">10もん</button>
+            <button class="g3-charBtn g3-qTotalBtn" data-total="15">15もん</button>
+            <button class="g3-charBtn g3-qTotalBtn" data-total="20">20もん</button>
+            <button class="g3-charBtn" id="g3WrongOnlyBtn">❌ まちがいのみ</button>
+          </div>
+          <div class="g3-scoreBadge" id="g3Score">⭐ 0 / 10もん</div>
+          <div id="g3QuizMain">
+            <div class="g3-question" id="g3QEmoji">🐜</div>
+            <div class="g3-instruction" id="g3QText"></div>
+            <div class="g3-options" id="g3Opts"></div>
+          </div>
+          <div id="g3QuizResult" style="display:none;text-align:center;padding:20px 0;">
+            <div class="g3-scoreBadge" style="font-size:20px;padding:14px 28px;" id="g3QuizResultScore"></div>
+            <div style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+              <button class="g3-modeBtn active" id="g3QuizRetry">もういちど</button>
+              <button class="g3-modeBtn" id="g3QuizRetryWrong" style="display:none;">❌ まちがいのみ</button>
+            </div>
+          </div>
         </div>
       </div>
       <div id="g3Word" style="display:none;">
@@ -475,10 +491,18 @@ document.getElementById('cardG1').addEventListener('click',startGame1);
 document.getElementById('cardG2').addEventListener('click',startGame2);
 document.getElementById('cardG3').addEventListener('click',startGame3);
 
-// TTS (Google翻訳TTS固定)
-let _ttsAudio=null;
+// TTS (Google翻訳TTS優先、ネイティブTTSにフォールバック)
+let _ttsAudio=null,_nativeVoice=null;
+(function(){
+  if(!('speechSynthesis' in window))return;
+  function pick(){const v=speechSynthesis.getVoices(),ja=v.filter(x=>x.lang&&x.lang.startsWith('ja'));
+    const best=ja.find(x=>/natural|neural/i.test(x.name))||ja.find(x=>/online/i.test(x.name)&&!/desktop/i.test(x.name))||ja.find(x=>/google/i.test(x.name))||ja.find(x=>!x.localService);
+    if(best)_nativeVoice=best;}
+  speechSynthesis.onvoiceschanged=pick;pick();
+})();
 function speak(text,cb){
-  try{if(_ttsAudio){_ttsAudio.pause();_ttsAudio=null;}const url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ja&q="+encodeURIComponent(text);_ttsAudio=new Audio(url);_ttsAudio.volume=1.0;if(cb)_ttsAudio.onended=cb;_ttsAudio.onerror=function(){if(cb)cb();};_ttsAudio.play().catch(()=>{if(cb)cb();});}catch(e){if(cb)cb();}
+  function nativeFallback(){if(_nativeVoice){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.voice=_nativeVoice;u.lang='ja-JP';u.rate=0.85;u.pitch=1.1;u.volume=1.0;if(cb)u.onend=cb;u.onerror=function(){if(cb)cb();};speechSynthesis.speak(u);}else if(cb)cb();}
+  try{if(_ttsAudio){_ttsAudio.pause();_ttsAudio=null;}const url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ja&q="+encodeURIComponent(text);_ttsAudio=new Audio(url);_ttsAudio.volume=1.0;if(cb)_ttsAudio.onended=cb;_ttsAudio.onerror=function(){nativeFallback();};_ttsAudio.play().catch(()=>{nativeFallback();});}catch(e){nativeFallback();}
 }
 
 // Audio
@@ -697,7 +721,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     renderAnswerButtons();renderBook();applyTrainColor();
   }
   function renderAnswerButtons(){
-    answersEl.textContent='';const max=state.mathMode?getMaxCount()*2:getMaxCount();const realMax=Math.min(max,10);
+    answersEl.textContent='';const max=Math.max(currentCount||1,state.mathMode?getMaxCount()*2:getMaxCount());const realMax=Math.min(max,10);
     const cols=realMax<=3?realMax:5;answersEl.style.gridTemplateColumns="repeat("+cols+",1fr)";
     for(let n=1;n<=realMax;n++){const btn=document.createElement("button");btn.className="g2-btn";btn.textContent=String(n);btn.addEventListener("pointerdown",()=>onAnswer(n),{passive:true});answersEl.appendChild(btn);}
   }
@@ -859,7 +883,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   function getRate(ch){const s=stats[ch];if(!s||s.t===0)return -1;return Math.round(s.c/s.t*100);}
 
   const $=id=>document.getElementById(id);
-  let charSet='basic',curData=BASIC,idx=0,mode='flash',seen=new Set(),qScore=0,qAnswered=false,wScore=0,initialized=false;
+  let charSet='basic',curData=BASIC,idx=0,mode='flash',seen=new Set(),qScore=0,qAnswered=false,wScore=0,initialized=false,quizTotal=10,quizCount=0,wrongList=[],wrongOnlyMode=false;
 
   function getData(){if(charSet==='dakuten')return DAKUTEN;if(charSet==='katakana')return KATAKANA;return BASIC;}
 
@@ -867,7 +891,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   document.querySelectorAll('#g3CharRow .g3-charBtn').forEach(b=>b.addEventListener('click',()=>{
     charSet=b.dataset.set;curData=getData();idx=0;seen.clear();
     document.querySelectorAll('#g3CharRow .g3-charBtn').forEach(x=>x.classList.toggle('active',x===b));
-    if(mode==='flash')updateCard();else if(mode==='quiz'){qScore=0;genQuiz();}else if(mode==='word'){wScore=0;genWord();}else if(mode==='stats')renderStats();
+    if(mode==='flash')updateCard();else if(mode==='quiz'){qScore=0;quizCount=0;wrongList=[];wrongOnlyMode=false;$('g3WrongOnlyBtn').classList.remove('active');$('g3WrongOnlyBtn').textContent='❌ まちがいのみ';$('g3QuizMain').style.display='';$('g3QuizResult').style.display='none';genQuiz();}else if(mode==='word'){wScore=0;genWord();}else if(mode==='stats')renderStats();
   }));
 
   // Mode buttons
@@ -879,7 +903,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     document.querySelectorAll('#g3Word')[0].style.display=mode==='word'?'block':'none';
     $('g3Stats').style.display=mode==='stats'?'block':'none';
     if(mode==='flash')updateCard();
-    if(mode==='quiz'){qScore=0;$('g3Score').textContent='⭐ 0 もん せいかい！';genQuiz();}
+    if(mode==='quiz'){qScore=0;quizCount=0;wrongList=[];wrongOnlyMode=false;$('g3WrongOnlyBtn').classList.remove('active');$('g3WrongOnlyBtn').textContent='❌ まちがいのみ';$('g3QuizMain').style.display='';$('g3QuizResult').style.display='none';$('g3Score').textContent='⭐ 0 / '+quizTotal+'もん';genQuiz();}
     if(mode==='word'){wScore=0;$('g3WScore').textContent='⭐ 0 もん せいかい！';genWord();}
     if(mode==='stats')renderStats();
   }));
@@ -902,25 +926,41 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   $('g3Prev').addEventListener('click',()=>{idx=(idx-1+curData.length)%curData.length;updateCard();speakCard();});
   $('g3Next').addEventListener('click',()=>{idx=(idx+1)%curData.length;updateCard();speakCard();});
 
+  function resetQuiz(wo){wrongOnlyMode=!!wo;$('g3WrongOnlyBtn').classList.toggle('active',wrongOnlyMode);$('g3WrongOnlyBtn').textContent=wrongOnlyMode?'✅ まちがいのみ':'❌ まちがいのみ';qScore=0;quizCount=0;$('g3QuizMain').style.display='';$('g3QuizResult').style.display='none';genQuiz();}
+  document.querySelectorAll('.g3-qTotalBtn').forEach(b=>b.addEventListener('click',()=>{quizTotal=Number(b.dataset.total);document.querySelectorAll('.g3-qTotalBtn').forEach(x=>x.classList.toggle('active',x===b));if(mode==='quiz')resetQuiz(wrongOnlyMode);}));
+  $('g3WrongOnlyBtn').addEventListener('click',()=>{if(!wrongOnlyMode&&wrongList.length<4){speak('まちがいが たりないよ');return;}resetQuiz(!wrongOnlyMode);});
+  $('g3QuizRetry').addEventListener('click',()=>resetQuiz(false));
+  $('g3QuizRetryWrong').addEventListener('click',()=>resetQuiz(true));
+
+  function showQuizResult(){$('g3QuizMain').style.display='none';$('g3QuizResult').style.display='';const pct=Math.round(qScore/quizTotal*100);$('g3QuizResultScore').textContent='🎉 '+qScore+' / '+quizTotal+'もん せいかい！（'+pct+'%）';$('g3Score').textContent='⭐ '+qScore+' / '+quizTotal+'もん';$('g3QuizRetryWrong').style.display=wrongList.length>=4?'inline-block':'none';if(pct===100)speak('パーフェクト！すごいね！');else speak(qScore+'もん せいかい！');}
+
   // Quiz
   function genQuiz(){
-    qAnswered=false;const pool=curData;
-    // Prioritize weak characters
-    let ci;const weak=pool.map((it,i)=>({i,rate:getRate(it.h)})).filter(x=>x.rate>=0&&x.rate<70);
-    if(weak.length>0&&Math.random()<0.6){ci=weak[Math.floor(Math.random()*weak.length)].i;}
+    if(quizCount>=quizTotal){showQuizResult();return;}
+    qAnswered=false;
+    const pool=wrongOnlyMode?wrongList:curData;
+    if(pool.length<1){$('g3QText').textContent='もんだいが ないよ！';$('g3Opts').textContent='';return;}
+    $('g3QuizMain').style.display='';$('g3QuizResult').style.display='none';
+    // 正解を選ぶ
+    let ci;
+    if(!wrongOnlyMode){const weak=pool.map((it,i)=>({i,rate:getRate(it.h)})).filter(x=>x.rate>=0&&x.rate<70);ci=(weak.length>0&&Math.random()<0.6)?weak[Math.floor(Math.random()*weak.length)].i:Math.floor(Math.random()*pool.length);}
     else{ci=Math.floor(Math.random()*pool.length);}
     const correct=pool[ci];
-    let ws=new Set([ci]),wrongs=[];while(wrongs.length<3){const r=Math.floor(Math.random()*pool.length);if(!ws.has(r)){ws.add(r);wrongs.push(r);}}
-    const opts=shuffle([ci,...wrongs]);
+    // 不正解の選択肢はcurDataから取る
+    const wrongPool=curData.filter(x=>x.h!==correct.h);
+    const wrongs=shuffle(wrongPool).slice(0,3);
+    const shuffledOpts=shuffle([correct,...wrongs]);
     $('g3QEmoji').textContent=correct.emoji;$('g3QText').textContent='「'+correct.word+'」の さいしょの もじは どれ？';
+    $('g3Score').textContent='⭐ '+qScore+' / '+quizTotal+'もん　'+(quizCount+1)+'もん目';
     const cont=$('g3Opts');cont.textContent='';
-    opts.forEach(oi=>{
-      const btn=document.createElement('button');btn.className='g3-opt';btn.textContent=pool[oi].h;
+    shuffledOpts.forEach(item=>{
+      const btn=document.createElement('button');btn.className='g3-opt';btn.textContent=item.h;
       btn.addEventListener('click',()=>{
-        if(qAnswered)return;qAnswered=true;const ok=oi===ci;
+        if(qAnswered)return;qAnswered=true;quizCount++;
+        const ok=item.h===correct.h;
         recordAnswer(correct.h,ok);
-        if(ok){btn.classList.add('correct');qScore++;$('g3Score').textContent='⭐ '+qScore+' もん せいかい！';showCeleb('🎉 せいかい！');playCorrectSound();speak('やったー！せいかい！');}
-        else{btn.classList.add('wrong');cont.querySelectorAll('.g3-opt').forEach(b=>{if(b.textContent===correct.h)b.classList.add('correct');});playWrongSound();speak('ざんねん！「'+correct.h+'」だよ！');}
+        if(ok){btn.classList.add('correct');qScore++;$('g3Score').textContent='⭐ '+qScore+' / '+quizTotal+'もん　'+quizCount+'もん目';showCeleb('🎉 せいかい！');playCorrectSound();speak('やったー！せいかい！');}
+        else{btn.classList.add('wrong');cont.querySelectorAll('.g3-opt').forEach(b=>{if(b.textContent===correct.h)b.classList.add('correct');});if(!wrongOnlyMode&&!wrongList.some(x=>x.h===correct.h))wrongList.push(correct);playWrongSound();speak('ざんねん！「'+correct.h+'」だよ！');}
         setTimeout(genQuiz,2000);
       });
       cont.appendChild(btn);
