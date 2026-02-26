@@ -260,9 +260,7 @@
     .g4-choice.wrong{border-color:var(--ng);background:#fffbeb;opacity:.7;}
     /* ======== Game5: めくりあわせ ======== */
     .g5-wrap{width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;gap:16px;}
-    .g5-grid{display:grid;gap:10px;width:100%;}
-    .g5-grid.easy{grid-template-columns:repeat(4,1fr);}
-    .g5-grid.normal{grid-template-columns:repeat(6,1fr);}
+    .g5-grid{display:grid;gap:10px;width:100%;grid-template-columns:repeat(4,1fr);}
     .g5-card{perspective:400px;cursor:pointer;}
     .g5-inner{position:relative;width:100%;padding-top:100%;transform-style:preserve-3d;transition:transform .4s;}
     .g5-card.flipped .g5-inner{transform:rotateY(180deg);}
@@ -525,10 +523,11 @@
     <div class="g5-wrap">
       <div style="font-size:22px;font-weight:900;">🃏 めくりあわせ</div>
       <div style="display:flex;gap:10px;justify-content:center;">
-        <button class="btn lv active" id="g5Easy">かんたん (6ペア)</button>
-        <button class="btn lv" id="g5Normal">ふつう (9ペア)</button>
+        <button class="btn lv active" id="g5Lv1">レベル1 (4ペア)</button>
+        <button class="btn lv" id="g5Lv2">レベル2 (6ペア)</button>
+        <button class="btn lv" id="g5Lv3">レベル3 (8ペア)</button>
       </div>
-      <div class="badge" id="g5Badge">ペア: 0 / 6</div>
+      <div class="badge" id="g5Badge">ペア: 0 / 4</div>
       <div id="g5Complete" style="display:none;text-align:center;">
         <div style="font-size:48px;">🎉</div>
         <div style="font-size:24px;font-weight:900;">ぜんぶ そろったよ！</div>
@@ -537,7 +536,7 @@
           <button class="btn" id="g5HomeBtn">🏠 もどる</button>
         </div>
       </div>
-      <div class="g5-grid easy" id="g5Grid"></div>
+      <div class="g5-grid" id="g5Grid"></div>
     </div>
   </div>
 
@@ -1305,7 +1304,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
 
   function initG5(diff){
     difficulty=diff;
-    const pairs=diff==='easy'?6:9;
+    const pairs=diff==='lv1'?4:diff==='lv2'?6:8;
     total=pairs;matched=0;flipped=[];locked=false;
     $('g5Complete').style.display='none';
     const pool=shuffle([...ALL_ANIMALS]).slice(0,pairs);
@@ -1313,7 +1312,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     cards=deck;
     $('g5Badge').textContent='ペア: 0 / '+pairs;
     const grid=$('g5Grid');
-    grid.className='g5-grid '+(diff==='easy'?'easy':'normal');
+    grid.className='g5-grid';
     grid.textContent='';
     deck.forEach((a,i)=>{
       const card=document.createElement('div');card.className='g5-card';card.dataset.idx=String(i);
@@ -1357,21 +1356,14 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     }
   }
 
-  $('g5Easy').addEventListener('click',()=>{
-    $('g5Easy').classList.add('active');$('g5Normal').classList.remove('active');
-    initG5('easy');
-  });
-  $('g5Normal').addEventListener('click',()=>{
-    $('g5Normal').classList.add('active');$('g5Easy').classList.remove('active');
-    initG5('normal');
-  });
+  function setG5Active(id){['g5Lv1','g5Lv2','g5Lv3'].forEach(i=>$(i).classList.toggle('active',i===id));}
+  $('g5Lv1').addEventListener('click',()=>{setG5Active('g5Lv1');initG5('lv1');});
+  $('g5Lv2').addEventListener('click',()=>{setG5Active('g5Lv2');initG5('lv2');});
+  $('g5Lv3').addEventListener('click',()=>{setG5Active('g5Lv3');initG5('lv3');});
   $('g5RetryBtn').addEventListener('click',()=>{$('g5Complete').style.display='none';initG5(difficulty);});
   $('g5HomeBtn').addEventListener('click',goHome);
 
-  window.g5Init=function(){
-    $('g5Easy').classList.add('active');$('g5Normal').classList.remove('active');
-    initG5('easy');
-  };
+  window.g5Init=function(){setG5Active('g5Lv1');initG5('lv1');};
 })();
 
 // ============================================================
