@@ -1208,7 +1208,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   ];
   const ROUNDS=5;
   const $=id=>document.getElementById(id);
-  let score=0,round=0,current=null,locked=false,usedKeys=[],cryAudio=null;
+  let score=0,round=0,current=null,locked=false,usedKeys=[],cryAudio=null,g4Timer=null;
 
   function playCry4(animal){
     if(cryAudio){cryAudio.pause();cryAudio=null;}
@@ -1254,7 +1254,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     });
     if(ok){score++;playCorrectSound();speak('せいかい！ '+current.name+'！');launchConfetti();}
     else{playWrongSound();speak('おしい！こたえは '+current.name+' だよ！');}
-    setTimeout(nextRound4,ok?1800:3000);
+    g4Timer=setTimeout(nextRound4,ok?1800:3000);
   }
 
   function showResult4(){
@@ -1273,7 +1273,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   $('g4RetryBtn').addEventListener('click',()=>window.g4Init());
   $('g4HomeBtn').addEventListener('click',goHome);
 
-  window.g4Init=function(){score=0;round=0;usedKeys=[];nextRound4();};
+  window.g4Init=function(){if(g4Timer)clearTimeout(g4Timer);g4Timer=null;score=0;round=0;locked=false;usedKeys=[];nextRound4();};
 })();
 
 // ============================================================
@@ -1300,12 +1300,13 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     {key:"koara",name:"コアラ",soundFile:null,cry:"すやすや"},
   ];
   const $=id=>document.getElementById(id);
-  let cards=[],flipped=[],matched=0,total=0,locked=false,difficulty='easy';
+  let cards=[],flipped=[],matched=0,total=0,locked=false,difficulty='lv1',g5FlipTimer=null;
 
   function initG5(diff){
     difficulty=diff;
     const pairs=diff==='lv1'?4:diff==='lv2'?6:8;
     total=pairs;matched=0;flipped=[];locked=false;
+    if(g5FlipTimer)clearTimeout(g5FlipTimer);g5FlipTimer=null;
     $('g5Complete').style.display='none';
     const pool=shuffle([...ALL_ANIMALS]).slice(0,pairs);
     const deck=shuffle([...pool,...pool].map((a,i)=>({...a,uid:i})));
@@ -1348,7 +1349,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
           },400);
         }
       }else{
-        setTimeout(()=>{
+        g5FlipTimer=setTimeout(()=>{
           a.cardEl.classList.remove('flipped');b.cardEl.classList.remove('flipped');
           flipped=[];locked=false;
         },1000);
@@ -1379,7 +1380,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   ];
   const ROUNDS=10;
   const $=id=>document.getElementById(id);
-  let score=0,round=0,locked=false,pairs=[];
+  let score=0,round=0,locked=false,pairs=[],g6Timer=null;
 
   function buildPairs(){
     const all=[];
@@ -1418,7 +1419,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     });
     if(ok){score++;playCorrectSound();speak('せいかい！ '+correctAnimal.name+' の ほうが おおきいよ！');}
     else{playWrongSound();speak('おしい！ '+correctAnimal.name+' の ほうが おおきいよ！');}
-    setTimeout(nextRound6,ok?1800:3500);
+    g6Timer=setTimeout(nextRound6,ok?1800:3500);
   }
 
   function showResult6(){
@@ -1437,7 +1438,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   $('g6RetryBtn').addEventListener('click',()=>window.g6Init());
   $('g6HomeBtn').addEventListener('click',goHome);
 
-  window.g6Init=function(){score=0;round=0;locked=false;pairs=buildPairs();nextRound6();};
+  window.g6Init=function(){if(g6Timer)clearTimeout(g6Timer);g6Timer=null;score=0;round=0;locked=false;pairs=buildPairs();nextRound6();};
 })();
 
 // ============================================================
@@ -1454,7 +1455,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   const ANIMAL_CHARS=[...new Set(ANIMALS.flatMap(a=>a.name.split('')))];
   const ROUNDS=10;
   const $=id=>document.getElementById(id);
-  let score=0,round=0,locked=false,difficulty='easy',usedKeys=[],current=null;
+  let score=0,round=0,locked=false,difficulty='easy',usedKeys=[],current=null,g7Timer=null;
 
   function nextRound7(){
     if(round>=ROUNDS){showResult7();return;}
@@ -1503,7 +1504,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     if(blank){blank.textContent=correct;blank.style.borderStyle='solid';blank.style.color='var(--ok)';}
     if(ok){score++;playCorrectSound();speak('せいかい！ '+current.name+'！');}
     else{playWrongSound();speak('おしい！「'+correct+'」だよ！');}
-    setTimeout(nextRound7,ok?1800:3000);
+    g7Timer=setTimeout(nextRound7,ok?1800:3000);
   }
 
   function showResult7(){
@@ -1520,10 +1521,12 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   }
 
   $('g7Easy').addEventListener('click',()=>{
+    if(g7Timer)clearTimeout(g7Timer);g7Timer=null;
     difficulty='easy';$('g7Easy').classList.add('active');$('g7Normal').classList.remove('active');
     score=0;round=0;locked=false;usedKeys=[];nextRound7();
   });
   $('g7Normal').addEventListener('click',()=>{
+    if(g7Timer)clearTimeout(g7Timer);g7Timer=null;
     difficulty='normal';$('g7Normal').classList.add('active');$('g7Easy').classList.remove('active');
     score=0;round=0;locked=false;usedKeys=[];nextRound7();
   });
@@ -1531,6 +1534,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   $('g7HomeBtn').addEventListener('click',goHome);
 
   window.g7Init=function(){
+    if(g7Timer)clearTimeout(g7Timer);g7Timer=null;
     score=0;round=0;locked=false;usedKeys=[];difficulty='easy';
     $('g7Easy').classList.add('active');$('g7Normal').classList.remove('active');
     nextRound7();
