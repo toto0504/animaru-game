@@ -287,6 +287,28 @@
     .g7-choice:active{transform:scale(.95);}
     .g7-choice.correct{border-color:var(--ok);background:#f0fdf4;}
     .g7-choice.wrong{border-color:var(--ng);background:#fffbeb;opacity:.7;}
+    /* ======== Game8: どうぶつピアノ ======== */
+    .g8-wrap{width:100%;max-width:600px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+    .g8-keyboard{display:flex;gap:6px;justify-content:center;width:100%;padding:8px;}
+    .g8-key{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff;
+            border:2px solid #ddd;border-radius:0 0 16px 16px;padding:8px 4px 12px;cursor:pointer;
+            transition:transform .08s,background .15s;box-shadow:0 4px 10px rgba(0,0,0,.1);
+            min-height:120px;justify-content:flex-end;}
+    .g8-key:active{transform:scale(.93) translateY(2px);background:#fffbe0;}
+    .g8-key img{width:48px;height:48px;object-fit:contain;}
+    .g8-key .g8-note{font-size:17px;font-weight:900;margin-top:4px;}
+    .g8-key .g8-animal{font-size:11px;color:var(--muted);}
+    .g8-key.correct{background:#f0fdf4;border-color:var(--ok);animation:g8flash .5s;}
+    .g8-key.wrong{background:#fff7ed;border-color:var(--ng);}
+    .g8-key.inactive{opacity:.3;}
+    @keyframes g8flash{0%{transform:scale(1)}30%{transform:scale(1.12)}100%{transform:scale(1)}}
+    .g8-key.dancing img{animation:g8dance .65s ease;}
+    @keyframes g8dance{0%{transform:scale(1) rotate(0)}20%{transform:scale(1.4) rotate(-18deg)}45%{transform:scale(1.2) rotate(14deg)}65%{transform:scale(1.3) rotate(-10deg)}80%{transform:scale(1.15) rotate(6deg)}100%{transform:scale(1) rotate(0)}}
+    .g8-key.guide{background:#fff9c4;border-color:#fbbf24;animation:g8guide .55s ease-in-out infinite alternate;}
+    @keyframes g8guide{from{transform:scaleY(1)}to{transform:scaleY(1.06)}}
+    .g8-key.melody-active{background:#e0f2fe;border-color:#38bdf8;}
+    .g8-quiz-label{font-size:44px;font-weight:900;background:#fff;padding:10px 40px;
+                   border-radius:999px;box-shadow:var(--shadow);letter-spacing:.05em;}
   </style>
 </head>
 <body>
@@ -306,6 +328,11 @@
       <div class="game-card" id="cardG5"><div class="card-icon">🃏</div><div class="card-title">めくりあわせ</div><div class="card-desc">おなじ どうぶつを みつけよう！<br>ぜんぶ そろえてね！</div></div>
       <div class="game-card" id="cardG6"><div class="card-icon">📏</div><div class="card-title">おおきさ くらべ</div><div class="card-desc">どっちの どうぶつが<br>おおきいかな？</div></div>
       <div class="game-card" id="cardG7"><div class="card-icon">✏️</div><div class="card-title">ことば かんせい</div><div class="card-desc">どうぶつの なまえの<br>もじを えらんでね！</div></div>
+      <div class="game-card" id="cardG8">
+        <div class="card-icon">🎹</div>
+        <div class="card-title">どうぶつ ピアノ</div>
+        <div class="card-desc">どうぶつと いっしょに<br>ドレミを おぼえよう！</div>
+      </div>
     </div>
   </div>
 
@@ -590,6 +617,43 @@
       </div>
     </div>
   </div>
+  <!-- Game8: どうぶつピアノ -->
+  <div class="screen" id="g8Screen">
+    <div class="g8-wrap">
+      <div class="level-select" id="g8LvSelect">
+        <button class="btn lv active" id="g8LvEasy">かんたん</button>
+        <button class="btn lv" id="g8LvNormal">ふつう</button>
+        <button class="btn lv" id="g8LvHard">むずかし</button>
+      </div>
+      <div id="g8QuizLabel" class="g8-quiz-label" style="display:none;"></div>
+      <button class="btn" id="g8AgainBtn" style="display:none;">🔁 もういちど</button>
+      <div class="g8-keyboard" id="g8Keyboard"></div>
+      <button class="btn accent" id="g8StartQuizBtn">🎵 クイズ スタート！</button>
+      <button class="btn" id="g8RensouBtn" style="display:none;">🎹 れんそうモード</button>
+      <div id="g8FreeTip" style="font-size:15px;color:var(--muted);">すきな けんばんを おしてみよう！</div>
+      <div id="g8MelodySection" style="display:none;flex-direction:column;align-items:center;gap:8px;">
+        <div style="font-size:14px;font-weight:700;color:var(--muted);">♪ じどう えんそう</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn g8-melody-btn" data-melody="0">🌟 きらきらぼし</button>
+          <button class="btn g8-melody-btn" data-melody="1">🦋 ちょうちょ</button>
+        </div>
+        <button class="btn" id="g8MelodyStopBtn">⏹ とめる</button>
+      </div>
+    </div>
+  </div>
+  <!-- Game8 Result -->
+  <div class="screen" id="g8ResultScreen">
+    <div class="result-card">
+      <div class="result-medal" id="g8Medal"></div>
+      <div class="result-stars" id="g8Stars"></div>
+      <div class="result-score" id="g8Score"></div>
+      <div class="result-sub" id="g8Sub"></div>
+      <div class="result-btns">
+        <button class="btn accent" id="g8RetryBtn">🎹 もういちど！</button>
+        <button class="btn" id="g8HomeBtn">🏠 もどる</button>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="streak-msg" id="streakMsg"></div>
 <div class="g2-toast" id="g2Toast"></div>
@@ -622,9 +686,9 @@
 // ============================================================
 //  共通
 // ============================================================
-const allScreens=['menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','g2Screen','g3Screen','g4Screen','g4ResultScreen','g5Screen','g6Screen','g6ResultScreen','g7Screen','g7ResultScreen'];
+const allScreens=['menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','g2Screen','g3Screen','g4Screen','g4ResultScreen','g5Screen','g6Screen','g6ResultScreen','g7Screen','g7ResultScreen','g8Screen','g8ResultScreen'];
 function showScreen(id){allScreens.forEach(s=>document.getElementById(s).classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('backBtn').classList.toggle('visible',id!=='menuScreen');}
-function goHome(){showScreen('menuScreen');if(typeof g2Stop==='function')g2Stop();if(typeof g4Stop==='function')g4Stop();if(typeof g5Stop==='function')g5Stop();if(typeof g6Stop==='function')g6Stop();if(typeof g7Stop==='function')g7Stop();}
+function goHome(){showScreen('menuScreen');if(typeof g2Stop==='function')g2Stop();if(typeof g4Stop==='function')g4Stop();if(typeof g5Stop==='function')g5Stop();if(typeof g6Stop==='function')g6Stop();if(typeof g7Stop==='function')g7Stop();if(typeof g8Stop==='function')g8Stop();}
 function startGame1(){showScreen('g1StartScreen');g1RenderAnimalSelect();}
 function startGame2(){showScreen('g2Screen');g2Init();}
 function startGame3(){showScreen('g3Screen');if(typeof g3Init==='function')g3Init();}
@@ -632,6 +696,7 @@ function startGame4(){showScreen('g4Screen');if(typeof g4Init==='function')g4Ini
 function startGame5(){showScreen('g5Screen');if(typeof g5Init==='function')g5Init();}
 function startGame6(){showScreen('g6Screen');if(typeof g6Init==='function')g6Init();}
 function startGame7(){showScreen('g7Screen');if(typeof g7Init==='function')g7Init();}
+function startGame8(){showScreen('g8Screen');if(typeof g8Init==='function')g8Init();}
 
 document.getElementById('backBtn').addEventListener('click',goHome);
 document.getElementById('cardG1').addEventListener('click',startGame1);
@@ -641,6 +706,7 @@ document.getElementById('cardG4').addEventListener('click',startGame4);
 document.getElementById('cardG5').addEventListener('click',startGame5);
 document.getElementById('cardG6').addEventListener('click',startGame6);
 document.getElementById('cardG7').addEventListener('click',startGame7);
+document.getElementById('cardG8').addEventListener('click',startGame8);
 
 // TTS (Google翻訳TTS優先、ネイティブTTSにフォールバック)
 let _ttsAudio=null,_nativeVoice=null;
@@ -1544,6 +1610,283 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     nextRound7();
   };
   window.g7Stop=function(){if(g7Timer)clearTimeout(g7Timer);g7Timer=null;};
+})();
+
+// ============================================================
+// Game8: どうぶつピアノ
+// ============================================================
+(function(){
+  var NOTES=[
+    {note:'ド',  freq:261.63,key:'inu',   name:'いぬ',   sound:'音声/inu.mp3'},
+    {note:'レ',  freq:293.66,key:'neko',  name:'ねこ',   sound:'音声/neko.mp3'},
+    {note:'ミ',  freq:329.63,key:'hiyoko',name:'ひよこ', sound:'音声/hiyoko.mp3'},
+    {note:'ファ',freq:349.23,key:'buta',  name:'ぶた',   sound:'音声/buta.mp3'},
+    {note:'ソ',  freq:392.00,key:'raion', name:'らいおん',sound:'音声/raion.mp3'},
+    {note:'ラ',  freq:440.00,key:'pengin',name:'ぺんぎん',sound:'音声/ペンギンの鳴き声.mp3'},
+    {note:'シ',  freq:493.88,key:'ushi',  name:'うし',   sound:'音声/ushi.mp3'},
+    {note:'高ド',freq:523.25,key:'zou',   name:'ぞう',   sound:'音声/zou.mp3'},
+  ];
+  var LEVEL_COUNT={easy:3,normal:5,hard:8};
+  var TOTAL=8;
+  // きらきらぼし: [noteIdx, durationMs]  (0=ド,1=レ,2=ミ,3=ファ,4=ソ,5=ラ,6=シ,7=高ド)
+  var MELODIES=[
+    [[0,400],[0,400],[4,400],[4,400],[5,400],[5,400],[4,800],
+     [3,400],[3,400],[2,400],[2,400],[1,400],[1,400],[0,800],
+     [4,400],[4,400],[3,400],[3,400],[2,400],[2,400],[1,800],
+     [4,400],[4,400],[3,400],[3,400],[2,400],[2,400],[1,800],
+     [0,400],[0,400],[4,400],[4,400],[5,400],[5,400],[4,800],
+     [3,400],[3,400],[2,400],[2,400],[1,400],[1,400],[0,800]],
+    [[0,400],[2,400],[4,400],[4,800],[2,400],[0,400],[2,400],[4,400],[4,800],[4,800],
+     [5,400],[4,400],[3,400],[3,400],[2,400],[1,400],[0,400],[2,400],[4,400],[4,800],[4,800],
+     [4,400],[3,400],[2,400],[2,800],[1,400],[2,400],[3,400],[3,800],
+     [0,400],[2,400],[4,400],[4,800],[2,400],[0,400],[2,400],[4,400],[4,800],[4,800]]
+  ];
+  var $=function(id){return document.getElementById(id);};
+  var mode='free',level='easy';
+  var score=0,round=0,locked=false,usedIdx=[],currentNote=null,g8Timer=null;
+  var keyEls=[];
+  var rensouIdx=0;
+  var melodyTimers=[];
+
+  function playNote(freq,dur){
+    dur=dur||0.5;
+    try{
+      var c=getAudioCtx();
+      var o=c.createOscillator(),g=c.createGain();
+      o.type='triangle';o.frequency.value=freq;
+      g.gain.setValueAtTime(0.2,c.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.01,c.currentTime+dur);
+      o.connect(g);g.connect(c.destination);
+      o.start(c.currentTime);o.stop(c.currentTime+dur);
+    }catch(e){}
+  }
+
+  function buildKeyboard(){
+    var kb=$('g8Keyboard');kb.textContent='';keyEls=[];
+    var count=LEVEL_COUNT[level];
+    NOTES.forEach(function(n,idx){
+      var el=document.createElement('div');
+      el.className='g8-key'+(idx>=count?' inactive':'');
+      el.appendChild(mkImg(n.key));
+      var noteEl=document.createElement('div');noteEl.className='g8-note';noteEl.textContent=n.note;el.appendChild(noteEl);
+      var animalEl=document.createElement('div');animalEl.className='g8-animal';animalEl.textContent=n.name;el.appendChild(animalEl);
+      (function(nn,eel,ii){el.addEventListener('click',function(){onKeyPress(nn,eel,ii);});})(n,el,idx);
+      kb.appendChild(el);keyEls.push(el);
+    });
+  }
+
+  function flashKey(el,cls,ms){
+    ms=ms||500;
+    el.classList.add(cls);
+    setTimeout(function(){el.classList.remove(cls);},ms);
+  }
+
+  function danceKey(el){
+    el.classList.remove('dancing');
+    void el.offsetWidth;
+    el.classList.add('dancing');
+    setTimeout(function(){el.classList.remove('dancing');},700);
+  }
+
+  function stopMelody(){
+    melodyTimers.forEach(function(id){clearTimeout(id);});
+    melodyTimers=[];
+    keyEls.forEach(function(k){k.classList.remove('melody-active');});
+  }
+
+  function showGuide(idx){
+    keyEls.forEach(function(k){k.classList.remove('guide');});
+    var count=LEVEL_COUNT[level];
+    if(idx<count&&keyEls[idx]){
+      keyEls[idx].classList.add('guide');
+      playNote(NOTES[idx].freq,0.4);
+    }
+  }
+
+  function startRensou(){
+    var count=LEVEL_COUNT[level];
+    if(count<1)return;
+    mode='rensou';
+    rensouIdx=0;
+    stopMelody();
+    $('g8StartQuizBtn').style.display='none';
+    $('g8RensouBtn').style.display='none';
+    $('g8FreeTip').style.display='none';
+    $('g8MelodySection').style.display='none';
+    $('g8LvSelect').style.display='none';
+    showGuide(rensouIdx);
+    speak('ひかった けんばんを じゅんばんに おしてね！');
+  }
+
+  function playMelody(melodyIdx){
+    stopMelody();
+    var mel=MELODIES[melodyIdx];
+    if(!mel)return;
+    var elapsed=0;
+    mel.forEach(function(step){
+      var noteIdx=step[0];
+      var dur=step[1];
+      var t1=setTimeout(function(){
+        var count=LEVEL_COUNT[level];
+        if(noteIdx<count&&keyEls[noteIdx]){
+          keyEls[noteIdx].classList.add('melody-active');
+          playNote(NOTES[noteIdx].freq,dur/1000);
+          var t2=setTimeout(function(){
+            if(keyEls[noteIdx])keyEls[noteIdx].classList.remove('melody-active');
+          },dur-50);
+          melodyTimers.push(t2);
+        }
+      },elapsed);
+      melodyTimers.push(t1);
+      elapsed+=dur;
+    });
+  }
+
+  function onKeyPress(n,keyEl,idx){
+    var count=LEVEL_COUNT[level];
+    if(idx>=count)return;
+    if(mode==='free'){
+      playNote(n.freq);
+      flashKey(keyEl,'correct');
+      danceKey(keyEl);
+      setTimeout(function(){try{new Audio(n.sound).play();}catch(e){}},400);
+    }else if(mode==='rensou'){
+      if(idx!==rensouIdx)return;
+      keyEls[rensouIdx].classList.remove('guide');
+      flashKey(keyEl,'correct');
+      danceKey(keyEl);
+      playNote(n.freq);
+      rensouIdx++;
+      if(rensouIdx>=count){
+        launchConfetti();
+        speak('すごい！ぜんぶ できたね！');
+        g8Timer=setTimeout(function(){
+          mode='free';
+          keyEls.forEach(function(k){k.classList.remove('guide');});
+          $('g8StartQuizBtn').style.display='';
+          $('g8RensouBtn').style.display='';
+          $('g8FreeTip').style.display='';
+          $('g8MelodySection').style.display='flex';
+          $('g8LvSelect').style.display='';
+        },2000);
+      }else{
+        g8Timer=setTimeout(function(){showGuide(rensouIdx);},400);
+      }
+    }else{
+      if(locked)return;
+      locked=true;
+      var ok=(n.key===currentNote.key);
+      if(ok){
+        flashKey(keyEl,'correct');
+        danceKey(keyEl);
+        playCorrectSound();
+        speak('せいかい！'+currentNote.note+' だよ！');
+        score++;
+        if(g8Timer)clearTimeout(g8Timer);
+        g8Timer=setTimeout(nextRound8,1800);
+      }else{
+        keyEl.classList.add('wrong');
+        var correctIdx=NOTES.findIndex(function(x){return x.key===currentNote.key;});
+        if(correctIdx>=0)flashKey(keyEls[correctIdx],'correct',3200);
+        playWrongSound();
+        speak('おしい！'+currentNote.note+' だよ！');
+        if(g8Timer)clearTimeout(g8Timer);
+        g8Timer=setTimeout(nextRound8,3200);
+      }
+    }
+  }
+
+  function nextRound8(){
+    if(round>=TOTAL){showResult8();return;}
+    locked=false;
+    var count=LEVEL_COUNT[level];
+    var avail=[];
+    for(var i=0;i<count;i++){if(usedIdx.indexOf(i)<0)avail.push(i);}
+    if(!avail.length){usedIdx=[];for(var j=0;j<count;j++)avail.push(j);}
+    var pick=avail[Math.floor(Math.random()*avail.length)];
+    usedIdx.push(pick);
+    currentNote=NOTES[pick];
+    round++;
+    $('g8QuizLabel').textContent=currentNote.note+' を おして！';
+    $('g8AgainBtn').style.display='';
+    keyEls.forEach(function(k){k.classList.remove('correct','wrong');});
+    speak(currentNote.note+' を おして！',function(){
+      if(!locked){g8Timer=setTimeout(function(){playNote(currentNote.freq,0.8);},600);}
+    });
+  }
+
+  function startQuiz(){
+    mode='quiz';
+    score=0;round=0;locked=false;usedIdx=[];
+    stopMelody();
+    $('g8StartQuizBtn').style.display='none';
+    $('g8RensouBtn').style.display='none';
+    $('g8FreeTip').style.display='none';
+    $('g8MelodySection').style.display='none';
+    $('g8AgainBtn').style.display='none';
+    $('g8QuizLabel').style.display='';
+    $('g8LvSelect').style.display='none';
+    nextRound8();
+  }
+
+  function showResult8(){
+    showScreen('g8ResultScreen');
+    var pct=Math.round(score/TOTAL*100);
+    var medal;
+    if(score===TOTAL)medal='👑';
+    else if(pct>=80)medal='🥇';
+    else if(pct>=60)medal='🥈';
+    else if(pct>=40)medal='🥉';
+    else medal='💪';
+    $('g8Medal').textContent=medal;
+    $('g8Score').textContent=score+' / '+TOTAL;
+    $('g8Stars').textContent='⭐'.repeat(score)+'☆'.repeat(TOTAL-score);
+    $('g8Sub').textContent=score===TOTAL?'パーフェクト！！':pct>=80?'すばらしい！':pct>=60?'がんばったね！':pct>=40?'おしい！':'つぎは がんばろう！';
+    if(score===TOTAL){launchConfetti();speak('パーフェクト！すごいね！');}
+    else speak(score+'もん せいかい！');
+  }
+
+  function setLevel(lv){
+    level=lv;
+    ['easy','normal','hard'].forEach(function(l){
+      var id='g8Lv'+l.charAt(0).toUpperCase()+l.slice(1);
+      $(id).classList.toggle('active',l===lv);
+    });
+    buildKeyboard();
+  }
+
+  $('g8LvEasy').addEventListener('click',function(){setLevel('easy');});
+  $('g8LvNormal').addEventListener('click',function(){setLevel('normal');});
+  $('g8LvHard').addEventListener('click',function(){setLevel('hard');});
+  $('g8StartQuizBtn').addEventListener('click',startQuiz);
+  $('g8RetryBtn').addEventListener('click',function(){showScreen('g8Screen');window.g8Init();});
+  $('g8HomeBtn').addEventListener('click',goHome);
+  $('g8AgainBtn').addEventListener('click',function(){
+    speak(currentNote.note+' を おして！',function(){
+      if(!locked){playNote(currentNote.freq,0.8);}
+    });
+  });
+  $('g8RensouBtn').addEventListener('click',startRensou);
+  document.querySelectorAll('.g8-melody-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){playMelody(Number(btn.dataset.melody));});
+  });
+  $('g8MelodyStopBtn').addEventListener('click',stopMelody);
+
+  window.g8Init=function(){
+    if(g8Timer){clearTimeout(g8Timer);g8Timer=null;}
+    stopMelody();
+    mode='free';score=0;round=0;locked=false;usedIdx=[];rensouIdx=0;
+    keyEls.forEach(function(k){k.classList.remove('guide','dancing','melody-active');});
+    $('g8StartQuizBtn').style.display='';
+    $('g8RensouBtn').style.display='';
+    $('g8FreeTip').style.display='';
+    $('g8QuizLabel').style.display='none';
+    $('g8AgainBtn').style.display='none';
+    $('g8MelodySection').style.display='flex';
+    $('g8LvSelect').style.display='';
+    setLevel('easy');
+  };
+  window.g8Stop=function(){if(g8Timer){clearTimeout(g8Timer);g8Timer=null;}stopMelody();};
 })();
 </script>
 </body>
