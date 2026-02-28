@@ -308,6 +308,10 @@
     .g8-key.guide{background:#fff9c4;border-color:#fbbf24;animation:g8guide .55s ease-in-out infinite alternate;}
     @keyframes g8guide{from{transform:scaleY(1)}to{transform:scaleY(1.06)}}
     .g8-key.melody-active{background:#e0f2fe;border-color:#38bdf8;}
+    .g8-nq-btn{font-size:26px;font-weight:900;padding:14px 22px;border-radius:18px;background:#fff;border:3px solid #ddd;cursor:pointer;min-width:76px;transition:all .15s;box-shadow:0 4px 12px rgba(0,0,0,.08);font-family:inherit;}
+    .g8-nq-btn:active{transform:scale(.95);}
+    .g8-nq-btn.correct{background:#f0fdf4;border-color:var(--ok);}
+    .g8-nq-btn.wrong{background:#fffbeb;border-color:var(--ng);opacity:.6;}
     .g8-quiz-label{font-size:44px;font-weight:900;background:#fff;padding:10px 40px;
                    border-radius:999px;box-shadow:var(--shadow);letter-spacing:.05em;}
   </style>
@@ -323,17 +327,13 @@
     <div class="menu-sub">あそびたい ゲームを えらんでね！</div>
     <div class="game-cards">
       <div class="game-card" id="cardG1"><div class="card-icon">🎯</div><div class="card-title">なまえ あてゲーム</div><div class="card-desc">どうぶつの えを みて<br>なまえを あてよう！</div></div>
+      <div class="game-card" id="cardG8"><div class="card-icon">🎹</div><div class="card-title">どうぶつ ピアノ</div><div class="card-desc">どうぶつと いっしょに<br>ドレミを おぼえよう！</div></div>
       <div class="game-card" id="cardG2"><div class="card-icon">🚂</div><div class="card-title">どうぶつ列車</div><div class="card-desc">れっしゃに のった どうぶつを<br>かぞえよう！</div></div>
       <div class="game-card" id="cardG3"><div class="card-icon">✏️</div><div class="card-title">ひらがな おぼえよう</div><div class="card-desc">ひらがなの カードを みたり<br>クイズで あそぼう！</div></div>
       <div class="game-card" id="cardG4"><div class="card-icon">🔊</div><div class="card-title">なきごえ あてゲーム</div><div class="card-desc">どうぶつの なきごえを きいて<br>えを えらぼう！</div></div>
       <div class="game-card" id="cardG5"><div class="card-icon">🃏</div><div class="card-title">めくりあわせ</div><div class="card-desc">おなじ どうぶつを みつけよう！<br>ぜんぶ そろえてね！</div></div>
       <div class="game-card" id="cardG6"><div class="card-icon">📏</div><div class="card-title">おおきさ くらべ</div><div class="card-desc">どっちの どうぶつが<br>おおきいかな？</div></div>
       <div class="game-card" id="cardG7"><div class="card-icon">✏️</div><div class="card-title">ことば かんせい</div><div class="card-desc">どうぶつの なまえの<br>もじを えらんでね！</div></div>
-      <div class="game-card" id="cardG8">
-        <div class="card-icon">🎹</div>
-        <div class="card-title">どうぶつ ピアノ</div>
-        <div class="card-desc">どうぶつと いっしょに<br>ドレミを おぼえよう！</div>
-      </div>
     </div>
   </div>
 
@@ -628,16 +628,24 @@
       </div>
       <div id="g8QuizLabel" class="g8-quiz-label" style="display:none;"></div>
       <button class="btn" id="g8AgainBtn" style="display:none;">🔁 もういちど</button>
+      <!-- おとあてクイズ用UI -->
+      <div id="g8NoteQuizSection" style="display:none;flex-direction:column;align-items:center;gap:12px;">
+        <div id="g8NoteQuizLabel" style="font-size:20px;font-weight:900;">どの おとかな？ 🎵</div>
+        <button class="btn" id="g8NoteQuizListenBtn">🔊 もういちど きく</button>
+        <div id="g8NoteQuizChoices" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"></div>
+      </div>
       <div class="g8-keyboard" id="g8Keyboard"></div>
-      <button class="btn accent" id="g8StartQuizBtn">🎵 クイズ スタート！</button>
+      <button class="btn accent" id="g8StartQuizBtn">🎹 ドレミ クイズ！</button>
+      <button class="btn" id="g8StartNoteQuizBtn">🎵 おとあて クイズ！</button>
       <button class="btn" id="g8RensouBtn" style="display:none;">🎹 れんそうモード</button>
       <div id="g8FreeTip" style="font-size:15px;color:var(--muted);">すきな けんばんを おしてみよう！</div>
       <div id="g8MelodySection" style="display:none;flex-direction:column;align-items:center;gap:8px;">
-        <div style="font-size:14px;font-weight:700;color:var(--muted);">♪ じどう えんそう</div>
+        <div style="font-size:14px;font-weight:700;color:var(--muted);">♪ えんそう（ボタンを おすたびに すすむよ）</div>
         <div style="display:flex;gap:8px;">
           <button class="btn g8-melody-btn" data-melody="0">🌟 きらきらぼし</button>
           <button class="btn g8-melody-btn" data-melody="1">🦋 ちょうちょ</button>
         </div>
+        <button class="btn accent" id="g8MelodyNextBtn" style="display:none;font-size:22px;padding:14px 44px;">🎵 ポン！</button>
         <button class="btn" id="g8MelodyStopBtn">⏹ とめる</button>
       </div>
     </div>
@@ -1648,6 +1656,9 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   var keyEls=[];
   var rensouIdx=0;
   var melodyTimers=[];
+  var melodyStepIdx=-1, melodyCurrentIdx=-1;
+  var noteQuizNote=null, noteQuizNoteIdx=0, noteQuizRound=0, noteQuizScore=0;
+  var NQ_TOTAL=5;
 
   function playNote(freq,dur){
     dur=dur||0.5;
@@ -1692,7 +1703,10 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   function stopMelody(){
     melodyTimers.forEach(function(id){clearTimeout(id);});
     melodyTimers=[];
+    melodyStepIdx=-1;
+    melodyCurrentIdx=-1;
     keyEls.forEach(function(k){k.classList.remove('melody-active');});
+    $('g8MelodyNextBtn').style.display='none';
   }
 
   function showGuide(idx){
@@ -1704,6 +1718,88 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     }
   }
 
+  function startNoteQuiz(){
+    mode='notequiz';
+    noteQuizRound=0;noteQuizScore=0;
+    stopMelody();
+    $('g8StartQuizBtn').style.display='none';
+    $('g8StartNoteQuizBtn').style.display='none';
+    $('g8RensouBtn').style.display='none';
+    $('g8FreeTip').style.display='none';
+    $('g8MelodySection').style.display='none';
+    $('g8AgainBtn').style.display='none';
+    $('g8NoteQuizSection').style.display='flex';
+    $('g8LvSelect').style.display='none';
+    nextNoteRound();
+  }
+
+  function nextNoteRound(){
+    if(noteQuizRound>=NQ_TOTAL){
+      mode='free';
+      $('g8NoteQuizSection').style.display='none';
+      $('g8QuizLabel').style.display='';
+      $('g8QuizLabel').textContent=noteQuizScore+' / '+NQ_TOTAL+' せいかい！';
+      if(noteQuizScore===NQ_TOTAL)launchConfetti();
+      speak(noteQuizScore+'もん せいかい！');
+      g8Timer=setTimeout(function(){
+        $('g8QuizLabel').style.display='none';
+        $('g8StartQuizBtn').style.display='';
+        $('g8StartNoteQuizBtn').style.display='';
+        $('g8RensouBtn').style.display='';
+        $('g8FreeTip').style.display='';
+        $('g8MelodySection').style.display='flex';
+        $('g8LvSelect').style.display='';
+      },2500);
+      return;
+    }
+    noteQuizRound++;
+    var count=LEVEL_COUNT[level];
+    noteQuizNoteIdx=Math.floor(Math.random()*count);
+    noteQuizNote=NOTES[noteQuizNoteIdx];
+    $('g8NoteQuizLabel').textContent='どの おとかな？（'+noteQuizRound+' / '+NQ_TOTAL+'）';
+    buildNoteChoices(count);
+    g8Timer=setTimeout(function(){playNote(noteQuizNote.freq,0.8);},300);
+  }
+
+  function buildNoteChoices(count){
+    var choices=$('g8NoteQuizChoices');
+    choices.textContent='';
+    var wrong=[];
+    for(var i=0;i<count;i++){if(i!==noteQuizNoteIdx)wrong.push(i);}
+    for(var j=wrong.length-1;j>0;j--){var k=Math.floor(Math.random()*(j+1));var t=wrong[j];wrong[j]=wrong[k];wrong[k]=t;}
+    var opts=[noteQuizNoteIdx];
+    for(var w=0;w<Math.min(2,wrong.length);w++)opts.push(wrong[w]);
+    for(var s=opts.length-1;s>0;s--){var r=Math.floor(Math.random()*(s+1));var tmp=opts[s];opts[s]=opts[r];opts[r]=tmp;}
+    opts.forEach(function(ni){
+      var btn=document.createElement('button');
+      btn.className='g8-nq-btn';
+      btn.textContent=NOTES[ni].note;
+      (function(noteI){
+        btn.addEventListener('click',function(){
+          if(btn.dataset.answered)return;
+          var all=choices.querySelectorAll('.g8-nq-btn');
+          all.forEach(function(b){b.dataset.answered='1';});
+          if(noteI===noteQuizNoteIdx){
+            btn.classList.add('correct');
+            noteQuizScore++;
+            playCorrectSound();
+            setTimeout(function(){try{new Audio(noteQuizNote.sound).play();}catch(e){}},300);
+            danceKey(keyEls[noteQuizNoteIdx]);
+            speak('せいかい！'+noteQuizNote.note+' だよ！');
+            g8Timer=setTimeout(nextNoteRound,2000);
+          }else{
+            btn.classList.add('wrong');
+            all.forEach(function(b){if(b.textContent===noteQuizNote.note)b.classList.add('correct');});
+            playWrongSound();
+            speak('おしい！'+noteQuizNote.note+' だよ！');
+            g8Timer=setTimeout(nextNoteRound,2500);
+          }
+        });
+      })(ni);
+      choices.appendChild(btn);
+    });
+  }
+
   function startRensou(){
     var count=LEVEL_COUNT[level];
     if(count<1)return;
@@ -1711,6 +1807,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     rensouIdx=0;
     stopMelody();
     $('g8StartQuizBtn').style.display='none';
+    $('g8StartNoteQuizBtn').style.display='none';
     $('g8RensouBtn').style.display='none';
     $('g8FreeTip').style.display='none';
     $('g8MelodySection').style.display='none';
@@ -1723,30 +1820,39 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     stopMelody();
     var mel=MELODIES[melodyIdx];
     if(!mel)return;
-    var elapsed=0;
-    mel.forEach(function(step){
-      var noteIdx=step[0];
-      var dur=step[1];
-      var t1=setTimeout(function(){
-        var count=LEVEL_COUNT[level];
-        if(noteIdx<count&&keyEls[noteIdx]){
-          keyEls[noteIdx].classList.add('melody-active');
-          playNote(NOTES[noteIdx].freq,dur/1000);
-          var t2=setTimeout(function(){
-            if(keyEls[noteIdx])keyEls[noteIdx].classList.remove('melody-active');
-          },dur-50);
-          melodyTimers.push(t2);
-        }
-      },elapsed);
-      melodyTimers.push(t1);
-      elapsed+=dur;
-    });
+    melodyCurrentIdx=melodyIdx;
+    melodyStepIdx=0;
+    $('g8MelodyNextBtn').style.display='';
+    playCurrentMelodyStep();
+  }
+
+  function playCurrentMelodyStep(){
+    var mel=MELODIES[melodyCurrentIdx];
+    if(melodyCurrentIdx<0||!mel||melodyStepIdx>=mel.length){
+      keyEls.forEach(function(k){k.classList.remove('melody-active');});
+      $('g8MelodyNextBtn').style.display='none';
+      melodyStepIdx=-1;melodyCurrentIdx=-1;
+      speak('おわり！');
+      return;
+    }
+    var step=mel[melodyStepIdx];
+    var noteIdx=step[0];
+    var count=LEVEL_COUNT[level];
+    keyEls.forEach(function(k){k.classList.remove('melody-active');});
+    if(noteIdx<count&&keyEls[noteIdx]){
+      keyEls[noteIdx].classList.add('melody-active');
+      playNote(NOTES[noteIdx].freq,0.5);
+      var t=setTimeout(function(){
+        if(keyEls[noteIdx])keyEls[noteIdx].classList.remove('melody-active');
+      },450);
+      melodyTimers.push(t);
+    }
   }
 
   function onKeyPress(n,keyEl,idx){
     var count=LEVEL_COUNT[level];
     if(idx>=count)return;
-    if(mode==='free'){
+    if(mode==='free'||mode==='notequiz'){
       playNote(n.freq);
       flashKey(keyEl,'correct');
       danceKey(keyEl);
@@ -1764,6 +1870,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
           mode='free';
           keyEls.forEach(function(k){k.classList.remove('guide');});
           $('g8StartQuizBtn').style.display='';
+          $('g8StartNoteQuizBtn').style.display='';
           $('g8RensouBtn').style.display='';
           $('g8FreeTip').style.display='';
           $('g8MelodySection').style.display='flex';
@@ -1821,10 +1928,12 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     score=0;round=0;locked=false;usedIdx=[];
     stopMelody();
     $('g8StartQuizBtn').style.display='none';
+    $('g8StartNoteQuizBtn').style.display='none';
     $('g8RensouBtn').style.display='none';
     $('g8FreeTip').style.display='none';
     $('g8MelodySection').style.display='none';
     $('g8AgainBtn').style.display='none';
+    $('g8NoteQuizSection').style.display='none';
     $('g8QuizLabel').style.display='';
     $('g8LvSelect').style.display='none';
     nextRound8();
@@ -1872,6 +1981,15 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     btn.addEventListener('click',function(){playMelody(Number(btn.dataset.melody));});
   });
   $('g8MelodyStopBtn').addEventListener('click',stopMelody);
+  $('g8MelodyNextBtn').addEventListener('click',function(){
+    if(melodyStepIdx<0||melodyCurrentIdx<0)return;
+    melodyStepIdx++;
+    playCurrentMelodyStep();
+  });
+  $('g8StartNoteQuizBtn').addEventListener('click',startNoteQuiz);
+  $('g8NoteQuizListenBtn').addEventListener('click',function(){
+    if(noteQuizNote)playNote(noteQuizNote.freq,0.8);
+  });
 
   window.g8Init=function(){
     if(g8Timer){clearTimeout(g8Timer);g8Timer=null;}
@@ -1879,10 +1997,12 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     mode='free';score=0;round=0;locked=false;usedIdx=[];rensouIdx=0;
     keyEls.forEach(function(k){k.classList.remove('guide','dancing','melody-active');});
     $('g8StartQuizBtn').style.display='';
+    $('g8StartNoteQuizBtn').style.display='';
     $('g8RensouBtn').style.display='';
     $('g8FreeTip').style.display='';
     $('g8QuizLabel').style.display='none';
     $('g8AgainBtn').style.display='none';
+    $('g8NoteQuizSection').style.display='none';
     $('g8MelodySection').style.display='flex';
     $('g8LvSelect').style.display='';
     setLevel('easy');
