@@ -293,10 +293,11 @@
     .g8-key{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff;
             border:2px solid #ddd;border-radius:0 0 16px 16px;padding:8px 4px 12px;cursor:pointer;
             transition:transform .08s,background .15s;box-shadow:0 4px 10px rgba(0,0,0,.1);
-            min-height:120px;justify-content:flex-end;}
+            min-height:120px;justify-content:space-between;}
     .g8-key:active{transform:scale(.93) translateY(2px);background:#fffbe0;}
     .g8-key img{width:48px;height:48px;object-fit:contain;}
-    .g8-key .g8-note{font-size:17px;font-weight:900;margin-top:4px;}
+    .g8-key .g8-note{font-size:18px;font-weight:900;}
+    .g8-key .g8-note.do{background:var(--accent);color:#fff;border-radius:6px;padding:1px 6px;}
     .g8-key .g8-animal{font-size:11px;color:var(--muted);}
     .g8-key.correct{background:#f0fdf4;border-color:var(--ok);animation:g8flash .5s;}
     .g8-key.wrong{background:#fff7ed;border-color:var(--ng);}
@@ -1667,8 +1668,8 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     NOTES.forEach(function(n,idx){
       var el=document.createElement('div');
       el.className='g8-key'+(idx>=count?' inactive':'');
+      var noteEl=document.createElement('div');noteEl.className='g8-note'+(idx===0?' do':'');noteEl.textContent=n.note;el.appendChild(noteEl);
       el.appendChild(mkImg(n.key));
-      var noteEl=document.createElement('div');noteEl.className='g8-note';noteEl.textContent=n.note;el.appendChild(noteEl);
       var animalEl=document.createElement('div');animalEl.className='g8-animal';animalEl.textContent=n.name;el.appendChild(animalEl);
       (function(nn,eel,ii){el.addEventListener('click',function(){onKeyPress(nn,eel,ii);});})(n,el,idx);
       kb.appendChild(el);keyEls.push(el);
@@ -1749,7 +1750,6 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
       playNote(n.freq);
       flashKey(keyEl,'correct');
       danceKey(keyEl);
-      setTimeout(function(){try{new Audio(n.sound).play();}catch(e){}},400);
     }else if(mode==='rensou'){
       if(idx!==rensouIdx)return;
       keyEls[rensouIdx].classList.remove('guide');
@@ -1780,6 +1780,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
         flashKey(keyEl,'correct');
         danceKey(keyEl);
         playCorrectSound();
+        setTimeout(function(){try{new Audio(n.sound).play();}catch(e){}},300);
         speak('せいかい！'+currentNote.note+' だよ！');
         score++;
         if(g8Timer)clearTimeout(g8Timer);
