@@ -289,15 +289,16 @@
     .g7-choice.wrong{border-color:var(--ng);background:#fffbeb;opacity:.7;}
     /* ======== Game8: どうぶつピアノ ======== */
     .g8-wrap{width:100%;max-width:600px;display:flex;flex-direction:column;align-items:center;gap:16px;}
-    .g8-keyboard{display:flex;gap:6px;justify-content:center;width:100%;padding:12px 8px 8px;background:linear-gradient(180deg,#e2e8f0,#f1f5f9);border-radius:0 0 14px 14px;border:2px solid #cbd5e1;border-top:8px solid #334155;}
-    .g8-key{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff;
-            border:2px solid #ddd;border-radius:0 0 16px 16px;padding:8px 4px 12px;cursor:pointer;
+    .g8-keyboard{display:flex;gap:4px;justify-content:center;width:100%;padding:0 4px 8px;background:linear-gradient(180deg,#e2e8f0,#f1f5f9);border-radius:0 0 14px 14px;border:2px solid #cbd5e1;border-top:10px solid #334155;position:relative;}
+    .g8-key{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:#fff;
+            border:2px solid #ddd;border-radius:0 0 14px 14px;padding:4px 4px 8px;cursor:pointer;
             transition:transform .08s,background .15s;box-shadow:0 4px 10px rgba(0,0,0,.1);
-            min-height:120px;justify-content:space-between;}
+            min-height:140px;justify-content:flex-end;}
     .g8-key:active{transform:scale(.93) translateY(2px);background:#fffbe0;}
-    .g8-key img{width:48px;height:48px;object-fit:contain;}
-    .g8-key .g8-note{font-size:18px;font-weight:900;}
-    .g8-key .g8-animal{font-size:11px;color:var(--muted);}
+    .g8-key img{width:36px;height:36px;object-fit:contain;}
+    .g8-key .g8-note{font-size:17px;font-weight:900;}
+    .g8-key .g8-animal{font-size:10px;color:var(--muted);}
+    .g8-black-key{position:absolute;top:0;width:6.5%;height:55px;background:linear-gradient(180deg,#2d2d2d,#111);border-radius:0 0 5px 5px;z-index:5;pointer-events:none;box-shadow:2px 4px 8px rgba(0,0,0,.55);}
     .g8-key.correct{background:#f0fdf4;border-color:var(--ok);animation:g8flash .5s;}
     .g8-key.wrong{background:#fff7ed;border-color:var(--ng);}
     .g8-key.inactive{opacity:.3;}
@@ -1678,11 +1679,17 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     NOTES.forEach(function(n,idx){
       var el=document.createElement('div');
       el.className='g8-key'+(idx>=count?' inactive':'');
-      var noteEl=document.createElement('div');noteEl.className='g8-note';noteEl.textContent=n.note;el.appendChild(noteEl);
       el.appendChild(mkImg(n.key));
       var animalEl=document.createElement('div');animalEl.className='g8-animal';animalEl.textContent=n.name;el.appendChild(animalEl);
+      var noteEl=document.createElement('div');noteEl.className='g8-note';noteEl.textContent=n.note;el.appendChild(noteEl);
       (function(nn,eel,ii){el.addEventListener('click',function(){onKeyPress(nn,eel,ii);});})(n,el,idx);
       kb.appendChild(el);keyEls.push(el);
+    });
+    // 黒鍵（装飾・クリック不可）: ド-レ間, レ-ミ間, ファ-ソ間, ソ-ラ間, ラ-シ間
+    [{left:'9%',ri:1},{left:'21.5%',ri:2},{left:'46.5%',ri:4},{left:'59%',ri:5},{left:'71.5%',ri:6}]
+    .forEach(function(bd){
+      if(bd.ri>=count)return;
+      var bk=document.createElement('div');bk.className='g8-black-key';bk.style.left=bd.left;kb.appendChild(bk);
     });
   }
 
@@ -1841,10 +1848,6 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     if(noteIdx<count&&keyEls[noteIdx]){
       keyEls[noteIdx].classList.add('melody-active');
       playNote(NOTES[noteIdx].freq,0.5);
-      var t=setTimeout(function(){
-        if(keyEls[noteIdx])keyEls[noteIdx].classList.remove('melody-active');
-      },450);
-      melodyTimers.push(t);
     }
   }
 
