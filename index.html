@@ -1844,10 +1844,19 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     var step=mel[melodyStepIdx];
     var noteIdx=step[0];
     var count=LEVEL_COUNT[level];
+    var prevIdx=melodyStepIdx>0?mel[melodyStepIdx-1][0]:-1;
     keyEls.forEach(function(k){k.classList.remove('melody-active');});
     if(noteIdx<count&&keyEls[noteIdx]){
-      keyEls[noteIdx].classList.add('melody-active');
-      playNote(NOTES[noteIdx].freq,0.5);
+      if(noteIdx===prevIdx){
+        // 同じ音が連続: 一瞬消してから再点灯（2回目とわかるように）
+        var t=setTimeout(function(){
+          if(keyEls[noteIdx])keyEls[noteIdx].classList.add('melody-active');
+        },200);
+        melodyTimers.push(t);
+      }else{
+        keyEls[noteIdx].classList.add('melody-active');
+      }
+      // ハイライトは無音 — キーを押したときだけ音が鳴る
     }
   }
 
