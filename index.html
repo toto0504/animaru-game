@@ -289,7 +289,7 @@
     .g7-choice.wrong{border-color:var(--ng);background:#fffbeb;opacity:.7;}
     /* ======== Game8: どうぶつピアノ ======== */
     .g8-wrap{width:100%;max-width:600px;display:flex;flex-direction:column;align-items:center;gap:16px;}
-    .g8-keyboard{display:flex;gap:6px;justify-content:center;width:100%;padding:8px;}
+    .g8-keyboard{display:flex;gap:6px;justify-content:center;width:100%;padding:12px 8px 8px;background:linear-gradient(180deg,#e2e8f0,#f1f5f9);border-radius:0 0 14px 14px;border:2px solid #cbd5e1;border-top:8px solid #334155;}
     .g8-key{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff;
             border:2px solid #ddd;border-radius:0 0 16px 16px;padding:8px 4px 12px;cursor:pointer;
             transition:transform .08s,background .15s;box-shadow:0 4px 10px rgba(0,0,0,.1);
@@ -297,7 +297,6 @@
     .g8-key:active{transform:scale(.93) translateY(2px);background:#fffbe0;}
     .g8-key img{width:48px;height:48px;object-fit:contain;}
     .g8-key .g8-note{font-size:18px;font-weight:900;}
-    .g8-key .g8-note.do{background:var(--accent);color:#fff;border-radius:6px;padding:1px 6px;}
     .g8-key .g8-animal{font-size:11px;color:var(--muted);}
     .g8-key.correct{background:#f0fdf4;border-color:var(--ok);animation:g8flash .5s;}
     .g8-key.wrong{background:#fff7ed;border-color:var(--ng);}
@@ -640,12 +639,12 @@
       <button class="btn" id="g8RensouBtn" style="display:none;">🎹 れんそうモード</button>
       <div id="g8FreeTip" style="font-size:15px;color:var(--muted);">すきな けんばんを おしてみよう！</div>
       <div id="g8MelodySection" style="display:none;flex-direction:column;align-items:center;gap:8px;">
-        <div style="font-size:14px;font-weight:700;color:var(--muted);">♪ えんそう（ボタンを おすたびに すすむよ）</div>
+        <div style="font-size:14px;font-weight:700;color:var(--muted);">♪ えんそう（ひかった けんばんを おしてね）</div>
         <div style="display:flex;gap:8px;">
           <button class="btn g8-melody-btn" data-melody="0">🌟 きらきらぼし</button>
           <button class="btn g8-melody-btn" data-melody="1">🦋 ちょうちょ</button>
         </div>
-        <button class="btn accent" id="g8MelodyNextBtn" style="display:none;font-size:22px;padding:14px 44px;">🎵 ポン！</button>
+        <button class="btn" id="g8MelodyNextBtn" style="display:none;">🔊 もういちど きく</button>
         <button class="btn" id="g8MelodyStopBtn">⏹ とめる</button>
       </div>
     </div>
@@ -1679,7 +1678,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     NOTES.forEach(function(n,idx){
       var el=document.createElement('div');
       el.className='g8-key'+(idx>=count?' inactive':'');
-      var noteEl=document.createElement('div');noteEl.className='g8-note'+(idx===0?' do':'');noteEl.textContent=n.note;el.appendChild(noteEl);
+      var noteEl=document.createElement('div');noteEl.className='g8-note';noteEl.textContent=n.note;el.appendChild(noteEl);
       el.appendChild(mkImg(n.key));
       var animalEl=document.createElement('div');animalEl.className='g8-animal';animalEl.textContent=n.name;el.appendChild(animalEl);
       (function(nn,eel,ii){el.addEventListener('click',function(){onKeyPress(nn,eel,ii);});})(n,el,idx);
@@ -1852,6 +1851,20 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   function onKeyPress(n,keyEl,idx){
     var count=LEVEL_COUNT[level];
     if(idx>=count)return;
+    if(melodyCurrentIdx>=0&&melodyStepIdx>=0){
+      var mel=MELODIES[melodyCurrentIdx];
+      if(mel&&melodyStepIdx<mel.length&&mel[melodyStepIdx][0]===idx){
+        playNote(n.freq,0.3);
+        flashKey(keyEl,'correct');
+        danceKey(keyEl);
+        melodyStepIdx++;
+        playCurrentMelodyStep();
+      }else{
+        playNote(n.freq,0.3);
+        flashKey(keyEl,'correct');
+      }
+      return;
+    }
     if(mode==='free'||mode==='notequiz'){
       playNote(n.freq);
       flashKey(keyEl,'correct');
@@ -1983,8 +1996,10 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   $('g8MelodyStopBtn').addEventListener('click',stopMelody);
   $('g8MelodyNextBtn').addEventListener('click',function(){
     if(melodyStepIdx<0||melodyCurrentIdx<0)return;
-    melodyStepIdx++;
-    playCurrentMelodyStep();
+    var mel=MELODIES[melodyCurrentIdx];
+    if(mel&&melodyStepIdx<mel.length){
+      playNote(NOTES[mel[melodyStepIdx][0]].freq,0.6);
+    }
   });
   $('g8StartNoteQuizBtn').addEventListener('click',startNoteQuiz);
   $('g8NoteQuizListenBtn').addEventListener('click',function(){
