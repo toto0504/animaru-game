@@ -634,9 +634,17 @@
         <button class="btn" id="g8NoteQuizListenBtn">🔊 もういちど きく</button>
         <div id="g8NoteQuizChoices" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"></div>
       </div>
+      <!-- おんぷクイズ用UI -->
+      <div id="g8NoteStaffSection" style="display:none;flex-direction:column;align-items:center;gap:12px;">
+        <div id="g8StaffLabel" style="font-size:20px;font-weight:900;">この おんぷは なに？ 🎼</div>
+        <div id="g8StaffDisplay" style="width:100%;max-width:280px;background:#fffef5;border-radius:12px;padding:8px;border:2px solid #e5e7eb;display:flex;justify-content:center;"></div>
+        <button class="btn" id="g8StaffListenBtn">🔊 おとを きく</button>
+        <div id="g8StaffChoices" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"></div>
+      </div>
       <div class="g8-keyboard" id="g8Keyboard"></div>
       <button class="btn accent" id="g8StartQuizBtn">🎹 ドレミ クイズ！</button>
       <button class="btn" id="g8StartNoteQuizBtn">🎵 おとあて クイズ！</button>
+      <button class="btn" id="g8StartNoteStaffBtn">🎼 おんぷ クイズ！</button>
       <button class="btn" id="g8RensouBtn" style="display:none;">🎹 れんそうモード</button>
       <div id="g8FreeTip" style="font-size:15px;color:var(--muted);">すきな けんばんを おしてみよう！</div>
       <div id="g8MelodySection" style="display:none;flex-direction:column;align-items:center;gap:8px;">
@@ -1659,6 +1667,8 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   var melodyStepIdx=-1, melodyCurrentIdx=-1;
   var noteQuizNote=null, noteQuizNoteIdx=0, noteQuizRound=0, noteQuizScore=0;
   var NQ_TOTAL=5;
+  var staffQuizNote=null, staffQuizNoteIdx=0, staffQuizRound=0, staffQuizScore=0;
+  var NSQ_TOTAL=5;
 
   function playNote(freq,dur){
     dur=dur||0.5;
@@ -1730,11 +1740,13 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     stopMelody();
     $('g8StartQuizBtn').style.display='none';
     $('g8StartNoteQuizBtn').style.display='none';
+    $('g8StartNoteStaffBtn').style.display='none';
     $('g8RensouBtn').style.display='none';
     $('g8FreeTip').style.display='none';
     $('g8MelodySection').style.display='none';
     $('g8AgainBtn').style.display='none';
     $('g8NoteQuizSection').style.display='flex';
+    $('g8NoteStaffSection').style.display='none';
     $('g8LvSelect').style.display='none';
     nextNoteRound();
   }
@@ -1751,6 +1763,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
         $('g8QuizLabel').style.display='none';
         $('g8StartQuizBtn').style.display='';
         $('g8StartNoteQuizBtn').style.display='';
+        $('g8StartNoteStaffBtn').style.display='';
         $('g8RensouBtn').style.display='';
         $('g8FreeTip').style.display='';
         $('g8MelodySection').style.display='flex';
@@ -1806,6 +1819,144 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     });
   }
 
+  function buildStaffSVG(noteIdx){
+    var NS='http://www.w3.org/2000/svg';
+    var svg=document.createElementNS(NS,'svg');
+    svg.setAttribute('viewBox','0 0 200 110');
+    svg.setAttribute('width','200');svg.setAttribute('height','110');
+    var bg=document.createElementNS(NS,'rect');
+    bg.setAttribute('x','0');bg.setAttribute('y','0');
+    bg.setAttribute('width','200');bg.setAttribute('height','110');
+    bg.setAttribute('fill','#fffef5');bg.setAttribute('rx','8');
+    svg.appendChild(bg);
+    [80,68,56,44,32].forEach(function(y){
+      var ln=document.createElementNS(NS,'line');
+      ln.setAttribute('x1','10');ln.setAttribute('y1',String(y));
+      ln.setAttribute('x2','190');ln.setAttribute('y2',String(y));
+      ln.setAttribute('stroke','#555');ln.setAttribute('stroke-width','1.5');
+      svg.appendChild(ln);
+    });
+    var clef=document.createElementNS(NS,'text');
+    clef.setAttribute('x','12');clef.setAttribute('y','87');
+    clef.setAttribute('font-size','52');clef.setAttribute('font-family','serif');
+    clef.setAttribute('fill','#333');
+    clef.textContent='\uD834\uDD1E';
+    svg.appendChild(clef);
+    if(noteIdx===0){
+      var ledger=document.createElementNS(NS,'line');
+      ledger.setAttribute('x1','120');ledger.setAttribute('y1','92');
+      ledger.setAttribute('x2','154');ledger.setAttribute('y2','92');
+      ledger.setAttribute('stroke','#555');ledger.setAttribute('stroke-width','1.5');
+      svg.appendChild(ledger);
+    }
+    var noteY=[92,86,80,74,68,62,56,50];
+    var cy=noteY[noteIdx];
+    var ellipse=document.createElementNS(NS,'ellipse');
+    ellipse.setAttribute('cx','137');ellipse.setAttribute('cy',String(cy));
+    ellipse.setAttribute('rx','9');ellipse.setAttribute('ry','7');
+    ellipse.setAttribute('fill','#1e293b');
+    svg.appendChild(ellipse);
+    var stem=document.createElementNS(NS,'line');
+    if(cy>=56){
+      stem.setAttribute('x1','146');stem.setAttribute('y1',String(cy-6));
+      stem.setAttribute('x2','146');stem.setAttribute('y2',String(cy-36));
+    }else{
+      stem.setAttribute('x1','128');stem.setAttribute('y1',String(cy+6));
+      stem.setAttribute('x2','128');stem.setAttribute('y2',String(cy+36));
+    }
+    stem.setAttribute('stroke','#1e293b');stem.setAttribute('stroke-width','2');
+    svg.appendChild(stem);
+    return svg;
+  }
+
+  function startNoteStaff(){
+    mode='notestaff';
+    staffQuizRound=0;staffQuizScore=0;
+    stopMelody();
+    $('g8StartQuizBtn').style.display='none';
+    $('g8StartNoteQuizBtn').style.display='none';
+    $('g8StartNoteStaffBtn').style.display='none';
+    $('g8RensouBtn').style.display='none';
+    $('g8FreeTip').style.display='none';
+    $('g8MelodySection').style.display='none';
+    $('g8AgainBtn').style.display='none';
+    $('g8NoteQuizSection').style.display='none';
+    $('g8NoteStaffSection').style.display='flex';
+    $('g8LvSelect').style.display='none';
+    nextStaffRound();
+  }
+
+  function nextStaffRound(){
+    if(staffQuizRound>=NSQ_TOTAL){
+      mode='free';
+      $('g8NoteStaffSection').style.display='none';
+      $('g8QuizLabel').style.display='';
+      $('g8QuizLabel').textContent=staffQuizScore+' / '+NSQ_TOTAL+' せいかい！';
+      if(staffQuizScore===NSQ_TOTAL)launchConfetti();
+      speak(staffQuizScore+'もん せいかい！');
+      g8Timer=setTimeout(function(){
+        $('g8QuizLabel').style.display='none';
+        $('g8StartQuizBtn').style.display='';
+        $('g8StartNoteQuizBtn').style.display='';
+        $('g8StartNoteStaffBtn').style.display='';
+        $('g8RensouBtn').style.display='';
+        $('g8FreeTip').style.display='';
+        $('g8MelodySection').style.display='flex';
+        $('g8LvSelect').style.display='';
+      },3000);
+      return;
+    }
+    staffQuizRound++;
+    var count=LEVEL_COUNT[level];
+    staffQuizNoteIdx=Math.floor(Math.random()*count);
+    staffQuizNote=NOTES[staffQuizNoteIdx];
+    $('g8StaffLabel').textContent='この おんぷは なに？（'+staffQuizRound+' / '+NSQ_TOTAL+'）';
+    var display=$('g8StaffDisplay');
+    display.textContent='';
+    display.appendChild(buildStaffSVG(staffQuizNoteIdx));
+    buildStaffChoices(count);
+    g8Timer=setTimeout(function(){playNote(staffQuizNote.freq,0.8);},400);
+  }
+
+  function buildStaffChoices(count){
+    var choices=$('g8StaffChoices');
+    choices.textContent='';
+    var wrong=[];
+    for(var i=0;i<count;i++){if(i!==staffQuizNoteIdx)wrong.push(i);}
+    for(var j=wrong.length-1;j>0;j--){var k=Math.floor(Math.random()*(j+1));var t=wrong[j];wrong[j]=wrong[k];wrong[k]=t;}
+    var opts=[staffQuizNoteIdx];
+    for(var w=0;w<Math.min(2,wrong.length);w++)opts.push(wrong[w]);
+    for(var s=opts.length-1;s>0;s--){var r=Math.floor(Math.random()*(s+1));var tmp=opts[s];opts[s]=opts[r];opts[r]=tmp;}
+    opts.forEach(function(noteI){
+      var btn=document.createElement('button');
+      btn.className='g8-nq-btn';
+      btn.textContent=NOTES[noteI].note;
+      (function(ni){
+        btn.addEventListener('click',function(){
+          if(btn.dataset.answered)return;
+          var all=choices.querySelectorAll('.g8-nq-btn');
+          all.forEach(function(b){b.dataset.answered='1';});
+          if(ni===staffQuizNoteIdx){
+            btn.classList.add('correct');
+            staffQuizScore++;
+            playCorrectSound();
+            setTimeout(function(){try{new Audio(NOTES[staffQuizNoteIdx].sound).play();}catch(e){}},300);
+            danceKey(keyEls[staffQuizNoteIdx]);
+            speak('せいかい！'+NOTES[staffQuizNoteIdx].note+' だよ！');
+            g8Timer=setTimeout(nextStaffRound,2000);
+          }else{
+            btn.classList.add('wrong');
+            all.forEach(function(b){if(b.textContent===NOTES[staffQuizNoteIdx].note)b.classList.add('correct');});
+            playWrongSound();
+            speak('おしい！'+NOTES[staffQuizNoteIdx].note+' だよ！');
+            g8Timer=setTimeout(nextStaffRound,2500);
+          }
+        });
+      })(noteI);
+      choices.appendChild(btn);
+    });
+  }
+
   function startRensou(){
     var count=LEVEL_COUNT[level];
     if(count<1)return;
@@ -1814,6 +1965,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     stopMelody();
     $('g8StartQuizBtn').style.display='none';
     $('g8StartNoteQuizBtn').style.display='none';
+    $('g8StartNoteStaffBtn').style.display='none';
     $('g8RensouBtn').style.display='none';
     $('g8FreeTip').style.display='none';
     $('g8MelodySection').style.display='none';
@@ -1877,7 +2029,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
       }
       return;
     }
-    if(mode==='free'||mode==='notequiz'){
+    if(mode==='free'||mode==='notequiz'||mode==='notestaff'){
       playNote(n.freq);
       flashKey(keyEl,'correct');
       danceKey(keyEl);
@@ -1896,6 +2048,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
           keyEls.forEach(function(k){k.classList.remove('guide');});
           $('g8StartQuizBtn').style.display='';
           $('g8StartNoteQuizBtn').style.display='';
+          $('g8StartNoteStaffBtn').style.display='';
           $('g8RensouBtn').style.display='';
           $('g8FreeTip').style.display='';
           $('g8MelodySection').style.display='flex';
@@ -1954,11 +2107,13 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     stopMelody();
     $('g8StartQuizBtn').style.display='none';
     $('g8StartNoteQuizBtn').style.display='none';
+    $('g8StartNoteStaffBtn').style.display='none';
     $('g8RensouBtn').style.display='none';
     $('g8FreeTip').style.display='none';
     $('g8MelodySection').style.display='none';
     $('g8AgainBtn').style.display='none';
     $('g8NoteQuizSection').style.display='none';
+    $('g8NoteStaffSection').style.display='none';
     $('g8QuizLabel').style.display='';
     $('g8LvSelect').style.display='none';
     nextRound8();
@@ -2017,19 +2172,26 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   $('g8NoteQuizListenBtn').addEventListener('click',function(){
     if(noteQuizNote)playNote(noteQuizNote.freq,0.8);
   });
+  $('g8StartNoteStaffBtn').addEventListener('click',startNoteStaff);
+  $('g8StaffListenBtn').addEventListener('click',function(){
+    if(staffQuizNote)playNote(staffQuizNote.freq,0.8);
+  });
 
   window.g8Init=function(){
     if(g8Timer){clearTimeout(g8Timer);g8Timer=null;}
     stopMelody();
     mode='free';score=0;round=0;locked=false;usedIdx=[];rensouIdx=0;
+    staffQuizRound=0;staffQuizScore=0;
     keyEls.forEach(function(k){k.classList.remove('guide','dancing','melody-active');});
     $('g8StartQuizBtn').style.display='';
     $('g8StartNoteQuizBtn').style.display='';
+    $('g8StartNoteStaffBtn').style.display='';
     $('g8RensouBtn').style.display='';
     $('g8FreeTip').style.display='';
     $('g8QuizLabel').style.display='none';
     $('g8AgainBtn').style.display='none';
     $('g8NoteQuizSection').style.display='none';
+    $('g8NoteStaffSection').style.display='none';
     $('g8MelodySection').style.display='flex';
     $('g8LvSelect').style.display='';
     setLevel('easy');
