@@ -1697,6 +1697,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   var NQ_TOTAL=5;
   var staffQuizNote=null, staffQuizNoteIdx=0, staffQuizRound=0, staffQuizScore=0;
   var NSQ_TOTAL=5;
+  var staffQuizBag=[];
 
   function playNote(freq,dur){
     dur=dur||0.5;
@@ -1899,7 +1900,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
 
   function startNoteStaff(){
     mode='notestaff';
-    staffQuizRound=0;staffQuizScore=0;
+    staffQuizRound=0;staffQuizScore=0;staffQuizBag=[];
     stopMelody();
     $('g8StartQuizBtn').style.display='none';
     $('g8StartNoteQuizBtn').style.display='none';
@@ -1938,7 +1939,11 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     }
     staffQuizRound++;
     var count=LEVEL_COUNT[level];
-    staffQuizNoteIdx=Math.floor(Math.random()*count);
+    if(staffQuizBag.length===0){
+      for(var bi=0;bi<count;bi++)staffQuizBag.push(bi);
+      for(var bj=staffQuizBag.length-1;bj>0;bj--){var bk=Math.floor(Math.random()*(bj+1));var bt=staffQuizBag[bj];staffQuizBag[bj]=staffQuizBag[bk];staffQuizBag[bk]=bt;}
+    }
+    staffQuizNoteIdx=staffQuizBag.pop();
     staffQuizNote=NOTES[staffQuizNoteIdx];
     $('g8StaffLabel').textContent='この おんぷは なに？（'+staffQuizRound+' / '+NSQ_TOTAL+'）';
     var display=$('g8StaffDisplay');
@@ -2211,7 +2216,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     if(g8Timer){clearTimeout(g8Timer);g8Timer=null;}
     stopMelody();
     mode='free';score=0;round=0;locked=false;usedIdx=[];rensouIdx=0;
-    staffQuizRound=0;staffQuizScore=0;
+    staffQuizRound=0;staffQuizScore=0;staffQuizBag=[];
     keyEls.forEach(function(k){k.classList.remove('guide','dancing','melody-active');});
     $('g8StartQuizBtn').style.display='';
     $('g8StartNoteQuizBtn').style.display='';
