@@ -2049,6 +2049,8 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
       var mel=MELODIES[melodyCurrentIdx];
       if(mel&&melodyStepIdx<mel.length&&mel[melodyStepIdx][0]===idx){
         playNote(n.freq,0.3);
+        playNote(n.freq/2,0.25);
+        if(idx+2<8)playNote(NOTES[idx+2].freq,0.25);
         flashKey(keyEl,'correct');
         danceKey(keyEl);
         melodyStepIdx++;
