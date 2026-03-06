@@ -580,7 +580,11 @@
   <div class="screen" id="g6Screen">
     <div class="g6-wrap">
       <div style="font-size:22px;font-weight:900;">📏 おおきさ くらべ</div>
-      <div class="badge" id="g6Badge">🐾 1/10</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn lv active" id="g6Lv1" style="font-size:13px;">Lv1 ヒントあり</button>
+        <button class="btn lv" id="g6Lv2" style="font-size:13px;">Lv2 ヒントなし</button>
+      </div>
+      <div class="badge" id="g6Badge">🐾 1/7</div>
       <div style="font-size:18px;font-weight:900;color:var(--accent);">どっちが おおきい？</div>
       <div class="g6-pair" id="g6Pair"></div>
     </div>
@@ -1546,9 +1550,9 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     {key:"buta",name:"ぶた"},{key:"koara",name:"コアラ"},{key:"hiyoko",name:"ひよこ"},{key:"karasu",name:"からす"},
     {key:"niwatori",name:"にわとり"},{key:"ookami",name:"おおかみ"},{key:"uma",name:"うま"},{key:"yagi",name:"やぎ"},{key:"ushi",name:"うし"},
   ];
-  const ROUNDS=10;
+  const ROUNDS=7;
   const $=id=>document.getElementById(id);
-  let score=0,round=0,locked=false,pairs=[],g6Timer=null;
+  let score=0,round=0,locked=false,pairs=[],g6Timer=null,g6Level=1;
 
   function buildPairs(){
     const all=[];
@@ -1565,11 +1569,13 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     const [a,b]=pairs[round];round++;
     $('g6Badge').textContent='🐾 '+round+'/'+ROUNDS+'　⭐ '+score;
     const pair=$('g6Pair');pair.textContent='';
+    const correctKey=SIZE[a.key]>=SIZE[b.key]?a.key:b.key;
     [a,b].forEach(animal=>{
       const btn=document.createElement('button');btn.className='g6-animal';btn.type='button';
       const img=mkImg(animal.key);
       btn.appendChild(img);
       const nm=document.createElement('div');nm.className='g6-name';nm.textContent=animal.name;btn.appendChild(nm);
+      if(g6Level===1&&animal.key===correctKey){btn.style.transform='scale(1.3)';btn.style.transformOrigin='bottom center';}
       btn.addEventListener('click',()=>onAnswer6(animal,btn,a,b));
       pair.appendChild(btn);
     });
@@ -1603,6 +1609,8 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     else speak(score+'もん せいかい！');
   }
 
+  $('g6Lv1').addEventListener('click',()=>{g6Level=1;$('g6Lv1').classList.add('active');$('g6Lv2').classList.remove('active');window.g6Init();});
+  $('g6Lv2').addEventListener('click',()=>{g6Level=2;$('g6Lv2').classList.add('active');$('g6Lv1').classList.remove('active');window.g6Init();});
   $('g6RetryBtn').addEventListener('click',()=>{showScreen('g6Screen');window.g6Init();});
   $('g6HomeBtn').addEventListener('click',goHome);
 
