@@ -680,7 +680,10 @@
 <div class="g3-celeb" id="g3Celeb"></div>
 <div class="g3-traceOverlay" id="g3TraceOverlay">
   <canvas class="g3-traceCanvas" id="g3TraceCanvas" width="320" height="320"></canvas>
-  <button class="g3-traceClose" id="g3TraceClose">とじる</button>
+  <div style="display:flex;gap:12px;">
+    <button class="g3-traceClose" id="g3TraceClear">🗑️ クリア</button>
+    <button class="g3-traceClose" id="g3TraceClose">とじる</button>
+  </div>
 </div>
 
 <!-- Game2 Settings Modal -->
@@ -1111,6 +1114,30 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   ];
   const WORDS=['さくら','りんご','すいか','きつね','ねこ','いぬ','うさぎ','かめ','とり','はな','くも','そら','ほし','つき','やま','かに','たこ','うみ'];
 
+  // 書き順ガイド: 各ひらがなの筆順始点 [x比率, y比率] (左上を0,0)
+  const STROKE_POS={
+    'あ':[[.50,.15],[.28,.38],[.52,.42]],'い':[[.30,.23],[.65,.18]],'う':[[.50,.15],[.50,.30]],
+    'え':[[.22,.35],[.50,.18]],'お':[[.50,.15],[.28,.35],[.52,.40]],
+    'か':[[.40,.18],[.28,.38],[.65,.28]],'き':[[.25,.28],[.25,.52],[.50,.18],[.55,.55]],
+    'く':[[.65,.28]],'け':[[.35,.18],[.35,.42],[.62,.30]],'こ':[[.25,.35],[.25,.62]],
+    'さ':[[.25,.30],[.38,.48],[.58,.62]],'し':[[.52,.18]],'す':[[.30,.25],[.50,.35],[.65,.65]],
+    'せ':[[.45,.20],[.25,.40],[.25,.62]],'そ':[[.28,.22],[.28,.52]],
+    'た':[[.50,.18],[.25,.35],[.25,.55],[.62,.50]],'ち':[[.30,.22],[.52,.40]],
+    'つ':[[.55,.25]],'て':[[.25,.35],[.50,.20]],'と':[[.48,.18],[.32,.40]],
+    'な':[[.28,.28],[.50,.18],[.50,.45],[.58,.55]],'に':[[.28,.22],[.28,.60],[.58,.22]],
+    'ぬ':[[.28,.22],[.58,.25]],'ね':[[.28,.22],[.55,.22]],'の':[[.45,.22]],
+    'は':[[.28,.18],[.28,.55],[.55,.25]],'ひ':[[.30,.20],[.62,.22]],
+    'ふ':[[.50,.18],[.28,.42],[.60,.38],[.62,.58]],'へ':[[.25,.45]],
+    'ほ':[[.28,.18],[.28,.55],[.55,.25],[.60,.55]],
+    'ま':[[.25,.35],[.25,.55],[.48,.25]],'み':[[.25,.22],[.52,.22],[.52,.50]],
+    'む':[[.25,.30],[.48,.18],[.48,.48]],'め':[[.28,.28],[.55,.22]],'も':[[.25,.30],[.25,.50],[.48,.18]],
+    'や':[[.28,.28],[.52,.18],[.52,.55]],'ゆ':[[.28,.22],[.58,.22],[.28,.55]],'よ':[[.35,.28],[.35,.50]],
+    'ら':[[.30,.22],[.52,.22]],'り':[[.30,.22],[.60,.18]],'る':[[.35,.22],[.52,.40]],
+    'れ':[[.35,.22],[.52,.35]],'ろ':[[.28,.30]],'わ':[[.35,.18],[.55,.18]],
+    'を':[[.50,.18],[.25,.40],[.65,.42]],'ん':[[.50,.18],[.38,.42]]
+  };
+  const DAKUTEN_BASE={'が':'か','ぎ':'き','ぐ':'く','げ':'け','ご':'こ','ざ':'さ','じ':'し','ず':'す','ぜ':'せ','ぞ':'そ','だ':'た','ぢ':'ち','づ':'つ','で':'て','ど':'と','ば':'は','び':'ひ','ぶ':'ふ','べ':'へ','ぼ':'ほ','ぱ':'は','ぴ':'ひ','ぷ':'ふ','ぺ':'へ','ぽ':'ほ'};
+
   const STATS_KEY='hiragana_stats_v1';
   let stats=loadStats();
   function loadStats(){try{const r=localStorage.getItem(STATS_KEY);if(r){const d=JSON.parse(r);if(d&&typeof d==='object')return d;}}catch(e){}return {};}
@@ -1249,20 +1276,48 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   $('g3TraceBtn').addEventListener('click',()=>{
     const overlay=$('g3TraceOverlay');overlay.classList.add('show');
     const canvas=$('g3TraceCanvas');const ctx=canvas.getContext('2d');
-    const size=Math.min(320,window.innerWidth-40);canvas.width=size;canvas.height=size;
-    ctx.clearRect(0,0,size,size);
-    // Draw guide character
-    ctx.fillStyle='rgba(0,0,0,0.08)';ctx.font='bold '+Math.floor(size*0.7)+'px "Zen Maru Gothic",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(curData[idx].h,size/2,size/2);
-    // Drawing
+    const size=Math.min(320,window.innerWidth-40);
+    canvas.width=size;canvas.height=size;
+    const curChar=curData[idx].h;
+    const sKey=STROKE_POS[curChar]||STROKE_POS[DAKUTEN_BASE[curChar]];
+    function drawGuide(){
+      ctx.clearRect(0,0,size,size);
+      // 薄い文字ガイド
+      ctx.fillStyle='rgba(0,0,0,0.07)';
+      ctx.font='bold '+Math.floor(size*0.72)+'px "Zen Maru Gothic",sans-serif';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(curChar,size/2,size/2);
+      // 書き順番号（青丸）
+      if(sKey){
+        sKey.forEach((pos,i)=>{
+          const x=pos[0]*size,y=pos[1]*size;
+          ctx.beginPath();ctx.arc(x,y,13,0,Math.PI*2);
+          ctx.fillStyle='rgba(59,130,246,0.85)';ctx.fill();
+          ctx.fillStyle='#fff';
+          ctx.font='bold 13px sans-serif';
+          ctx.textAlign='center';ctx.textBaseline='middle';
+          ctx.fillText(String(i+1),x,y);
+        });
+      }
+      // ストローク設定をリセット
+      ctx.strokeStyle='#1a1a2e';ctx.lineWidth=7;ctx.lineCap='round';ctx.lineJoin='round';
+    }
+    drawGuide();
     let drawing=false;
-    ctx.strokeStyle='#ff4d6d';ctx.lineWidth=6;ctx.lineCap='round';ctx.lineJoin='round';
-    function getPos(e){const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};}
+    function getPos(e){
+      const r=canvas.getBoundingClientRect();
+      const t=e.touches?e.touches[0]:e;
+      return{x:(t.clientX-r.left)*(canvas.width/r.width),y:(t.clientY-r.top)*(canvas.height/r.height)};
+    }
     function down(e){e.preventDefault();drawing=true;const p=getPos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);}
     function move(e){if(!drawing)return;e.preventDefault();const p=getPos(e);ctx.lineTo(p.x,p.y);ctx.stroke();}
     function up(){drawing=false;}
     canvas.onmousedown=down;canvas.onmousemove=move;canvas.onmouseup=up;canvas.onmouseleave=up;
-    canvas.ontouchstart=down;canvas.ontouchmove=move;canvas.ontouchend=up;
+    canvas.ontouchstart=down;canvas.ontouchend=up;
+    if(canvas._tmove)canvas.removeEventListener('touchmove',canvas._tmove);
+    canvas._tmove=move;
+    canvas.addEventListener('touchmove',move,{passive:false});
+    $('g3TraceClear').onclick=()=>{drawing=false;drawGuide();};
   });
   $('g3TraceClose').addEventListener('click',()=>{$('g3TraceOverlay').classList.remove('show');});
 
