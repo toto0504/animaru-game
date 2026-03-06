@@ -445,6 +445,14 @@
         </div>
       </section>
     </div>
+    <div id="g2Checkpoint" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:120;align-items:center;justify-content:center;">
+      <div style="background:#fff;border-radius:28px;padding:32px 24px;text-align:center;box-shadow:0 16px 40px rgba(0,0,0,.2);max-width:320px;width:90%;">
+        <div style="font-size:44px;margin-bottom:8px;">🚂✨</div>
+        <div style="font-size:22px;font-weight:900;margin-bottom:8px;">7もん おわったよ！</div>
+        <div id="g2CheckpointScore" style="font-size:30px;font-weight:900;color:var(--accent);margin-bottom:20px;"></div>
+        <button id="g2CheckpointNext" class="btn" style="background:var(--accent);color:#fff;font-size:18px;padding:16px 40px;border-radius:999px;">つぎへ ▶</button>
+      </div>
+    </div>
   </div>
 
   <!-- Game3 -->
@@ -929,6 +937,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   let currentCount=1,targetAnimal="inu",trainAnimals=[],isLocked=false;
   let practiceTarget=null,practiceRemaining=0,forcedNextCount=null,lastStationDelta=0;
   let mathBase=0,mathAdd=0;
+  let g2SessionQ=0,g2SessionCorrect=0;
   let initialized=false;
 
   const $=id=>document.getElementById(id);
@@ -1033,11 +1042,12 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   function correct(){
     toast("ピンポン！🎉");speakJA("せいかい！");if(state.fancyRewards)confettiBurst();
     state.stamps+=1;state.stickers+=1;state.totalCorrect=(state.totalCorrect||0)+1;state.streak=(state.streak||0)+1;state.missStreak=0;
+    g2SessionQ++;g2SessionCorrect++;
     if(state.totalCorrect%10===0){state.level=Math.min(9,state.level+1);toast("レベルアップ！ Lv"+state.level+" ✨");speakJA("レベルアップ！");if(state.fancyRewards)confettiBurst();}
     if(state.stamps%5===0){state.unlockedCount=Math.min(ALL_ANIMALS.length,state.unlockedCount+1);toast("あたらしい どうぶつ！🧡");speakJA("あたらしいどうぶつ！");if(state.fancyRewards)confettiBurst();}
     if(!state.practiceMode){lastStationDelta=0;forcedNextCount=null;if(state.stationChange){const max=getMaxCount(),deltas=[];if(currentCount-1>=1)deltas.push(-1);if(currentCount+1<=max)deltas.push(1);if(deltas.length){const d=deltas[Math.floor(Math.random()*deltas.length)];lastStationDelta=d;forcedNextCount=clamp(currentCount+d,1,max);}}}
     else{lastStationDelta=0;forcedNextCount=null;}
-    saveState(state);updateHUD();isLocked=true;setButtonsEnabled(false);animateTrainOut(()=>newRound());
+    saveState(state);updateHUD();isLocked=true;setButtonsEnabled(false);animateTrainOut(()=>{if(g2SessionQ>=7)showCheckpoint();else newRound();});
   }
   function wrong(){
     toast("おしい！もういっかい 😊");speakJA("おしい。");state.streak=0;state.missStreak=(state.missStreak||0)+1;
@@ -1046,6 +1056,17 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     animateTrainOut(()=>{buildTrain(trainAnimals);animateTrainIn();setTimeout(()=>{setButtonsEnabled(true);isLocked=false;},250);});
   }
   function onAnswer(n){if(isLocked)return;speakJA(NUM_WORD[n]||String(n));(n===currentCount)?correct():wrong();}
+  function showCheckpoint(){
+    $('g2CheckpointScore').textContent=g2SessionCorrect+' / 7 もん せいかい！';
+    if(state.fancyRewards)confettiBurst();
+    $('g2Checkpoint').style.display='flex';
+    speakJA(g2SessionCorrect+'もん せいかい！');
+  }
+  $('g2CheckpointNext').addEventListener('click',()=>{
+    $('g2Checkpoint').style.display='none';
+    g2SessionQ=0;g2SessionCorrect=0;
+    newRound();
+  });
   async function countAll(){if(isLocked)return;const target=trainAnimals.filter(a=>a===targetAnimal).length;for(let i=1;i<=target;i++){speakJA(String(i));await new Promise(r=>setTimeout(r,420));}}
 
   $('g2SpeakBtn').addEventListener("click",()=>speakJA("いくつ？"));
@@ -1074,7 +1095,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   function saveState(s){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s));}catch(e){}}
 
   window.g2Init=function(){if(!initialized){initialized=true;updateHUD();newRound();}};
-  window.g2Stop=function(){isLocked=true;};
+  window.g2Stop=function(){isLocked=true;g2SessionQ=0;g2SessionCorrect=0;$('g2Checkpoint').style.display='none';};
 })();
 
 // ============================================================
@@ -1313,10 +1334,14 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     function move(e){if(!drawing)return;e.preventDefault();const p=getPos(e);ctx.lineTo(p.x,p.y);ctx.stroke();}
     function up(){drawing=false;}
     canvas.onmousedown=down;canvas.onmousemove=move;canvas.onmouseup=up;canvas.onmouseleave=up;
-    canvas.ontouchstart=down;canvas.ontouchend=up;
+    canvas.style.touchAction='none';
+    if(canvas._tstart)canvas.removeEventListener('touchstart',canvas._tstart);
     if(canvas._tmove)canvas.removeEventListener('touchmove',canvas._tmove);
-    canvas._tmove=move;
+    if(canvas._tend)canvas.removeEventListener('touchend',canvas._tend);
+    canvas._tstart=down;canvas._tmove=move;canvas._tend=up;
+    canvas.addEventListener('touchstart',down,{passive:false});
     canvas.addEventListener('touchmove',move,{passive:false});
+    canvas.addEventListener('touchend',up);
     $('g3TraceClear').onclick=()=>{drawing=false;drawGuide();};
   });
   $('g3TraceClose').addEventListener('click',()=>{$('g3TraceOverlay').classList.remove('show');});
