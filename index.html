@@ -656,7 +656,7 @@
       <!-- いろ音符ゲーム用UI -->
       <div id="g8ColorSection" style="display:none;flex-direction:column;align-items:center;gap:8px;width:100%;">
         <div style="font-size:13px;color:var(--muted);text-align:center;">🔴ド・🟡レ・🟢ミ の まるを ただしい おとぷに ドラッグしよう！</div>
-        <canvas id="g8ColorCanvas" style="width:100%;max-width:380px;touch-action:none;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.1);display:block;"></canvas>
+        <canvas id="g8ColorCanvas" style="width:100%;max-width:660px;touch-action:none;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.1);display:block;"></canvas>
         <div style="font-size:18px;font-weight:900;" id="g8ColorProgress">0 / 3</div>
       </div>
       <!-- おんぷクイズ用UI -->
@@ -2344,14 +2344,14 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   // ============================================================
   //  いろ音符ゲーム (Color Drag)
   // ============================================================
-  var CD={W:320,H:420,
-    staffLines:[70,92,114,136,158],   // 五線（22px間隔）
-    noteYs:[238,195,158],             // 0=ド(ledger下), 1=レ(スペース), 2=ミ(下の線)
-    noteXs:[82,160,238],              // 3音符（左・中・右）
-    palY:375, palXs:[65,160,255],
+  var CD={W:540,H:380,
+    staffLines:[56,76,96,116,136],    // 五線（20px間隔・横長レイアウト）
+    noteYs:[180,156,136],             // 0=ド(ledger下), 1=レ(スペース), 2=ミ(下の線)
+    noteXs:[118,270,422],             // 3音符（等間隔3列）
+    palY:308, palXs:[118,270,422],    // パレットも3列に揃える
     COLORS:['#ef4444','#f5c518','#22c55e'],
     NAMES:['ド','レ','ミ'],
-    NR:22, PR:34, SNAP:52
+    NR:26, PR:38, SNAP:58
   };
   var cdNotes=[],cdDrag=null,cdScore=0,cdCanvas=null,cdCtx=null;
 
@@ -2372,56 +2372,56 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     c.save();c.scale(scale,scale);
     // 背景
     c.fillStyle='#fffef5';c.fillRect(0,0,CD.W,CD.H);
-    // 五線
-    c.strokeStyle='#999';c.lineWidth=2;
-    CD.staffLines.forEach(function(y){c.beginPath();c.moveTo(35,y);c.lineTo(290,y);c.stroke();});
+    // 五線（横長・full width）
+    c.strokeStyle='#999';c.lineWidth=2.5;
+    CD.staffLines.forEach(function(y){c.beginPath();c.moveTo(46,y);c.lineTo(CD.W-6,y);c.stroke();});
     // ト音記号
-    c.fillStyle='#1a1a2e';c.font='62px serif';c.textAlign='left';c.textBaseline='alphabetic';
-    c.fillText('\uD834\uDD1E',4,166);
+    c.fillStyle='#1a1a2e';c.font='72px serif';c.textAlign='left';c.textBaseline='alphabetic';
+    c.fillText('\uD834\uDD1E',6,144);
     // 音符（ターゲット円）
     cdNotes.forEach(function(note){
       var col=CD.COLORS[note.typeIdx];
       // ドのみ加線
       if(note.typeIdx===0){
         c.strokeStyle='#999';c.lineWidth=2.5;
-        c.beginPath();c.moveTo(note.x-CD.NR-10,note.y);c.lineTo(note.x+CD.NR+10,note.y);c.stroke();
+        c.beginPath();c.moveTo(note.x-CD.NR-12,note.y);c.lineTo(note.x+CD.NR+12,note.y);c.stroke();
       }
       if(note.answered){
         // 正解：色で塗りつぶし＋チェック
         c.beginPath();c.arc(note.x,note.y,CD.NR,0,Math.PI*2);
         c.fillStyle=col;c.fill();
-        c.fillStyle='#fff';c.font='bold 22px sans-serif';
+        c.fillStyle='#fff';c.font='bold 26px sans-serif';
         c.textAlign='center';c.textBaseline='middle';c.fillText('✓',note.x,note.y);
       }else{
         // 未回答：薄い色背景＋点線アウトライン＋ヒント文字
         c.beginPath();c.arc(note.x,note.y,CD.NR,0,Math.PI*2);
         c.fillStyle=col+'28';c.fill();
-        c.strokeStyle=col;c.lineWidth=3.5;c.setLineDash([6,4]);c.stroke();c.setLineDash([]);
-        c.fillStyle=col;c.font='bold 19px "Zen Maru Gothic",sans-serif';
+        c.strokeStyle=col;c.lineWidth=4;c.setLineDash([7,5]);c.stroke();c.setLineDash([]);
+        c.fillStyle=col;c.font='bold 22px "Zen Maru Gothic",sans-serif';
         c.textAlign='center';c.textBaseline='middle';c.fillText(CD.NAMES[note.typeIdx],note.x,note.y);
       }
     });
-    // パレットエリア
-    c.fillStyle='rgba(230,242,255,0.95)';
-    c.fillRect(8,CD.palY-CD.PR-22,304,CD.PR*2+44);
-    c.strokeStyle='#b0c8e0';c.lineWidth=1.5;c.strokeRect(8,CD.palY-CD.PR-22,304,CD.PR*2+44);
-    c.fillStyle='#555';c.font='14px "Zen Maru Gothic",sans-serif';
+    // パレットエリア（横幅に合わせる）
+    var pRect={x:8,y:CD.palY-CD.PR-24,w:CD.W-16,h:CD.PR*2+48};
+    c.fillStyle='rgba(224,240,255,0.95)';c.fillRect(pRect.x,pRect.y,pRect.w,pRect.h);
+    c.strokeStyle='#a8c8e8';c.lineWidth=2;c.strokeRect(pRect.x,pRect.y,pRect.w,pRect.h);
+    c.fillStyle='#444';c.font='bold 16px "Zen Maru Gothic",sans-serif';
     c.textAlign='center';c.textBaseline='alphabetic';
-    c.fillText('↑ ただしい まるを ドラッグしよう！',CD.W/2,CD.palY-CD.PR-6);
-    // パレット円（大きく）
+    c.fillText('↑ ただしい いろの まるを ドラッグしよう！',CD.W/2,CD.palY-CD.PR-8);
+    // パレット円（大きく・3列）
     CD.palXs.forEach(function(px,i){
       c.beginPath();c.arc(px,CD.palY,CD.PR,0,Math.PI*2);
       c.fillStyle=CD.COLORS[i];c.fill();
-      c.strokeStyle='rgba(255,255,255,0.85)';c.lineWidth=3;c.stroke();
-      c.fillStyle='#fff';c.font='bold 22px "Zen Maru Gothic",sans-serif';
+      c.strokeStyle='rgba(255,255,255,0.85)';c.lineWidth=4;c.stroke();
+      c.fillStyle='#fff';c.font='bold 26px "Zen Maru Gothic",sans-serif';
       c.textAlign='center';c.textBaseline='middle';c.fillText(CD.NAMES[i],px,CD.palY);
     });
     // ドラッグ中のゴースト
     if(cdDrag){
       c.beginPath();c.arc(cdDrag.curX,cdDrag.curY,CD.PR,0,Math.PI*2);
       c.fillStyle=CD.COLORS[cdDrag.typeIdx];c.globalAlpha=0.9;c.fill();c.globalAlpha=1;
-      c.strokeStyle='rgba(255,255,255,0.85)';c.lineWidth=3;c.stroke();
-      c.fillStyle='#fff';c.font='bold 22px "Zen Maru Gothic",sans-serif';
+      c.strokeStyle='rgba(255,255,255,0.85)';c.lineWidth=4;c.stroke();
+      c.fillStyle='#fff';c.font='bold 26px "Zen Maru Gothic",sans-serif';
       c.textAlign='center';c.textBaseline='middle';c.fillText(CD.NAMES[cdDrag.typeIdx],cdDrag.curX,cdDrag.curY);
     }
     c.restore();
@@ -2473,7 +2473,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     $('g8NoteQuizSection').style.display='none';$('g8NoteStaffSection').style.display='none';$('g8ColorSection').style.display='none';
     $('g8Keyboard').style.display='none';$('g8QuizLabel').style.display='none';$('g8LvSelect').style.display='none';
     cdCanvas=$('g8ColorCanvas');cdCtx=cdCanvas.getContext('2d');
-    var cw=Math.min(380,window.innerWidth-32);
+    var cw=Math.min(660,window.innerWidth-48);
     cdCanvas.width=cw;cdCanvas.height=Math.round(cw*CD.H/CD.W);
     setupColorNotes();
     $('g8ColorProgress').textContent='0 / 3';
