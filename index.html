@@ -408,10 +408,12 @@
       <div class="g2-header" style="margin-bottom:12px;">
         <div>
           <h2 style="font-size:clamp(18px,3.2vw,26px);margin:0;">🚂 どうぶつ列車</h2>
-          <p class="g2-subtitle" id="g2Subtitle">どうぶつをタップすると数えるよ</p>
+          <p class="g2-subtitle" id="g2Subtitle">🐾 1/7</p>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <div class="g2-pill"><div><strong id="g2LevelText">Lv 1</strong><br/><small id="g2ModeText">はんい: 1〜5</small></div></div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button class="btn lv active" id="g2LvBtn1" style="font-size:12px;padding:8px 12px;">Lv1</button>
+          <button class="btn lv" id="g2LvBtn2" style="font-size:12px;padding:8px 12px;">Lv2</button>
+          <button class="btn lv" id="g2LvBtn3" style="font-size:12px;padding:8px 12px;">Lv3</button>
           <button class="g2-iconBtn" id="g2OpenSettings">⚙</button>
         </div>
       </div>
@@ -431,7 +433,7 @@
         </div>
         <div class="g2-answers" id="g2Answers"></div>
         <div class="g2-footerRow">
-          <div class="g2-progress"><span style="font-weight:900;">スタンプ</span><div class="g2-bar"><i id="g2BarFill"></i></div><span id="g2StampText" style="font-weight:900;">0/5</span></div>
+          <div class="g2-progress"><span style="font-weight:900;">もんだい</span><div class="g2-bar"><i id="g2BarFill"></i></div><span id="g2StampText" style="font-weight:900;">0/7</span></div>
           <div class="g2-mini">
             <button class="g2-smallBtn" id="g2SpeakBtn">「いくつ？」</button>
             <button class="g2-smallBtn" id="g2CountAllBtn">ぜんぶ かぞえる</button>
@@ -445,12 +447,17 @@
         </div>
       </section>
     </div>
-    <div id="g2Checkpoint" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:120;align-items:center;justify-content:center;">
-      <div style="background:#fff;border-radius:28px;padding:32px 24px;text-align:center;box-shadow:0 16px 40px rgba(0,0,0,.2);max-width:320px;width:90%;">
-        <div style="font-size:44px;margin-bottom:8px;">🚂✨</div>
-        <div style="font-size:22px;font-weight:900;margin-bottom:8px;">7もん おわったよ！</div>
-        <div id="g2CheckpointScore" style="font-size:30px;font-weight:900;color:var(--accent);margin-bottom:20px;"></div>
-        <button id="g2CheckpointNext" class="btn" style="background:var(--accent);color:#fff;font-size:18px;padding:16px 40px;border-radius:999px;">つぎへ ▶</button>
+  </div>
+
+  <!-- Game2 Result -->
+  <div class="screen" id="g2ResultScreen">
+    <div class="result-card">
+      <div id="g2Medal" style="font-size:72px;margin-bottom:4px;">🥇</div>
+      <div class="result-score" id="g2ResultScore">7 / 7</div>
+      <div id="g2ResultSub" style="font-size:18px;font-weight:900;margin:8px 0 20px;"></div>
+      <div style="display:flex;gap:12px;">
+        <button class="btn accent" id="g2RetryBtn">もういちど</button>
+        <button class="btn" id="g2ResultHomeBtn">ホームへ</button>
       </div>
     </div>
   </div>
@@ -720,7 +727,7 @@
 // ============================================================
 //  共通
 // ============================================================
-const allScreens=['menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','g2Screen','g3Screen','g4Screen','g4ResultScreen','g5Screen','g6Screen','g6ResultScreen','g7Screen','g7ResultScreen','g8Screen','g8ResultScreen'];
+const allScreens=['menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','g2Screen','g2ResultScreen','g3Screen','g4Screen','g4ResultScreen','g5Screen','g6Screen','g6ResultScreen','g7Screen','g7ResultScreen','g8Screen','g8ResultScreen'];
 function showScreen(id){allScreens.forEach(s=>document.getElementById(s).classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('backBtn').classList.toggle('visible',id!=='menuScreen');}
 function goHome(){showScreen('menuScreen');if(typeof g2Stop==='function')g2Stop();if(typeof g4Stop==='function')g4Stop();if(typeof g5Stop==='function')g5Stop();if(typeof g6Stop==='function')g6Stop();if(typeof g7Stop==='function')g7Stop();if(typeof g8Stop==='function')g8Stop();}
 function startGame1(){showScreen('g1StartScreen');g1RenderAnimalSelect();}
@@ -941,7 +948,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   let currentCount=1,targetAnimal="inu",trainAnimals=[],isLocked=false;
   let practiceTarget=null,practiceRemaining=0,forcedNextCount=null,lastStationDelta=0;
   let mathBase=0,mathAdd=0;
-  let g2SessionQ=0,g2SessionCorrect=0;
+  let g2Level=1,g2Round=0,g2Score=0,g2FixedAnimal=null,g2Timer=null;
   let initialized=false;
 
   const $=id=>document.getElementById(id);
@@ -1008,72 +1015,96 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   function getMaxCount(){const m=state.ageMode;if(state.autoEase&&state.missStreak>=2)return Math.max(2,Math.floor(m/2));return m;}
   function pickCount(){return 1+Math.floor(Math.random()*getMaxCount());}
 
+  function renderAnswerButtonsG2(max){
+    answersEl.textContent='';
+    const cols=max<=3?max:5;answersEl.style.gridTemplateColumns='repeat('+cols+',1fr)';
+    for(let n=1;n<=max;n++){const btn=document.createElement('button');btn.className='g2-btn';btn.textContent=String(n);btn.addEventListener('pointerdown',()=>onAnswer(n),{passive:true});answersEl.appendChild(btn);}
+  }
+
   function newRound(){
-    if(state.practiceMode){if(practiceRemaining<=0||practiceTarget==null){practiceTarget=pickCount();practiceRemaining=3;}currentCount=practiceTarget;practiceRemaining--;}
-    else{practiceTarget=null;practiceRemaining=0;if(forcedNextCount!=null){currentCount=forcedNextCount;forcedNextCount=null;}else{currentCount=pickCount();}}
+    if(g2Round>=7){showResult2();return;}
+    locked=false;isLocked=false;
+    g2Round++;
+    $('g2Subtitle').textContent='🐾 '+g2Round+'/7　⭐ '+g2Score;
+    barFill.style.width=((g2Round-1)/7*100)+'%';
+    stampText.textContent=g2Round+'/7';
 
-    targetAnimal=pickAnimal();
-    // B1: mix animals
-    const pool=ALL_ANIMALS.slice(0,state.unlockedCount);
-    const otherPool=pool.filter(a=>a!==targetAnimal);
-    const totalCars=Math.min(currentCount+Math.floor(Math.random()*2),getMaxCount());
-    trainAnimals=[];
-    for(let i=0;i<currentCount;i++)trainAnimals.push(targetAnimal);
-    for(let i=currentCount;i<totalCars;i++)trainAnimals.push(otherPool.length?otherPool[Math.floor(Math.random()*otherPool.length)]:targetAnimal);
-    trainAnimals=shuffle(trainAnimals);
-
-    if(state.mathMode){
-      mathBase=Math.max(1,Math.floor(currentCount*0.6));mathAdd=currentCount-mathBase;
-      questionEl.textContent=mathBase+'ひき のってて '+mathAdd+'ひき のったよ。ぜんぶで？';
-      const firstBatch=trainAnimals.slice(0,mathBase);
-      buildTrain(firstBatch);animateTrainIn();
-      setButtonsEnabled(false);isLocked=true;
-      setTimeout(()=>{buildTrain(trainAnimals);animateTrainIn();
-        speakJA(mathAdd+'ひき のったよ。ぜんぶで いくつ？');
-        if(state.speedMode){setTimeout(()=>{animateTrainOut(()=>{setButtonsEnabled(true);isLocked=false;});},2500);}
-        else{setButtonsEnabled(true);isLocked=false;}
-      },2000);
+    if(g2Level===1){
+      // Lv1: 全部同じ動物、1〜3匹
+      targetAnimal=pickAnimal();
+      currentCount=1+Math.floor(Math.random()*3);
+      trainAnimals=[];
+      for(let i=0;i<currentCount;i++)trainAnimals.push(targetAnimal);
+      questionEl.textContent='いくつ？';
+      speakJA('いくつ？');
+      renderAnswerButtonsG2(3);
+    }else if(g2Level===2){
+      // Lv2: 動物固定、数が変わる、1〜5匹
+      if(!g2FixedAnimal)g2FixedAnimal=pickAnimal();
+      targetAnimal=g2FixedAnimal;
+      currentCount=1+Math.floor(Math.random()*5);
+      trainAnimals=[];
+      for(let i=0;i<currentCount;i++)trainAnimals.push(targetAnimal);
+      questionEl.textContent=(ALL_NAMES[targetAnimal]||targetAnimal)+'は なんびき？';
+      speakJA((ALL_NAMES[targetAnimal]||targetAnimal)+'は なんびき？');
+      renderAnswerButtonsG2(5);
     }else{
-      questionEl.textContent=(totalCars>currentCount)?(ALL_NAMES[targetAnimal]||targetAnimal)+'は なんびき？':'いくつ？';
-      buildTrain(trainAnimals);animateTrainIn();
-      if(state.speedMode){setButtonsEnabled(false);isLocked=true;
-        setTimeout(()=>{animateTrainOut(()=>{setButtonsEnabled(true);isLocked=false;});},2500);
-      }else{setButtonsEnabled(true);isLocked=false;}
+      // Lv3: 動物も変わる＋数えてはいけない動物あり
+      targetAnimal=pickAnimal();
+      currentCount=1+Math.floor(Math.random()*4);
+      const pool=ALL_ANIMALS.slice(0,state.unlockedCount);
+      const otherPool=shuffle(pool.filter(a=>a!==targetAnimal));
+      const distractorCount=1+Math.floor(Math.random()*2);
+      trainAnimals=[];
+      for(let i=0;i<currentCount;i++)trainAnimals.push(targetAnimal);
+      for(let i=0;i<Math.min(distractorCount,otherPool.length);i++)trainAnimals.push(otherPool[i]);
+      trainAnimals=shuffle(trainAnimals);
+      questionEl.textContent=(ALL_NAMES[targetAnimal]||targetAnimal)+'だけ なんびき？';
+      speakJA((ALL_NAMES[targetAnimal]||targetAnimal)+'は なんびき？');
+      renderAnswerButtonsG2(5);
     }
-    updateHUD();
+    buildTrain(trainAnimals);animateTrainIn();
+    setButtonsEnabled(true);
   }
 
   function correct(){
-    toast("ピンポン！🎉");speakJA("せいかい！");if(state.fancyRewards)confettiBurst();
-    state.stamps+=1;state.stickers+=1;state.totalCorrect=(state.totalCorrect||0)+1;state.streak=(state.streak||0)+1;state.missStreak=0;
-    g2SessionQ++;g2SessionCorrect++;
-    if(state.totalCorrect%10===0){state.level=Math.min(9,state.level+1);toast("レベルアップ！ Lv"+state.level+" ✨");speakJA("レベルアップ！");if(state.fancyRewards)confettiBurst();}
-    if(state.stamps%5===0){state.unlockedCount=Math.min(ALL_ANIMALS.length,state.unlockedCount+1);toast("あたらしい どうぶつ！🧡");speakJA("あたらしいどうぶつ！");if(state.fancyRewards)confettiBurst();}
-    if(!state.practiceMode){lastStationDelta=0;forcedNextCount=null;if(state.stationChange){const max=getMaxCount(),deltas=[];if(currentCount-1>=1)deltas.push(-1);if(currentCount+1<=max)deltas.push(1);if(deltas.length){const d=deltas[Math.floor(Math.random()*deltas.length)];lastStationDelta=d;forcedNextCount=clamp(currentCount+d,1,max);}}}
-    else{lastStationDelta=0;forcedNextCount=null;}
-    saveState(state);updateHUD();isLocked=true;setButtonsEnabled(false);animateTrainOut(()=>{if(g2SessionQ>=7)showCheckpoint();else newRound();});
+    toast('ピンポン！🎉');speakJA('せいかい！');if(state.fancyRewards)confettiBurst();
+    g2Score++;
+    $('g2Subtitle').textContent='🐾 '+g2Round+'/7　⭐ '+g2Score;
+    barFill.style.width=(g2Round/7*100)+'%';
+    stampText.textContent=g2Round+'/7';
+    isLocked=true;setButtonsEnabled(false);
+    animateTrainOut(()=>{if(g2Round>=7)showResult2();else newRound();});
   }
   function wrong(){
-    toast("おしい！もういっかい 😊");speakJA("おしい。");state.streak=0;state.missStreak=(state.missStreak||0)+1;
-    if(state.practiceMode)practiceRemaining=Math.min(3,practiceRemaining+1);
-    saveState(state);updateHUD();isLocked=true;setButtonsEnabled(false);
-    animateTrainOut(()=>{buildTrain(trainAnimals);animateTrainIn();setTimeout(()=>{setButtonsEnabled(true);isLocked=false;},250);});
+    toast('おしい！');speakJA('おしい！こたえは '+(NUM_WORD[currentCount]||String(currentCount))+'だよ！');
+    isLocked=true;setButtonsEnabled(false);
+    if(g2Timer)clearTimeout(g2Timer);
+    g2Timer=setTimeout(()=>{
+      g2Timer=null;
+      animateTrainOut(()=>{if(g2Round>=7)showResult2();else newRound();});
+    },2000);
   }
   function onAnswer(n){if(isLocked)return;speakJA(NUM_WORD[n]||String(n));(n===currentCount)?correct():wrong();}
-  function showCheckpoint(){
-    $('g2CheckpointScore').textContent=g2SessionCorrect+' / 7 もん せいかい！';
-    if(state.fancyRewards)confettiBurst();
-    $('g2Checkpoint').style.display='flex';
-    speakJA(g2SessionCorrect+'もん せいかい！');
+  function showResult2(){
+    showScreen('g2ResultScreen');
+    const pct=Math.round(g2Score/7*100);
+    let medal;
+    if(g2Score===7)medal='👑';else if(pct>=80)medal='🥇';else if(pct>=60)medal='🥈';else if(pct>=40)medal='🥉';else medal='💪';
+    $('g2Medal').textContent=medal;
+    $('g2ResultScore').textContent=g2Score+' / 7';
+    $('g2ResultSub').textContent=g2Score===7?'パーフェクト！！':pct>=80?'すばらしい！':pct>=60?'がんばったね！':pct>=40?'おしい！':'つぎは がんばろう！';
+    if(g2Score===7){confettiBurst();speak('パーフェクト！すごいね！');}else speak(g2Score+'もん せいかい！');
   }
-  $('g2CheckpointNext').addEventListener('click',()=>{
-    $('g2Checkpoint').style.display='none';
-    g2SessionQ=0;g2SessionCorrect=0;
-    newRound();
-  });
   async function countAll(){if(isLocked)return;const target=trainAnimals.filter(a=>a===targetAnimal).length;for(let i=1;i<=target;i++){speakJA(String(i));await new Promise(r=>setTimeout(r,420));}}
 
-  $('g2SpeakBtn').addEventListener("click",()=>speakJA("いくつ？"));
+  $('g2SpeakBtn').addEventListener("click",()=>speakJA(questionEl.textContent||"いくつ？"));
+  function setG2Level(lv){g2Level=lv;['g2LvBtn1','g2LvBtn2','g2LvBtn3'].forEach((id,i)=>{$(id).classList.toggle('active',i+1===lv);});window.g2Init();}
+  $('g2LvBtn1').addEventListener('click',()=>setG2Level(1));
+  $('g2LvBtn2').addEventListener('click',()=>setG2Level(2));
+  $('g2LvBtn3').addEventListener('click',()=>setG2Level(3));
+  $('g2RetryBtn').addEventListener('click',()=>{showScreen('g2Screen');window.g2Init();});
+  $('g2ResultHomeBtn').addEventListener('click',goHome);
   $('g2CountAllBtn').addEventListener("click",countAll);
   $('g2ResetBtn').addEventListener("click",()=>{if(!confirm("リセットする？"))return;localStorage.removeItem(STORAGE_KEY);location.reload();});
 
@@ -1090,16 +1121,24 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     state.practiceMode=!!$('g2PracticeMode').checked;state.stationChange=!!$('g2StationChange').checked;state.fancyRewards=!!$('g2FancyRewards').checked;
     state.mathMode=!!$('g2MathMode').checked;state.speedMode=!!$('g2SpeedMode').checked;
     state.missStreak=0;lastStationDelta=0;forcedNextCount=null;practiceTarget=null;practiceRemaining=0;
-    saveState(state);updateHUD();modalBg.classList.remove("show");toast("OK！");speakJA("オーケー！");
-    isLocked=true;setButtonsEnabled(false);animateTrainOut(()=>newRound());
+    saveState(state);modalBg.classList.remove("show");toast("OK！");speakJA("オーケー！");
+    window.g2Init();
   });
 
   function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw){const s=JSON.parse(raw);return{stamps:safeNum(s.stamps,0,0,9999),stickers:safeNum(s.stickers,0,0,9999),unlockedCount:safeNum(s.unlockedCount,3,3,ALL_ANIMALS.length),level:safeNum(s.level,1,1,9),totalCorrect:safeNum(s.totalCorrect,0,0,99999),ageMode:parseMode(s.ageMode),voiceOn:safeBool(s.voiceOn,true),autoEase:safeBool(s.autoEase,true),practiceMode:safeBool(s.practiceMode,false),stationChange:safeBool(s.stationChange,true),fancyRewards:safeBool(s.fancyRewards,true),mathMode:safeBool(s.mathMode,false),speedMode:safeBool(s.speedMode,false),streak:safeNum(s.streak,0,0,999),missStreak:safeNum(s.missStreak,0,0,999)};}}catch(e){}
   return{stamps:0,stickers:0,unlockedCount:3,level:1,totalCorrect:0,ageMode:5,voiceOn:true,autoEase:true,practiceMode:false,stationChange:true,fancyRewards:true,mathMode:false,speedMode:false,streak:0,missStreak:0};}
   function saveState(s){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s));}catch(e){}}
 
-  window.g2Init=function(){if(!initialized){initialized=true;updateHUD();newRound();}};
-  window.g2Stop=function(){isLocked=true;g2SessionQ=0;g2SessionCorrect=0;$('g2Checkpoint').style.display='none';};
+  window.g2Init=function(){
+    if(g2Timer)clearTimeout(g2Timer);g2Timer=null;
+    g2Round=0;g2Score=0;g2FixedAnimal=null;isLocked=false;initialized=true;
+    $('g2Subtitle').textContent='🐾 1/7';
+    barFill.style.width='0%';stampText.textContent='0/7';
+    ['g2LvBtn1','g2LvBtn2','g2LvBtn3'].forEach((id,i)=>{$(id).classList.toggle('active',i+1===g2Level);});
+    renderBook();applyTrainColor();
+    newRound();
+  };
+  window.g2Stop=function(){if(g2Timer)clearTimeout(g2Timer);g2Timer=null;isLocked=true;};
 })();
 
 // ============================================================
