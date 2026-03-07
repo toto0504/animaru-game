@@ -653,6 +653,12 @@
         <button class="btn" id="g8NoteQuizListenBtn">🔊 もういちど きく</button>
         <div id="g8NoteQuizChoices" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"></div>
       </div>
+      <!-- いろ音符ゲーム用UI -->
+      <div id="g8ColorSection" style="display:none;flex-direction:column;align-items:center;gap:8px;width:100%;">
+        <div style="font-size:13px;color:var(--muted);text-align:center;">🔴ド・🟡レ・🟢ミ の まるを ただしい おとぷに ドラッグしよう！</div>
+        <canvas id="g8ColorCanvas" style="width:100%;max-width:380px;touch-action:none;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.1);display:block;"></canvas>
+        <div style="font-size:18px;font-weight:900;" id="g8ColorProgress">0 / 6</div>
+      </div>
       <!-- おんぷクイズ用UI -->
       <div id="g8NoteStaffSection" style="display:none;flex-direction:column;align-items:center;gap:12px;">
         <div id="g8StaffLabel" style="font-size:20px;font-weight:900;">この おんぷは なに？ 🎼</div>
@@ -664,6 +670,7 @@
       <button class="btn accent" id="g8StartQuizBtn">🎹 ドレミ クイズ！</button>
       <button class="btn" id="g8StartNoteQuizBtn">🎵 おとあて クイズ！</button>
       <button class="btn" id="g8StartNoteStaffBtn">🎼 おんぷ クイズ！</button>
+      <button class="btn" id="g8StartColorBtn">🎨 いろ音符ゲーム！</button>
       <button class="btn" id="g8RensouBtn" style="display:none;">🎹 れんそうモード</button>
       <div id="g8FreeTip" style="font-size:15px;color:var(--muted);">すきな けんばんを おしてみよう！</div>
       <div id="g8MelodySection" style="display:none;flex-direction:column;align-items:center;gap:8px;">
@@ -1032,7 +1039,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     if(g2Level===1){
       // Lv1: 全部同じ動物、1〜3匹
       targetAnimal=pickAnimal();
-      currentCount=1+Math.floor(Math.random()*3);
+      currentCount=1+Math.floor(Math.random()*5);
       trainAnimals=[];
       for(let i=0;i<currentCount;i++)trainAnimals.push(targetAnimal);
       questionEl.textContent='いくつ？';
@@ -1896,13 +1903,13 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     stopMelody();
     $('g8StartQuizBtn').style.display='none';
     $('g8StartNoteQuizBtn').style.display='none';
-    $('g8StartNoteStaffBtn').style.display='none';
+    $('g8StartNoteStaffBtn').style.display='none';$('g8StartColorBtn').style.display='none';
     $('g8RensouBtn').style.display='none';
     $('g8FreeTip').style.display='none';
     $('g8MelodySection').style.display='none';
     $('g8AgainBtn').style.display='none';
     $('g8NoteQuizSection').style.display='flex';
-    $('g8NoteStaffSection').style.display='none';
+    $('g8NoteStaffSection').style.display='none';$('g8ColorSection').style.display='none';
     $('g8LvSelect').style.display='none';
     nextNoteRound();
   }
@@ -1919,7 +1926,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
         $('g8QuizLabel').style.display='none';
         $('g8StartQuizBtn').style.display='';
         $('g8StartNoteQuizBtn').style.display='';
-        $('g8StartNoteStaffBtn').style.display='';
+        $('g8StartNoteStaffBtn').style.display='';$('g8StartColorBtn').style.display='';
         $('g8RensouBtn').style.display='';
         $('g8FreeTip').style.display='';
         $('g8MelodySection').style.display='flex';
@@ -2031,7 +2038,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     stopMelody();
     $('g8StartQuizBtn').style.display='none';
     $('g8StartNoteQuizBtn').style.display='none';
-    $('g8StartNoteStaffBtn').style.display='none';
+    $('g8StartNoteStaffBtn').style.display='none';$('g8StartColorBtn').style.display='none';
     $('g8RensouBtn').style.display='none';
     $('g8FreeTip').style.display='none';
     $('g8MelodySection').style.display='none';
@@ -2046,7 +2053,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   function nextStaffRound(){
     if(staffQuizRound>=NSQ_TOTAL){
       mode='free';
-      $('g8NoteStaffSection').style.display='none';
+      $('g8NoteStaffSection').style.display='none';$('g8ColorSection').style.display='none';
       $('g8QuizLabel').style.display='';
       $('g8QuizLabel').textContent=staffQuizScore+' / '+NSQ_TOTAL+' せいかい！';
       if(staffQuizScore===NSQ_TOTAL)launchConfetti();
@@ -2055,7 +2062,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
         $('g8QuizLabel').style.display='none';
         $('g8StartQuizBtn').style.display='';
         $('g8StartNoteQuizBtn').style.display='';
-        $('g8StartNoteStaffBtn').style.display='';
+        $('g8StartNoteStaffBtn').style.display='';$('g8StartColorBtn').style.display='';
         $('g8RensouBtn').style.display='';
         $('g8FreeTip').style.display='';
         $('g8MelodySection').style.display='flex';
@@ -2127,7 +2134,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     stopMelody();
     $('g8StartQuizBtn').style.display='none';
     $('g8StartNoteQuizBtn').style.display='none';
-    $('g8StartNoteStaffBtn').style.display='none';
+    $('g8StartNoteStaffBtn').style.display='none';$('g8StartColorBtn').style.display='none';
     $('g8RensouBtn').style.display='none';
     $('g8FreeTip').style.display='none';
     $('g8MelodySection').style.display='none';
@@ -2210,7 +2217,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
           keyEls.forEach(function(k){k.classList.remove('guide');});
           $('g8StartQuizBtn').style.display='';
           $('g8StartNoteQuizBtn').style.display='';
-          $('g8StartNoteStaffBtn').style.display='';
+          $('g8StartNoteStaffBtn').style.display='';$('g8StartColorBtn').style.display='';
           $('g8RensouBtn').style.display='';
           $('g8FreeTip').style.display='';
           $('g8MelodySection').style.display='flex';
@@ -2269,13 +2276,13 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     stopMelody();
     $('g8StartQuizBtn').style.display='none';
     $('g8StartNoteQuizBtn').style.display='none';
-    $('g8StartNoteStaffBtn').style.display='none';
+    $('g8StartNoteStaffBtn').style.display='none';$('g8StartColorBtn').style.display='none';
     $('g8RensouBtn').style.display='none';
     $('g8FreeTip').style.display='none';
     $('g8MelodySection').style.display='none';
     $('g8AgainBtn').style.display='none';
     $('g8NoteQuizSection').style.display='none';
-    $('g8NoteStaffSection').style.display='none';
+    $('g8NoteStaffSection').style.display='none';$('g8ColorSection').style.display='none';
     $('g8QuizLabel').style.display='';
     $('g8LvSelect').style.display='none';
     nextRound8();
@@ -2334,7 +2341,130 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   $('g8NoteQuizListenBtn').addEventListener('click',function(){
     if(noteQuizNote)playNote(noteQuizNote.freq,0.8);
   });
+  // ============================================================
+  //  いろ音符ゲーム (Color Drag)
+  // ============================================================
+  var CD={W:320,H:230,
+    staffLines:[50,62,74,86,98],  // 五線（上から下）
+    noteYs:[110,104,98],           // 0=ド(ledger), 1=レ(space), 2=ミ(line1)
+    noteXs:[55,88,121,154,187,220],
+    palY:200, palXs:[80,160,240],
+    COLORS:['#ef4444','#f5c518','#22c55e'],
+    NAMES:['ド','レ','ミ'],
+    NR:11, PR:22, SNAP:32
+  };
+  var cdNotes=[],cdDrag=null,cdScore=0,cdCanvas=null,cdCtx=null;
+
+  function cdGetPos(e){var r=cdCanvas.getBoundingClientRect();var t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*CD.W/r.width,y:(t.clientY-r.top)*CD.H/r.height};}
+
+  function setupColorNotes(){
+    var types=[0,1,2];
+    for(var i=0;i<3;i++)types.push(Math.floor(Math.random()*3));
+    for(var j=types.length-1;j>0;j--){var k=Math.floor(Math.random()*(j+1));var tmp=types[j];types[j]=types[k];types[k]=tmp;}
+    cdNotes=types.map(function(t,i){return{typeIdx:t,answered:false,x:CD.noteXs[i],y:CD.noteYs[t]};});
+    cdScore=0;
+  }
+
+  function drawCD(){
+    if(!cdCtx)return;
+    var c=cdCtx,scale=cdCanvas.width/CD.W;
+    c.clearRect(0,0,cdCanvas.width,cdCanvas.height);
+    c.save();c.scale(scale,scale);
+    c.fillStyle='#fffef5';c.fillRect(0,0,CD.W,CD.H);
+    c.strokeStyle='#333';c.lineWidth=1.5;
+    CD.staffLines.forEach(function(y){c.beginPath();c.moveTo(30,y);c.lineTo(295,y);c.stroke();});
+    c.fillStyle='#1a1a2e';c.font='52px serif';c.textAlign='left';c.textBaseline='alphabetic';
+    c.fillText('\uD834\uDD1E',4,108);
+    cdNotes.forEach(function(note){
+      if(note.typeIdx===0){c.strokeStyle='#666';c.lineWidth=1.5;c.beginPath();c.moveTo(note.x-15,note.y);c.lineTo(note.x+15,note.y);c.stroke();}
+      c.beginPath();c.arc(note.x,note.y,CD.NR,0,Math.PI*2);
+      if(note.answered){c.fillStyle=CD.COLORS[note.typeIdx];c.fill();c.fillStyle='#fff';c.font='bold 11px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('\u2713',note.x,note.y);}
+      else{c.fillStyle='#fff';c.fill();c.strokeStyle='#888';c.lineWidth=2;c.stroke();}
+    });
+    c.fillStyle='rgba(245,245,255,0.9)';c.fillRect(10,CD.palY-CD.PR-10,300,78);
+    CD.palXs.forEach(function(px,i){
+      c.beginPath();c.arc(px,CD.palY,CD.PR,0,Math.PI*2);
+      c.fillStyle=CD.COLORS[i];c.fill();
+      c.strokeStyle='rgba(255,255,255,0.9)';c.lineWidth=3;c.stroke();
+      c.fillStyle='#fff';c.font='bold 14px "Zen Maru Gothic",sans-serif';
+      c.textAlign='center';c.textBaseline='middle';c.fillText(CD.NAMES[i],px,CD.palY);
+    });
+    if(cdDrag){
+      c.beginPath();c.arc(cdDrag.curX,cdDrag.curY,CD.PR,0,Math.PI*2);
+      c.fillStyle=CD.COLORS[cdDrag.typeIdx];c.globalAlpha=0.88;c.fill();c.globalAlpha=1;
+      c.strokeStyle='rgba(255,255,255,0.9)';c.lineWidth=3;c.stroke();
+      c.fillStyle='#fff';c.font='bold 14px "Zen Maru Gothic",sans-serif';
+      c.textAlign='center';c.textBaseline='middle';c.fillText(CD.NAMES[cdDrag.typeIdx],cdDrag.curX,cdDrag.curY);
+    }
+    c.restore();
+  }
+
+  function cdTouchStart(e){
+    e.preventDefault();
+    var pos=cdGetPos(e);
+    for(var i=0;i<CD.palXs.length;i++){
+      var dx=pos.x-CD.palXs[i],dy=pos.y-CD.palY;
+      if(Math.sqrt(dx*dx+dy*dy)<=CD.PR+10){cdDrag={typeIdx:i,curX:pos.x,curY:pos.y};drawCD();return;}
+    }
+  }
+  function cdTouchMove(e){if(!cdDrag)return;e.preventDefault();var pos=cdGetPos(e);cdDrag.curX=pos.x;cdDrag.curY=pos.y;drawCD();}
+  function cdTouchEnd(e){
+    if(!cdDrag)return;e.preventDefault();
+    var best=-1,bestDist=CD.SNAP;
+    cdNotes.forEach(function(note,i){
+      if(note.answered)return;
+      var dx=cdDrag.curX-note.x,dy=cdDrag.curY-note.y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<bestDist){bestDist=d;best=i;}
+    });
+    if(best>=0&&cdDrag.typeIdx===cdNotes[best].typeIdx){
+      cdNotes[best].answered=true;cdScore++;
+      playNote(NOTES[cdDrag.typeIdx].freq,0.4);
+    }
+    cdDrag=null;drawCD();
+    $('g8ColorProgress').textContent=cdScore+' / 6';
+    if(cdScore>=6)setTimeout(cdFinish,600);
+  }
+
+  function cdFinish(){
+    mode='free';
+    $('g8ColorSection').style.display='none';
+    $('g8QuizLabel').style.display='';$('g8QuizLabel').textContent='ぜんぶ せいかい！🎉';
+    launchConfetti();speak('ぜんぶ せいかい！すごいね！');
+    $('g8StartQuizBtn').style.display='';$('g8StartNoteQuizBtn').style.display='';
+    $('g8StartNoteStaffBtn').style.display='';$('g8StartColorBtn').style.display='';
+    $('g8RensouBtn').style.display='';$('g8FreeTip').style.display='';
+    $('g8Keyboard').style.display='';$('g8MelodySection').style.display='flex';$('g8LvSelect').style.display='';
+  }
+
+  function startColorDrag(){
+    mode='colordrag';stopMelody();
+    $('g8StartQuizBtn').style.display='none';$('g8StartNoteQuizBtn').style.display='none';
+    $('g8StartNoteStaffBtn').style.display='none';$('g8StartColorBtn').style.display='none';
+    $('g8RensouBtn').style.display='none';$('g8FreeTip').style.display='none';
+    $('g8MelodySection').style.display='none';$('g8AgainBtn').style.display='none';
+    $('g8NoteQuizSection').style.display='none';$('g8NoteStaffSection').style.display='none';$('g8ColorSection').style.display='none';
+    $('g8Keyboard').style.display='none';$('g8QuizLabel').style.display='none';$('g8LvSelect').style.display='none';
+    cdCanvas=$('g8ColorCanvas');cdCtx=cdCanvas.getContext('2d');
+    var cw=Math.min(380,window.innerWidth-32);
+    cdCanvas.width=cw;cdCanvas.height=Math.round(cw*CD.H/CD.W);
+    setupColorNotes();
+    $('g8ColorProgress').textContent='0 / 6';
+    $('g8ColorSection').style.display='flex';
+    drawCD();
+    if(cdCanvas._cdTs)cdCanvas.removeEventListener('touchstart',cdCanvas._cdTs);
+    if(cdCanvas._cdTm)cdCanvas.removeEventListener('touchmove',cdCanvas._cdTm);
+    if(cdCanvas._cdTe)cdCanvas.removeEventListener('touchend',cdCanvas._cdTe);
+    cdCanvas._cdTs=cdTouchStart;cdCanvas._cdTm=cdTouchMove;cdCanvas._cdTe=cdTouchEnd;
+    cdCanvas.addEventListener('touchstart',cdTouchStart,{passive:false});
+    cdCanvas.addEventListener('touchmove',cdTouchMove,{passive:false});
+    cdCanvas.addEventListener('touchend',cdTouchEnd);
+    cdCanvas.onmousedown=cdTouchStart;
+    cdCanvas.onmousemove=function(e){if(cdDrag)cdTouchMove(e);};
+    cdCanvas.onmouseup=cdTouchEnd;
+  }
+
   $('g8StartNoteStaffBtn').addEventListener('click',startNoteStaff);
+  $('g8StartColorBtn').addEventListener('click',startColorDrag);
   $('g8StaffListenBtn').addEventListener('click',function(){
     if(staffQuizNote)playNote(staffQuizNote.freq,0.8);
   });
@@ -2347,13 +2477,13 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     keyEls.forEach(function(k){k.classList.remove('guide','dancing','melody-active');});
     $('g8StartQuizBtn').style.display='';
     $('g8StartNoteQuizBtn').style.display='';
-    $('g8StartNoteStaffBtn').style.display='';
+    $('g8StartNoteStaffBtn').style.display='';$('g8StartColorBtn').style.display='';
     $('g8RensouBtn').style.display='';
     $('g8FreeTip').style.display='';
     $('g8QuizLabel').style.display='none';
     $('g8AgainBtn').style.display='none';
     $('g8NoteQuizSection').style.display='none';
-    $('g8NoteStaffSection').style.display='none';
+    $('g8NoteStaffSection').style.display='none';$('g8ColorSection').style.display='none';
     $('g8Keyboard').style.display='';
     $('g8MelodySection').style.display='flex';
     $('g8LvSelect').style.display='';
