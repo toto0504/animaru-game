@@ -657,7 +657,7 @@
       <div id="g8ColorSection" style="display:none;flex-direction:column;align-items:center;gap:8px;width:100%;">
         <div style="font-size:13px;color:var(--muted);text-align:center;">🔴ド・🟡レ・🟢ミ の まるを ただしい おとぷに ドラッグしよう！</div>
         <canvas id="g8ColorCanvas" style="width:100%;max-width:380px;touch-action:none;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.1);display:block;"></canvas>
-        <div style="font-size:18px;font-weight:900;" id="g8ColorProgress">0 / 6</div>
+        <div style="font-size:18px;font-weight:900;" id="g8ColorProgress">0 / 3</div>
       </div>
       <!-- おんぷクイズ用UI -->
       <div id="g8NoteStaffSection" style="display:none;flex-direction:column;align-items:center;gap:12px;">
@@ -1044,7 +1044,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
       for(let i=0;i<currentCount;i++)trainAnimals.push(targetAnimal);
       questionEl.textContent='いくつ？';
       speakJA('いくつ？');
-      renderAnswerButtonsG2(3);
+      renderAnswerButtonsG2(5);
     }else if(g2Level===2){
       // Lv2: 動物固定、数が変わる、1〜5匹
       if(!g2FixedAnimal)g2FixedAnimal=pickAnimal();
@@ -2344,22 +2344,22 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   // ============================================================
   //  いろ音符ゲーム (Color Drag)
   // ============================================================
-  var CD={W:320,H:230,
-    staffLines:[50,62,74,86,98],  // 五線（上から下）
-    noteYs:[110,104,98],           // 0=ド(ledger), 1=レ(space), 2=ミ(line1)
-    noteXs:[55,88,121,154,187,220],
-    palY:200, palXs:[80,160,240],
+  var CD={W:320,H:420,
+    staffLines:[70,92,114,136,158],   // 五線（22px間隔）
+    noteYs:[238,195,158],             // 0=ド(ledger下), 1=レ(スペース), 2=ミ(下の線)
+    noteXs:[82,160,238],              // 3音符（左・中・右）
+    palY:375, palXs:[65,160,255],
     COLORS:['#ef4444','#f5c518','#22c55e'],
     NAMES:['ド','レ','ミ'],
-    NR:11, PR:22, SNAP:32
+    NR:22, PR:34, SNAP:52
   };
   var cdNotes=[],cdDrag=null,cdScore=0,cdCanvas=null,cdCtx=null;
 
   function cdGetPos(e){var r=cdCanvas.getBoundingClientRect();var t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*CD.W/r.width,y:(t.clientY-r.top)*CD.H/r.height};}
 
   function setupColorNotes(){
+    // ド・レ・ミ を1個ずつ、順番をシャッフル
     var types=[0,1,2];
-    for(var i=0;i<3;i++)types.push(Math.floor(Math.random()*3));
     for(var j=types.length-1;j>0;j--){var k=Math.floor(Math.random()*(j+1));var tmp=types[j];types[j]=types[k];types[k]=tmp;}
     cdNotes=types.map(function(t,i){return{typeIdx:t,answered:false,x:CD.noteXs[i],y:CD.noteYs[t]};});
     cdScore=0;
@@ -2370,30 +2370,58 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     var c=cdCtx,scale=cdCanvas.width/CD.W;
     c.clearRect(0,0,cdCanvas.width,cdCanvas.height);
     c.save();c.scale(scale,scale);
+    // 背景
     c.fillStyle='#fffef5';c.fillRect(0,0,CD.W,CD.H);
-    c.strokeStyle='#333';c.lineWidth=1.5;
-    CD.staffLines.forEach(function(y){c.beginPath();c.moveTo(30,y);c.lineTo(295,y);c.stroke();});
-    c.fillStyle='#1a1a2e';c.font='52px serif';c.textAlign='left';c.textBaseline='alphabetic';
-    c.fillText('\uD834\uDD1E',4,108);
+    // 五線
+    c.strokeStyle='#999';c.lineWidth=2;
+    CD.staffLines.forEach(function(y){c.beginPath();c.moveTo(35,y);c.lineTo(290,y);c.stroke();});
+    // ト音記号
+    c.fillStyle='#1a1a2e';c.font='62px serif';c.textAlign='left';c.textBaseline='alphabetic';
+    c.fillText('\uD834\uDD1E',4,166);
+    // 音符（ターゲット円）
     cdNotes.forEach(function(note){
-      if(note.typeIdx===0){c.strokeStyle='#666';c.lineWidth=1.5;c.beginPath();c.moveTo(note.x-15,note.y);c.lineTo(note.x+15,note.y);c.stroke();}
-      c.beginPath();c.arc(note.x,note.y,CD.NR,0,Math.PI*2);
-      if(note.answered){c.fillStyle=CD.COLORS[note.typeIdx];c.fill();c.fillStyle='#fff';c.font='bold 11px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('\u2713',note.x,note.y);}
-      else{c.fillStyle='#fff';c.fill();c.strokeStyle='#888';c.lineWidth=2;c.stroke();}
+      var col=CD.COLORS[note.typeIdx];
+      // ドのみ加線
+      if(note.typeIdx===0){
+        c.strokeStyle='#999';c.lineWidth=2.5;
+        c.beginPath();c.moveTo(note.x-CD.NR-10,note.y);c.lineTo(note.x+CD.NR+10,note.y);c.stroke();
+      }
+      if(note.answered){
+        // 正解：色で塗りつぶし＋チェック
+        c.beginPath();c.arc(note.x,note.y,CD.NR,0,Math.PI*2);
+        c.fillStyle=col;c.fill();
+        c.fillStyle='#fff';c.font='bold 22px sans-serif';
+        c.textAlign='center';c.textBaseline='middle';c.fillText('✓',note.x,note.y);
+      }else{
+        // 未回答：薄い色背景＋点線アウトライン＋ヒント文字
+        c.beginPath();c.arc(note.x,note.y,CD.NR,0,Math.PI*2);
+        c.fillStyle=col+'28';c.fill();
+        c.strokeStyle=col;c.lineWidth=3.5;c.setLineDash([6,4]);c.stroke();c.setLineDash([]);
+        c.fillStyle=col;c.font='bold 19px "Zen Maru Gothic",sans-serif';
+        c.textAlign='center';c.textBaseline='middle';c.fillText(CD.NAMES[note.typeIdx],note.x,note.y);
+      }
     });
-    c.fillStyle='rgba(245,245,255,0.9)';c.fillRect(10,CD.palY-CD.PR-10,300,78);
+    // パレットエリア
+    c.fillStyle='rgba(230,242,255,0.95)';
+    c.fillRect(8,CD.palY-CD.PR-22,304,CD.PR*2+44);
+    c.strokeStyle='#b0c8e0';c.lineWidth=1.5;c.strokeRect(8,CD.palY-CD.PR-22,304,CD.PR*2+44);
+    c.fillStyle='#555';c.font='14px "Zen Maru Gothic",sans-serif';
+    c.textAlign='center';c.textBaseline='alphabetic';
+    c.fillText('↑ ただしい まるを ドラッグしよう！',CD.W/2,CD.palY-CD.PR-6);
+    // パレット円（大きく）
     CD.palXs.forEach(function(px,i){
       c.beginPath();c.arc(px,CD.palY,CD.PR,0,Math.PI*2);
       c.fillStyle=CD.COLORS[i];c.fill();
-      c.strokeStyle='rgba(255,255,255,0.9)';c.lineWidth=3;c.stroke();
-      c.fillStyle='#fff';c.font='bold 14px "Zen Maru Gothic",sans-serif';
+      c.strokeStyle='rgba(255,255,255,0.85)';c.lineWidth=3;c.stroke();
+      c.fillStyle='#fff';c.font='bold 22px "Zen Maru Gothic",sans-serif';
       c.textAlign='center';c.textBaseline='middle';c.fillText(CD.NAMES[i],px,CD.palY);
     });
+    // ドラッグ中のゴースト
     if(cdDrag){
       c.beginPath();c.arc(cdDrag.curX,cdDrag.curY,CD.PR,0,Math.PI*2);
-      c.fillStyle=CD.COLORS[cdDrag.typeIdx];c.globalAlpha=0.88;c.fill();c.globalAlpha=1;
-      c.strokeStyle='rgba(255,255,255,0.9)';c.lineWidth=3;c.stroke();
-      c.fillStyle='#fff';c.font='bold 14px "Zen Maru Gothic",sans-serif';
+      c.fillStyle=CD.COLORS[cdDrag.typeIdx];c.globalAlpha=0.9;c.fill();c.globalAlpha=1;
+      c.strokeStyle='rgba(255,255,255,0.85)';c.lineWidth=3;c.stroke();
+      c.fillStyle='#fff';c.font='bold 22px "Zen Maru Gothic",sans-serif';
       c.textAlign='center';c.textBaseline='middle';c.fillText(CD.NAMES[cdDrag.typeIdx],cdDrag.curX,cdDrag.curY);
     }
     c.restore();
@@ -2421,8 +2449,8 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
       playNote(NOTES[cdDrag.typeIdx].freq,0.4);
     }
     cdDrag=null;drawCD();
-    $('g8ColorProgress').textContent=cdScore+' / 6';
-    if(cdScore>=6)setTimeout(cdFinish,600);
+    $('g8ColorProgress').textContent=cdScore+' / 3';
+    if(cdScore>=3)setTimeout(cdFinish,600);
   }
 
   function cdFinish(){
@@ -2448,7 +2476,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     var cw=Math.min(380,window.innerWidth-32);
     cdCanvas.width=cw;cdCanvas.height=Math.round(cw*CD.H/CD.W);
     setupColorNotes();
-    $('g8ColorProgress').textContent='0 / 6';
+    $('g8ColorProgress').textContent='0 / 3';
     $('g8ColorSection').style.display='flex';
     drawCD();
     if(cdCanvas._cdTs)cdCanvas.removeEventListener('touchstart',cdCanvas._cdTs);
