@@ -328,7 +328,9 @@
     <div class="game-cards">
       <div class="game-card" id="cardG1"><div class="card-icon">🎯</div><div class="card-title">なまえ あてゲーム</div><div class="card-desc">どうぶつの えを みて<br>なまえを あてよう！</div></div>
       <div class="game-card" id="cardG8"><div class="card-icon">🎹</div><div class="card-title">どうぶつ ピアノ</div><div class="card-desc">どうぶつと いっしょに<br>ドレミを おぼえよう！</div></div>
-      <div class="game-card" id="cardG2"><div class="card-icon">🚂</div><div class="card-title">どうぶつ列車</div><div class="card-desc">れっしゃに のった どうぶつを<br>かぞえよう！</div></div>
+      <div class="game-card" id="cardGA"><div class="card-icon">🚗</div><div class="card-title">のりもの いろわけ</div><div class="card-desc">いろで のりものを<br>みつけよう！</div></div>
+      <div class="game-card" id="cardGB"><div class="card-icon">🚃</div><div class="card-title">でんしゃに のせよう</div><div class="card-desc">おなじ いろの どうぶつを<br>でんしゃに のせよう！</div></div>
+      <div class="game-card" id="cardGC"><div class="card-icon">🏎️</div><div class="card-title">くるま おおきさ ならべ</div><div class="card-desc">ちいさい じゅんに<br>くるまを タップしよう！</div></div>
       <div class="game-card" id="cardG3"><div class="card-icon">✏️</div><div class="card-title">ひらがな おぼえよう</div><div class="card-desc">ひらがなの カードを みたり<br>クイズで あそぼう！</div></div>
       <div class="game-card" id="cardG4"><div class="card-icon">🔊</div><div class="card-title">なきごえ あてゲーム</div><div class="card-desc">どうぶつの なきごえを きいて<br>えを えらぼう！</div></div>
       <div class="game-card" id="cardG5"><div class="card-icon">🃏</div><div class="card-title">めくりあわせ</div><div class="card-desc">おなじ どうぶつを みつけよう！<br>ぜんぶ そろえてね！</div></div>
@@ -402,62 +404,83 @@
     <button class="btn" id="g1BookBack">← もどる</button>
   </div>
 
-  <!-- Game2 -->
-  <div class="screen" id="g2Screen">
-    <div class="g2-wrap">
-      <div class="g2-header" style="margin-bottom:12px;">
-        <div>
-          <h2 style="font-size:clamp(18px,3.2vw,26px);margin:0;">🚂 どうぶつ列車</h2>
-          <p class="g2-subtitle" id="g2Subtitle">🐾 1/7</p>
-        </div>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <button class="btn lv active" id="g2LvBtn1" style="font-size:12px;padding:8px 12px;">Lv1</button>
-          <button class="btn lv" id="g2LvBtn2" style="font-size:12px;padding:8px 12px;">Lv2</button>
-          <button class="btn lv" id="g2LvBtn3" style="font-size:12px;padding:8px 12px;">Lv3</button>
-          <button class="g2-iconBtn" id="g2OpenSettings">⚙</button>
-        </div>
+  <!-- GameA: のりもの いろわけ -->
+  <div class="screen" id="gAScreen">
+    <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:600px;">
+      <div class="badge" id="gABadge">🚗 1/7</div>
+      <div class="badge" id="gAScoreBadge">⭐ 0</div>
+      <button class="btn" id="gAHomeBtn" style="padding:8px 14px;">🏠</button>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button class="btn lv active" id="gALv1Btn" style="font-size:13px;">Lv1 3いろ</button>
+      <button class="btn lv" id="gALv2Btn" style="font-size:13px;">Lv2 5いろ</button>
+    </div>
+    <div id="gAQuestion" style="font-size:26px;font-weight:900;color:#1a1a2e;margin:8px 0;"></div>
+    <div id="gACards" style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin:12px 0;"></div>
+  </div>
+  <div class="screen" id="gAResultScreen">
+    <div class="result-card">
+      <div id="gAMedal" style="font-size:72px;margin-bottom:4px;"></div>
+      <div style="font-size:28px;font-weight:900;" id="gAResultScore"></div>
+      <div style="font-size:18px;font-weight:900;margin:8px 0 20px;" id="gAResultSub"></div>
+      <div style="display:flex;gap:12px;">
+        <button class="btn accent" id="gARetryBtn">🚗 もういちど</button>
+        <button class="btn" id="gAResultHomeBtn">🏠 もどる</button>
       </div>
-      <section class="g2-panel">
-        <div class="g2-scene">
-          <div class="g2-prompt">
-            <p class="q" id="g2Question">いくつ？</p>
-            <p class="hint"><span id="g2HintRange">（1〜5）</span><span id="g2HintVoice">・こえ: ON</span><span id="g2HintPractice">・れんしゅう: OFF</span></p>
-          </div>
-          <div class="lane" id="lane">
-            <div class="cloud" style="left:-160px;animation-duration:11s;top:12%;"></div>
-            <div class="cloud" style="left:-240px;animation-duration:15s;top:22%;transform:scale(.8);"></div>
-            <div class="ground"></div><div class="track"></div>
-            <div class="station"><span>えきで</span><strong id="g2StationText">ピンポン！</strong><span style="margin-top:8px;">のったり</span><span>おりたり</span></div>
-            <div class="train" id="train"></div>
-          </div>
-        </div>
-        <div class="g2-answers" id="g2Answers"></div>
-        <div class="g2-footerRow">
-          <div class="g2-progress"><span style="font-weight:900;">もんだい</span><div class="g2-bar"><i id="g2BarFill"></i></div><span id="g2StampText" style="font-weight:900;">0/7</span></div>
-          <div class="g2-mini">
-            <button class="g2-smallBtn" id="g2SpeakBtn">「いくつ？」</button>
-            <button class="g2-smallBtn" id="g2CountAllBtn">ぜんぶ かぞえる</button>
-            <button class="g2-smallBtn" id="g2ResetBtn">リセット</button>
-          </div>
-        </div>
-        <div class="g2-book">
-          <div class="g2-bookTop"><div class="g2-bookTitle">📘 シールちょう</div><div class="g2-animalShelf" id="g2AnimalShelf"></div></div>
-          <div class="g2-stickers" id="g2StickerGrid"></div>
-          <div style="color:var(--muted);font-size:12px;">※ せいかいで ⭐ が1こ。10こで 1ページ！</div>
-        </div>
-      </section>
     </div>
   </div>
 
-  <!-- Game2 Result -->
-  <div class="screen" id="g2ResultScreen">
+  <!-- GameB: どうぶつ でんしゃに のせよう -->
+  <div class="screen" id="gBScreen">
+    <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:600px;">
+      <div class="badge" id="gBBadge">🚃 1/7</div>
+      <div class="badge" id="gBScoreBadge">⭐ 0</div>
+      <button class="btn" id="gBHomeBtn" style="padding:8px 14px;">🏠</button>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button class="btn lv active" id="gBLv1Btn" style="font-size:13px;">Lv1 3いろ</button>
+      <button class="btn lv" id="gBLv2Btn" style="font-size:13px;">Lv2 5いろ</button>
+    </div>
+    <div id="gBTrain" style="font-size:64px;margin:6px 0;text-align:center;line-height:1.2;"></div>
+    <div id="gBQuestion" style="font-size:22px;font-weight:900;color:#1a1a2e;margin:4px 0 12px;"></div>
+    <div id="gBCards" style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;"></div>
+  </div>
+  <div class="screen" id="gBResultScreen">
     <div class="result-card">
-      <div id="g2Medal" style="font-size:72px;margin-bottom:4px;">🥇</div>
-      <div class="result-score" id="g2ResultScore">7 / 7</div>
-      <div id="g2ResultSub" style="font-size:18px;font-weight:900;margin:8px 0 20px;"></div>
+      <div id="gBMedal" style="font-size:72px;margin-bottom:4px;"></div>
+      <div style="font-size:28px;font-weight:900;" id="gBResultScore"></div>
+      <div style="font-size:18px;font-weight:900;margin:8px 0 20px;" id="gBResultSub"></div>
       <div style="display:flex;gap:12px;">
-        <button class="btn accent" id="g2RetryBtn">もういちど</button>
-        <button class="btn" id="g2ResultHomeBtn">ホームへ</button>
+        <button class="btn accent" id="gBRetryBtn">🚃 もういちど</button>
+        <button class="btn" id="gBResultHomeBtn">🏠 もどる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GameC: くるま おおきさ ならべ -->
+  <div class="screen" id="gCScreen">
+    <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:600px;">
+      <div class="badge" id="gCBadge">🏎️ 1/5</div>
+      <div class="badge" id="gCScoreBadge">⭐ 0</div>
+      <button class="btn" id="gCHomeBtn" style="padding:8px 14px;">🏠</button>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button class="btn lv active" id="gCLv1Btn" style="font-size:13px;">Lv1 3だい</button>
+      <button class="btn lv" id="gCLv2Btn" style="font-size:13px;">Lv2 5だい</button>
+    </div>
+    <div id="gCInstruction" style="font-size:22px;font-weight:900;color:#1a1a2e;margin:10px 0 4px;">ちいさい じゅんに タップしよう！</div>
+    <div id="gCProgress" style="font-size:16px;color:#666;margin-bottom:6px;"></div>
+    <div id="gCCars" style="display:flex;gap:20px;justify-content:center;align-items:flex-end;flex-wrap:wrap;margin:16px 0;min-height:120px;"></div>
+    <div id="gCMessage" style="font-size:22px;font-weight:900;min-height:32px;"></div>
+  </div>
+  <div class="screen" id="gCResultScreen">
+    <div class="result-card">
+      <div id="gCMedal" style="font-size:72px;margin-bottom:4px;"></div>
+      <div style="font-size:28px;font-weight:900;" id="gCResultScore"></div>
+      <div style="font-size:18px;font-weight:900;margin:8px 0 20px;" id="gCResultSub"></div>
+      <div style="display:flex;gap:12px;">
+        <button class="btn accent" id="gCRetryBtn">🏎️ もういちど</button>
+        <button class="btn" id="gCResultHomeBtn">🏠 もどる</button>
       </div>
     </div>
   </div>
@@ -739,11 +762,13 @@
 // ============================================================
 //  共通
 // ============================================================
-const allScreens=['menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','g2Screen','g2ResultScreen','g3Screen','g4Screen','g4ResultScreen','g5Screen','g6Screen','g6ResultScreen','g7Screen','g7ResultScreen','g8Screen','g8ResultScreen'];
+const allScreens=['menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','gAScreen','gAResultScreen','gBScreen','gBResultScreen','gCScreen','gCResultScreen','g3Screen','g4Screen','g4ResultScreen','g5Screen','g6Screen','g6ResultScreen','g7Screen','g7ResultScreen','g8Screen','g8ResultScreen'];
 function showScreen(id){allScreens.forEach(s=>document.getElementById(s).classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('backBtn').classList.toggle('visible',id!=='menuScreen');}
-function goHome(){showScreen('menuScreen');if(typeof g2Stop==='function')g2Stop();if(typeof g4Stop==='function')g4Stop();if(typeof g5Stop==='function')g5Stop();if(typeof g6Stop==='function')g6Stop();if(typeof g7Stop==='function')g7Stop();if(typeof g8Stop==='function')g8Stop();}
+function goHome(){showScreen('menuScreen');if(typeof gAStop==='function')gAStop();if(typeof gBStop==='function')gBStop();if(typeof gCStop==='function')gCStop();if(typeof g4Stop==='function')g4Stop();if(typeof g5Stop==='function')g5Stop();if(typeof g6Stop==='function')g6Stop();if(typeof g7Stop==='function')g7Stop();if(typeof g8Stop==='function')g8Stop();}
 function startGame1(){showScreen('g1StartScreen');g1RenderAnimalSelect();}
-function startGame2(){showScreen('g2Screen');g2Init();}
+function startGameA(){showScreen('gAScreen');if(typeof gAInit==='function')gAInit();}
+function startGameB(){showScreen('gBScreen');if(typeof gBInit==='function')gBInit();}
+function startGameC(){showScreen('gCScreen');if(typeof gCInit==='function')gCInit();}
 function startGame3(){showScreen('g3Screen');if(typeof g3Init==='function')g3Init();}
 function startGame4(){showScreen('g4Screen');if(typeof g4Init==='function')g4Init();}
 function startGame5(){showScreen('g5Screen');if(typeof g5Init==='function')g5Init();}
@@ -753,7 +778,9 @@ function startGame8(){showScreen('g8Screen');if(typeof g8Init==='function')g8Ini
 
 document.getElementById('backBtn').addEventListener('click',goHome);
 document.getElementById('cardG1').addEventListener('click',startGame1);
-document.getElementById('cardG2').addEventListener('click',startGame2);
+document.getElementById('cardGA').addEventListener('click',startGameA);
+document.getElementById('cardGB').addEventListener('click',startGameB);
+document.getElementById('cardGC').addEventListener('click',startGameC);
 document.getElementById('cardG3').addEventListener('click',startGame3);
 document.getElementById('cardG4').addEventListener('click',startGame4);
 document.getElementById('cardG5').addEventListener('click',startGame5);
@@ -939,219 +966,220 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
 })();
 
 // ============================================================
-//  Game2: どうぶつ列車
+//  GameA: のりもの いろわけ
 // ============================================================
 (function(){
-  const ALL_ANIMALS=["inu","neko","kuma","zou","raion","pengin","kirin","hitsuji","buta","koara","hiyoko","karasu","niwatori","ookami","uma","yagi","ushi"];
-  const ALL_NAMES={"inu":"いぬ","neko":"ねこ","kuma":"くま","zou":"ぞう","raion":"らいおん","pengin":"ぺんぎん","kirin":"きりん","hitsuji":"ひつじ","buta":"ぶた","koara":"コアラ","hiyoko":"ひよこ","karasu":"からす","niwatori":"にわとり","ookami":"おおかみ","uma":"うま","yagi":"やぎ","ushi":"うし"};
-  const STORAGE_KEY="animal_train_v6";
-  const VALID_MODES=[2,3,5];
-  const TRAIN_COLORS=[
-    {c1:'rgba(37,99,235,.18)',c2:'rgba(37,99,235,.06)',label:'rgba(37,99,235,.85)'},
-    {c1:'rgba(34,197,94,.22)',c2:'rgba(34,197,94,.08)',label:'rgba(34,197,94,.85)'},
-    {c1:'rgba(239,68,68,.20)',c2:'rgba(239,68,68,.06)',label:'rgba(239,68,68,.85)'},
-    {c1:'rgba(234,179,8,.25)',c2:'rgba(234,179,8,.08)',label:'rgba(180,140,10,.85)'},
+  var $=function(id){return document.getElementById(id);};
+  var COLORS_A=[
+    {name:'あか',  bg:'#fecaca',border:'#ef4444'},
+    {name:'あお',  bg:'#bfdbfe',border:'#3b82f6'},
+    {name:'きいろ',bg:'#fef08a',border:'#eab308'},
+    {name:'みどり',bg:'#bbf7d0',border:'#22c55e'},
+    {name:'オレンジ',bg:'#fed7aa',border:'#f97316'}
   ];
-  function parseMode(v){const n=Number(v);return VALID_MODES.includes(n)?n:5;}
-  function safeNum(v,d,lo,hi){const n=Number(v);return isNaN(n)?d:Math.max(lo,Math.min(hi,n));}
-  function safeBool(v,d){return v===undefined?d:!!v;}
-
-  let state=loadState();
-  let currentCount=1,targetAnimal="inu",trainAnimals=[],isLocked=false;
-  let practiceTarget=null,practiceRemaining=0,forcedNextCount=null,lastStationDelta=0;
-  let mathBase=0,mathAdd=0;
-  let g2Level=1,g2Round=0,g2Score=0,g2FixedAnimal=null,g2Timer=null;
-  let initialized=false;
-
-  const $=id=>document.getElementById(id);
-  const trainEl=$('train'),toastEl=$('g2Toast'),confettiEl=$('g2Confetti');
-  const barFill=$('g2BarFill'),stampText=$('g2StampText'),levelText=$('g2LevelText'),modeText=$('g2ModeText');
-  const hintRange=$('g2HintRange'),hintVoice=$('g2HintVoice'),hintPractice=$('g2HintPractice'),stationText=$('g2StationText');
-  const answersEl=$('g2Answers'),animalShelf=$('g2AnimalShelf'),stickerGrid=$('g2StickerGrid');
-  const modalBg=$('g2ModalBg'),questionEl=$('g2Question');
-
-  const NUM_WORD={1:"いち",2:"に",3:"さん",4:"よん",5:"ご"};
-  function speakJA(text){if(!state.voiceOn)return;speak(text);}
-  function toast(msg){toastEl.textContent=msg;toastEl.classList.add("show");clearTimeout(toastEl._t);toastEl._t=setTimeout(()=>toastEl.classList.remove("show"),1100);}
-  function setButtonsEnabled(on){answersEl.querySelectorAll(".g2-btn").forEach(b=>b.disabled=!on);}
-  function clamp(n,lo,hi){return Math.max(lo,Math.min(hi,n));}
-
-  function applyTrainColor(){
-    const ci=Math.min(TRAIN_COLORS.length-1,Math.floor((state.level-1)/2));
-    const tc=TRAIN_COLORS[ci];
-    trainEl.style.setProperty('--train-c1',tc.c1);trainEl.style.setProperty('--train-c2',tc.c2);trainEl.style.setProperty('--train-label',tc.label);
+  var VEHICLES_A=['🚂','🚃','🚄','🚅','🚆','🚇','🚈','🚉','🚊','🚋','🚌','🚍','🚎','🚐','🚑','🚒','🚓','🚔','🚕','🚖','🚗','🚘','🚙','🚚','🚛','🚜'];
+  var gALevel=1,gARound=0,gAScore=0,gALocked=false,gATimer=null;
+  function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+  function showResultA(){
+    showScreen('gAResultScreen');
+    var pct=Math.round(gAScore/7*100);
+    var medal=gAScore===7?'👑':pct>=80?'🥇':pct>=60?'🥈':pct>=40?'🥉':'💪';
+    $('gAMedal').textContent=medal;$('gAResultScore').textContent=gAScore+' / 7';
+    $('gAResultSub').textContent=gAScore===7?'パーフェクト！！':pct>=80?'すばらしい！':pct>=60?'がんばったね！':pct>=40?'おしい！':'つぎは がんばろう！';
+    if(gAScore===7)launchConfetti();speak(gAScore+'もん せいかい！');
   }
-
-  function updateHUD(){
-    barFill.style.width=Math.min(100,(state.stamps%5)/5*100)+"%";
-    stampText.textContent=(state.stamps%5)+"/5";levelText.textContent="Lv "+state.level;
-    modeText.textContent="はんい: 1〜"+state.ageMode;hintRange.textContent="（1〜"+getMaxCount()+"）";
-    hintVoice.textContent="・こえ: "+(state.voiceOn?"ON":"OFF");hintPractice.textContent="・れんしゅう: "+(state.practiceMode?"ON":"OFF");
-    if(!state.stationChange)stationText.textContent="ピンポン！";
-    else{if(lastStationDelta===1)stationText.textContent="+1 のった！";else if(lastStationDelta===-1)stationText.textContent="-1 おりた！";else stationText.textContent="ピンポン！";}
-    renderAnswerButtons();renderBook();applyTrainColor();
-  }
-  function renderAnswerButtons(){
-    answersEl.textContent='';const max=Math.max(currentCount||1,state.mathMode?getMaxCount()*2:getMaxCount());const realMax=Math.min(max,10);
-    const cols=realMax<=3?realMax:5;answersEl.style.gridTemplateColumns="repeat("+cols+",1fr)";
-    for(let n=1;n<=realMax;n++){const btn=document.createElement("button");btn.className="g2-btn";btn.textContent=String(n);btn.addEventListener("pointerdown",()=>onAnswer(n),{passive:true});answersEl.appendChild(btn);}
-  }
-  function renderBook(){
-    animalShelf.textContent='';ALL_ANIMALS.slice(0,state.unlockedCount).forEach(a=>{
-      const s=document.createElement("span");s.className="g2-chip";s.appendChild(mkImg(a));
-      const t=document.createTextNode(' '+(ALL_NAMES[a]||a));s.appendChild(t);animalShelf.appendChild(s);
-    });
-    stickerGrid.textContent='';const page=state.stickers%10;
-    for(let i=0;i<10;i++){const slot=document.createElement("div");slot.className="g2-slot";slot.textContent=i<page?"⭐":"";stickerGrid.appendChild(slot);}
-  }
-  function confettiBurst(){if(!state.fancyRewards)return;confettiEl.textContent='';for(let i=0;i<26;i++){const p=document.createElement("i");p.style.left=Math.random()*100+"vw";p.style.animationDuration=(850+Math.random()*450)+"ms";p.style.width=(8+Math.floor(Math.random()*10))+"px";p.style.height=(10+Math.floor(Math.random()*14))+"px";p.style.background="hsl("+Math.floor(Math.random()*360)+" 85% 60%)";confettiEl.appendChild(p);}setTimeout(()=>{confettiEl.textContent='';},1200);}
-
-  function buildTrain(animals){
-    trainEl.textContent='';
-    const engine=document.createElement("div");engine.className="engine";
-    const lbl=document.createElement("div");lbl.className="label";lbl.textContent="TRAIN";engine.appendChild(lbl);
-    for(let w=0;w<3;w++){const wh=document.createElement("div");wh.className="wheel w"+(w+1);engine.appendChild(wh);}
-    trainEl.appendChild(engine);
-    animals.forEach((a,idx)=>{
-      const car=document.createElement("div");car.className="car";
-      for(let w=0;w<3;w++){const wh=document.createElement("div");wh.className="wheel w"+(w+1);car.appendChild(wh);}
-      const an=document.createElement("div");an.className="animal";an.setAttribute("role","button");an.appendChild(mkImg(a));
-      an.addEventListener("pointerdown",()=>{an.classList.remove("tap");void an.offsetWidth;an.classList.add("tap");speakJA(String(idx+1));},{passive:true});
-      car.appendChild(an);trainEl.appendChild(car);
+  function newRoundA(){
+    if(gARound>=7){showResultA();return;}
+    gALocked=false;gARound++;
+    $('gABadge').textContent='🚗 '+gARound+'/7';
+    var pool=(gALevel===1?COLORS_A.slice(0,3):COLORS_A);
+    var shown=shuffle(pool).slice(0,3);
+    var target=shown[Math.floor(Math.random()*shown.length)];
+    var vehicles=shuffle(VEHICLES_A).slice(0,3);
+    $('gAQuestion').textContent=target.name+' の のりものは どれ？';
+    speak(target.name+' の のりものは どれ？');
+    var cards=$('gACards');cards.textContent='';
+    shown.forEach(function(col,i){
+      var btn=document.createElement('button');
+      btn.style.cssText='background:'+col.bg+';border:5px solid '+col.border+';border-radius:24px;width:130px;height:130px;font-size:64px;cursor:pointer;transition:transform .1s,outline .1s;display:flex;align-items:center;justify-content:center;';
+      btn.textContent=vehicles[i];btn.type='button';
+      btn.addEventListener('click',function(){
+        if(gALocked)return;
+        if(col===target){
+          gALocked=true;gAScore++;$('gAScoreBadge').textContent='⭐ '+gAScore;
+          btn.style.outline='6px solid #22c55e';speak('せいかい！');
+          if(gATimer)clearTimeout(gATimer);gATimer=setTimeout(newRoundA,900);
+        }else{
+          btn.style.outline='6px solid #ef4444';speak('おしい！もういちど！');
+          setTimeout(function(){btn.style.outline='';},800);
+        }
+      });
+      cards.appendChild(btn);
     });
   }
-  function animateTrainIn(){playTrainDepart();trainEl.style.transition="none";trainEl.style.transform="translateX(-40%)";void trainEl.offsetWidth;trainEl.style.transition="transform 900ms cubic-bezier(.2,.9,.2,1)";trainEl.style.transform="translateX(4%)";}
-  function animateTrainOut(cb){playTrainBrake();trainEl.style.transition="transform 650ms cubic-bezier(.2,.9,.2,1)";trainEl.style.transform="translateX(120%)";setTimeout(cb,700);}
-
-  function pickAnimal(){const pool=ALL_ANIMALS.slice(0,state.unlockedCount);return pool[Math.floor(Math.random()*pool.length)];}
-  function getMaxCount(){const m=state.ageMode;if(state.autoEase&&state.missStreak>=2)return Math.max(2,Math.floor(m/2));return m;}
-  function pickCount(){return 1+Math.floor(Math.random()*getMaxCount());}
-
-  function renderAnswerButtonsG2(max){
-    answersEl.textContent='';
-    const cols=max<=3?max:5;answersEl.style.gridTemplateColumns='repeat('+cols+',1fr)';
-    for(let n=1;n<=max;n++){const btn=document.createElement('button');btn.className='g2-btn';btn.textContent=String(n);btn.addEventListener('pointerdown',()=>onAnswer(n),{passive:true});answersEl.appendChild(btn);}
-  }
-
-  function newRound(){
-    if(g2Round>=7){showResult2();return;}
-    locked=false;isLocked=false;
-    g2Round++;
-    $('g2Subtitle').textContent='🐾 '+g2Round+'/7　⭐ '+g2Score;
-    barFill.style.width=((g2Round-1)/7*100)+'%';
-    stampText.textContent=g2Round+'/7';
-
-    if(g2Level===1){
-      // Lv1: 全部同じ動物、1〜3匹
-      targetAnimal=pickAnimal();
-      currentCount=1+Math.floor(Math.random()*5);
-      trainAnimals=[];
-      for(let i=0;i<currentCount;i++)trainAnimals.push(targetAnimal);
-      questionEl.textContent='いくつ？';
-      speakJA('いくつ？');
-      renderAnswerButtonsG2(5);
-    }else if(g2Level===2){
-      // Lv2: 動物固定、数が変わる、1〜5匹
-      if(!g2FixedAnimal)g2FixedAnimal=pickAnimal();
-      targetAnimal=g2FixedAnimal;
-      currentCount=1+Math.floor(Math.random()*5);
-      trainAnimals=[];
-      for(let i=0;i<currentCount;i++)trainAnimals.push(targetAnimal);
-      questionEl.textContent=(ALL_NAMES[targetAnimal]||targetAnimal)+'は なんびき？';
-      speakJA((ALL_NAMES[targetAnimal]||targetAnimal)+'は なんびき？');
-      renderAnswerButtonsG2(5);
-    }else{
-      // Lv3: 動物も変わる＋数えてはいけない動物あり
-      targetAnimal=pickAnimal();
-      currentCount=1+Math.floor(Math.random()*4);
-      const pool=ALL_ANIMALS.slice(0,state.unlockedCount);
-      const otherPool=shuffle(pool.filter(a=>a!==targetAnimal));
-      const distractorCount=1+Math.floor(Math.random()*2);
-      trainAnimals=[];
-      for(let i=0;i<currentCount;i++)trainAnimals.push(targetAnimal);
-      for(let i=0;i<Math.min(distractorCount,otherPool.length);i++)trainAnimals.push(otherPool[i]);
-      trainAnimals=shuffle(trainAnimals);
-      questionEl.textContent=(ALL_NAMES[targetAnimal]||targetAnimal)+'だけ なんびき？';
-      speakJA((ALL_NAMES[targetAnimal]||targetAnimal)+'は なんびき？');
-      renderAnswerButtonsG2(5);
-    }
-    buildTrain(trainAnimals);animateTrainIn();
-    setButtonsEnabled(true);
-  }
-
-  function correct(){
-    toast('ピンポン！🎉');speakJA('せいかい！');if(state.fancyRewards)confettiBurst();
-    g2Score++;
-    $('g2Subtitle').textContent='🐾 '+g2Round+'/7　⭐ '+g2Score;
-    barFill.style.width=(g2Round/7*100)+'%';
-    stampText.textContent=g2Round+'/7';
-    isLocked=true;setButtonsEnabled(false);
-    animateTrainOut(()=>{if(g2Round>=7)showResult2();else newRound();});
-  }
-  function wrong(){
-    toast('おしい！');speakJA('おしい！こたえは '+(NUM_WORD[currentCount]||String(currentCount))+'だよ！');
-    isLocked=true;setButtonsEnabled(false);
-    if(g2Timer)clearTimeout(g2Timer);
-    g2Timer=setTimeout(()=>{
-      g2Timer=null;
-      animateTrainOut(()=>{if(g2Round>=7)showResult2();else newRound();});
-    },2000);
-  }
-  function onAnswer(n){if(isLocked)return;speakJA(NUM_WORD[n]||String(n));(n===currentCount)?correct():wrong();}
-  function showResult2(){
-    showScreen('g2ResultScreen');
-    const pct=Math.round(g2Score/7*100);
-    let medal;
-    if(g2Score===7)medal='👑';else if(pct>=80)medal='🥇';else if(pct>=60)medal='🥈';else if(pct>=40)medal='🥉';else medal='💪';
-    $('g2Medal').textContent=medal;
-    $('g2ResultScore').textContent=g2Score+' / 7';
-    $('g2ResultSub').textContent=g2Score===7?'パーフェクト！！':pct>=80?'すばらしい！':pct>=60?'がんばったね！':pct>=40?'おしい！':'つぎは がんばろう！';
-    if(g2Score===7){confettiBurst();speak('パーフェクト！すごいね！');}else speak(g2Score+'もん せいかい！');
-  }
-  async function countAll(){if(isLocked)return;const target=trainAnimals.filter(a=>a===targetAnimal).length;for(let i=1;i<=target;i++){speakJA(String(i));await new Promise(r=>setTimeout(r,420));}}
-
-  $('g2SpeakBtn').addEventListener("click",()=>speakJA(questionEl.textContent||"いくつ？"));
-  function setG2Level(lv){g2Level=lv;['g2LvBtn1','g2LvBtn2','g2LvBtn3'].forEach((id,i)=>{$(id).classList.toggle('active',i+1===lv);});window.g2Init();}
-  $('g2LvBtn1').addEventListener('click',()=>setG2Level(1));
-  $('g2LvBtn2').addEventListener('click',()=>setG2Level(2));
-  $('g2LvBtn3').addEventListener('click',()=>setG2Level(3));
-  $('g2RetryBtn').addEventListener('click',()=>{showScreen('g2Screen');window.g2Init();});
-  $('g2ResultHomeBtn').addEventListener('click',goHome);
-  $('g2CountAllBtn').addEventListener("click",countAll);
-  $('g2ResetBtn').addEventListener("click",()=>{if(!confirm("リセットする？"))return;localStorage.removeItem(STORAGE_KEY);location.reload();});
-
-  $('g2OpenSettings').addEventListener("click",()=>{
-    $('g2AgeMode').value=String(state.ageMode);$('g2VoiceOn').checked=!!state.voiceOn;$('g2AutoEase').checked=!!state.autoEase;
-    $('g2PracticeMode').checked=!!state.practiceMode;$('g2StationChange').checked=!!state.stationChange;
-    $('g2FancyRewards').checked=!!state.fancyRewards;$('g2MathMode').checked=!!state.mathMode;$('g2SpeedMode').checked=!!state.speedMode;
-    modalBg.classList.add("show");
-  });
-  $('g2CloseSettings').addEventListener("click",()=>modalBg.classList.remove("show"));
-  modalBg.addEventListener("click",e=>{if(e.target===modalBg)modalBg.classList.remove("show");});
-  $('g2ApplySettings').addEventListener("click",()=>{
-    state.ageMode=parseMode($('g2AgeMode').value);state.voiceOn=!!$('g2VoiceOn').checked;state.autoEase=!!$('g2AutoEase').checked;
-    state.practiceMode=!!$('g2PracticeMode').checked;state.stationChange=!!$('g2StationChange').checked;state.fancyRewards=!!$('g2FancyRewards').checked;
-    state.mathMode=!!$('g2MathMode').checked;state.speedMode=!!$('g2SpeedMode').checked;
-    state.missStreak=0;lastStationDelta=0;forcedNextCount=null;practiceTarget=null;practiceRemaining=0;
-    saveState(state);modalBg.classList.remove("show");toast("OK！");speakJA("オーケー！");
-    window.g2Init();
-  });
-
-  function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw){const s=JSON.parse(raw);return{stamps:safeNum(s.stamps,0,0,9999),stickers:safeNum(s.stickers,0,0,9999),unlockedCount:safeNum(s.unlockedCount,3,3,ALL_ANIMALS.length),level:safeNum(s.level,1,1,9),totalCorrect:safeNum(s.totalCorrect,0,0,99999),ageMode:parseMode(s.ageMode),voiceOn:safeBool(s.voiceOn,true),autoEase:safeBool(s.autoEase,true),practiceMode:safeBool(s.practiceMode,false),stationChange:safeBool(s.stationChange,true),fancyRewards:safeBool(s.fancyRewards,true),mathMode:safeBool(s.mathMode,false),speedMode:safeBool(s.speedMode,false),streak:safeNum(s.streak,0,0,999),missStreak:safeNum(s.missStreak,0,0,999)};}}catch(e){}
-  return{stamps:0,stickers:0,unlockedCount:3,level:1,totalCorrect:0,ageMode:5,voiceOn:true,autoEase:true,practiceMode:false,stationChange:true,fancyRewards:true,mathMode:false,speedMode:false,streak:0,missStreak:0};}
-  function saveState(s){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s));}catch(e){}}
-
-  window.g2Init=function(){
-    if(g2Timer)clearTimeout(g2Timer);g2Timer=null;
-    g2Round=0;g2Score=0;g2FixedAnimal=null;isLocked=false;initialized=true;
-    $('g2Subtitle').textContent='🐾 1/7';
-    barFill.style.width='0%';stampText.textContent='0/7';
-    ['g2LvBtn1','g2LvBtn2','g2LvBtn3'].forEach((id,i)=>{$(id).classList.toggle('active',i+1===g2Level);});
-    renderBook();applyTrainColor();
-    newRound();
+  window.gAInit=function(){
+    if(gATimer)clearTimeout(gATimer);gATimer=null;
+    gARound=0;gAScore=0;gALocked=false;
+    $('gABadge').textContent='🚗 1/7';$('gAScoreBadge').textContent='⭐ 0';
+    newRoundA();
   };
-  window.g2Stop=function(){if(g2Timer)clearTimeout(g2Timer);g2Timer=null;isLocked=true;};
+  window.gAStop=function(){gALocked=true;if(gATimer)clearTimeout(gATimer);gATimer=null;};
+  $('gAHomeBtn').addEventListener('click',goHome);
+  $('gALv1Btn').addEventListener('click',function(){gALevel=1;$('gALv1Btn').classList.add('active');$('gALv2Btn').classList.remove('active');window.gAInit();});
+  $('gALv2Btn').addEventListener('click',function(){gALevel=2;$('gALv2Btn').classList.add('active');$('gALv1Btn').classList.remove('active');window.gAInit();});
+  $('gARetryBtn').addEventListener('click',function(){showScreen('gAScreen');window.gAInit();});
+  $('gAResultHomeBtn').addEventListener('click',goHome);
 })();
+
+// ============================================================
+//  GameB: どうぶつ でんしゃに のせよう
+// ============================================================
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var ANIMALS_B=[
+    {key:'inu',name:'いぬ'},{key:'neko',name:'ねこ'},{key:'kuma',name:'くま'},
+    {key:'zou',name:'ぞう'},{key:'raion',name:'らいおん'},{key:'pengin',name:'ぺんぎん'},
+    {key:'kirin',name:'きりん'},{key:'hitsuji',name:'ひつじ'},{key:'buta',name:'ぶた'},
+    {key:'koara',name:'コアラ'},{key:'uma',name:'うま'},{key:'yagi',name:'やぎ'}
+  ];
+  var COLORS_B=[
+    {name:'あか',  trainBg:'#fca5a5',cardBg:'#fecaca',border:'#ef4444'},
+    {name:'あお',  trainBg:'#93c5fd',cardBg:'#bfdbfe',border:'#3b82f6'},
+    {name:'きいろ',trainBg:'#fde047',cardBg:'#fef08a',border:'#eab308'},
+    {name:'みどり',trainBg:'#86efac',cardBg:'#bbf7d0',border:'#22c55e'},
+    {name:'オレンジ',trainBg:'#fdba74',cardBg:'#fed7aa',border:'#f97316'}
+  ];
+  var gBLevel=1,gBRound=0,gBScore=0,gBLocked=false,gBTimer=null;
+  function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+  function showResultB(){
+    showScreen('gBResultScreen');
+    var pct=Math.round(gBScore/7*100);
+    var medal=gBScore===7?'👑':pct>=80?'🥇':pct>=60?'🥈':pct>=40?'🥉':'💪';
+    $('gBMedal').textContent=medal;$('gBResultScore').textContent=gBScore+' / 7';
+    $('gBResultSub').textContent=gBScore===7?'パーフェクト！！':pct>=80?'すばらしい！':pct>=60?'がんばったね！':pct>=40?'おしい！':'つぎは がんばろう！';
+    if(gBScore===7)launchConfetti();speak(gBScore+'もん せいかい！');
+  }
+  function newRoundB(){
+    if(gBRound>=7){showResultB();return;}
+    gBLocked=false;gBRound++;
+    $('gBBadge').textContent='🚃 '+gBRound+'/7';
+    var colorPool=(gBLevel===1?COLORS_B.slice(0,3):COLORS_B);
+    var colors=shuffle(colorPool);
+    var target=colors[0];
+    var shownColors=shuffle([target].concat(shuffle(colors.filter(function(c){return c!==target;})).slice(0,2)));
+    var animals=shuffle(ANIMALS_B).slice(0,3);
+    var trainDiv=document.createElement('div');
+    trainDiv.style.cssText='display:inline-flex;align-items:center;justify-content:center;background:'+target.trainBg+';border:5px solid '+target.border+';border-radius:20px;padding:10px 32px;font-size:72px;';
+    trainDiv.textContent='🚃';
+    $('gBTrain').textContent='';$('gBTrain').appendChild(trainDiv);
+    $('gBQuestion').textContent=target.name+' の でんしゃに のる どうぶつは どれ？';
+    speak(target.name+' の でんしゃに のる どうぶつは どれ？');
+    var cards=$('gBCards');cards.textContent='';
+    animals.forEach(function(animal,i){
+      var col=shownColors[i];var isCorrect=(col===target);
+      var card=document.createElement('button');
+      card.style.cssText='background:'+col.cardBg+';border:5px solid '+col.border+';border-radius:20px;width:110px;padding:12px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:outline .1s;';
+      card.type='button';
+      var img=document.createElement('img');
+      img.src='イラスト/'+animal.key+'.png';img.alt=animal.name;
+      img.style.cssText='width:72px;height:72px;object-fit:contain;';img.draggable=false;
+      var nameEl=document.createElement('div');
+      nameEl.style.cssText='font-size:14px;font-weight:900;color:#1a1a2e;';
+      nameEl.textContent=animal.name;
+      card.appendChild(img);card.appendChild(nameEl);
+      card.addEventListener('click',function(){
+        if(gBLocked)return;
+        if(isCorrect){
+          gBLocked=true;gBScore++;$('gBScoreBadge').textContent='⭐ '+gBScore;
+          card.style.outline='6px solid #22c55e';speak('せいかい！');
+          if(gBTimer)clearTimeout(gBTimer);gBTimer=setTimeout(newRoundB,900);
+        }else{
+          card.style.outline='6px solid #ef4444';speak('おしい！もういちど！');
+          setTimeout(function(){card.style.outline='';},800);
+        }
+      });
+      cards.appendChild(card);
+    });
+  }
+  window.gBInit=function(){
+    if(gBTimer)clearTimeout(gBTimer);gBTimer=null;
+    gBRound=0;gBScore=0;gBLocked=false;
+    $('gBBadge').textContent='🚃 1/7';$('gBScoreBadge').textContent='⭐ 0';
+    newRoundB();
+  };
+  window.gBStop=function(){gBLocked=true;if(gBTimer)clearTimeout(gBTimer);gBTimer=null;};
+  $('gBHomeBtn').addEventListener('click',goHome);
+  $('gBLv1Btn').addEventListener('click',function(){gBLevel=1;$('gBLv1Btn').classList.add('active');$('gBLv2Btn').classList.remove('active');window.gBInit();});
+  $('gBLv2Btn').addEventListener('click',function(){gBLevel=2;$('gBLv2Btn').classList.add('active');$('gBLv1Btn').classList.remove('active');window.gBInit();});
+  $('gBRetryBtn').addEventListener('click',function(){showScreen('gBScreen');window.gBInit();});
+  $('gBResultHomeBtn').addEventListener('click',goHome);
+})();
+
+// ============================================================
+//  GameC: くるま おおきさ ならべ
+// ============================================================
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var SIZES_LV1=[36,62,96];
+  var SIZES_LV2=[26,42,60,80,104];
+  var gCLevel=1,gCRound=0,gCScore=0,gCAnswerIdx=0,gCItems=[],gCLocked=false,gCTimer=null;
+  function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+  function showResultC(){
+    showScreen('gCResultScreen');
+    var total=5;var pct=Math.round(gCScore/total*100);
+    var medal=gCScore===total?'👑':pct>=80?'🥇':pct>=60?'🥈':pct>=40?'🥉':'💪';
+    $('gCMedal').textContent=medal;$('gCResultScore').textContent=gCScore+' / '+total;
+    $('gCResultSub').textContent=gCScore===total?'パーフェクト！！':pct>=80?'すばらしい！':pct>=60?'がんばったね！':pct>=40?'おしい！':'つぎは がんばろう！';
+    if(gCScore===total)launchConfetti();speak(gCScore+'もん せいかい！');
+  }
+  function onCarClick(btn,rank){
+    if(gCLocked)return;
+    if(rank===gCAnswerIdx){
+      gCAnswerIdx++;
+      btn.style.background='#bbf7d0';btn.style.borderColor='#22c55e';btn.disabled=true;
+      if(gCAnswerIdx>=gCItems.length){
+        gCLocked=true;gCScore++;$('gCScoreBadge').textContent='⭐ '+gCScore;
+        $('gCMessage').textContent='せいかい！🎉';speak('せいかい！');
+        if(gCTimer)clearTimeout(gCTimer);gCTimer=setTimeout(newRoundC,1200);
+      }
+    }else{
+      btn.style.borderColor='#ef4444';
+      $('gCMessage').textContent='ちがう！ちいさい じゅんに！';speak('ちいさい じゅんに おしてね！');
+      setTimeout(function(){btn.style.borderColor='transparent';$('gCMessage').textContent='';},900);
+    }
+  }
+  function newRoundC(){
+    if(gCRound>=5){showResultC();return;}
+    gCLocked=false;gCRound++;gCAnswerIdx=0;
+    $('gCBadge').textContent='🏎️ '+gCRound+'/5';$('gCMessage').textContent='';
+    var sizes=(gCLevel===1?SIZES_LV1:SIZES_LV2);
+    gCItems=sizes.map(function(s,i){return{size:s,rank:i};});
+    var displayOrder=shuffle(gCItems.slice());
+    var count=gCItems.length;
+    $('gCProgress').textContent='（'+count+'だい）';
+    var cars=$('gCCars');cars.textContent='';
+    displayOrder.forEach(function(item){
+      var btn=document.createElement('button');
+      btn.style.cssText='font-size:'+item.size+'px;background:none;border:4px solid transparent;border-radius:16px;padding:8px 12px;cursor:pointer;transition:all .15s;line-height:1;';
+      btn.textContent='🚗';btn.type='button';
+      btn.addEventListener('click',function(){onCarClick(btn,item.rank);});
+      cars.appendChild(btn);
+    });
+  }
+  window.gCInit=function(){
+    if(gCTimer)clearTimeout(gCTimer);gCTimer=null;
+    gCRound=0;gCScore=0;gCLocked=false;gCAnswerIdx=0;
+    $('gCBadge').textContent='🏎️ 1/5';$('gCScoreBadge').textContent='⭐ 0';$('gCMessage').textContent='';
+    newRoundC();
+  };
+  window.gCStop=function(){gCLocked=true;if(gCTimer)clearTimeout(gCTimer);gCTimer=null;};
+  $('gCHomeBtn').addEventListener('click',goHome);
+  $('gCLv1Btn').addEventListener('click',function(){gCLevel=1;$('gCLv1Btn').classList.add('active');$('gCLv2Btn').classList.remove('active');window.gCInit();});
+  $('gCLv2Btn').addEventListener('click',function(){gCLevel=2;$('gCLv2Btn').classList.add('active');$('gCLv1Btn').classList.remove('active');window.gCInit();});
+  $('gCRetryBtn').addEventListener('click',function(){showScreen('gCScreen');window.gCInit();});
+  $('gCResultHomeBtn').addEventListener('click',goHome);
+})();
+
 
 // ============================================================
 //  Game3: ひらがな おぼえよう
@@ -2349,10 +2377,10 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   // ============================================================
   //  いろ音符ゲーム (Color Drag)
   // ============================================================
-  var CD={W:540,H:230,
+  var CD={W:540,H:300,
     staffLines:[28,48,68,88,108],     // 五線（20px間隔）
-    noteYs:[158,132,108],             // 0=ド(ledger下), 1=レ(スペース), 2=ミ(下の線)
-    noteXs:[76,162,248,338,425],      // 5音符（等間隔）
+    noteYs:[200,152,108],             // 0=ド(ledger下), 1=レ(スペース広め), 2=ミ(下の線)
+    noteXs:[86,172,258,348,435],      // 5音符（等間隔）
     COLORS:['#ef4444','#f5c518','#22c55e'],
     NAMES:['ド','レ','ミ'],
     NR:24
@@ -2374,12 +2402,31 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     c.save();c.scale(scale,scale);
     // 背景
     c.fillStyle='#fffef5';c.fillRect(0,0,CD.W,CD.H);
+    // ド/レ/ミ ポジションゾーン（薄い色帯）
+    var zones=[
+      {y:CD.noteYs[2],col:'rgba(34,197,94,.10)'},   // ミ：緑
+      {y:CD.noteYs[1],col:'rgba(245,197,24,.13)'},   // レ：黄
+      {y:CD.noteYs[0],col:'rgba(239,68,68,.10)'}     // ド：赤
+    ];
+    zones.forEach(function(z){
+      c.fillStyle=z.col;c.fillRect(44,z.y-CD.NR-4,CD.W-52,CD.NR*2+8);
+    });
     // 五線
     c.strokeStyle='#aaa';c.lineWidth=2;
     CD.staffLines.forEach(function(y){c.beginPath();c.moveTo(44,y);c.lineTo(CD.W-4,y);c.stroke();});
     // ト音記号
     c.fillStyle='#1a1a2e';c.font='58px serif';c.textAlign='left';c.textBaseline='alphabetic';
     c.fillText('\uD834\uDD1E',4,116);
+    // 右側ラベル（ド/レ/ミ の位置表示）
+    var sideLabels=[
+      {y:CD.noteYs[2],col:'#16a34a',text:'ミ'},
+      {y:CD.noteYs[1],col:'#b45309',text:'レ'},
+      {y:CD.noteYs[0],col:'#dc2626',text:'ド'}
+    ];
+    sideLabels.forEach(function(s){
+      c.fillStyle=s.col;c.font='bold 16px "Zen Maru Gothic",sans-serif';
+      c.textAlign='right';c.textBaseline='middle';c.fillText(s.text,CD.W-2,s.y);
+    });
     // 各音符
     var NUMS=['\u2460','\u2461','\u2462','\u2463','\u2464'];
     cdNotes.forEach(function(note,i){
