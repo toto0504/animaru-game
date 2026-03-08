@@ -96,71 +96,6 @@
     .zukan-item .z-name{font-size:18px;font-weight:900;}
     .zukan-item .z-fact{font-size:11px;color:var(--muted);line-height:1.5;}
 
-    /* ======== Game2 ======== */
-    .g2-wrap{width:100%;max-width:980px;}
-    .g2-header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
-    .g2-subtitle{margin:0;color:var(--muted);font-size:13px;}
-    .g2-pill{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.06);padding:8px 10px;border-radius:999px;box-shadow:0 6px 16px rgba(0,0,0,.05);user-select:none;}
-    .g2-pill strong{font-size:14px;}.g2-pill small{color:var(--muted);}
-    .g2-iconBtn{border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.75);border-radius:999px;padding:10px 12px;cursor:pointer;box-shadow:0 10px 20px rgba(0,0,0,.06);font-weight:900;}
-    .g2-iconBtn:active{transform:translateY(1px);}
-    .g2-panel{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.06);overflow:hidden;width:100%;}
-    .g2-scene{padding:14px;display:flex;flex-direction:column;gap:12px;}
-    .g2-prompt{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-    .g2-prompt .q{font-size:clamp(18px,3vw,26px);margin:0;font-weight:900;}
-    .g2-prompt .hint{margin:0;color:var(--muted);font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
-    .lane{position:relative;height:min(42vh,320px);min-height:220px;border-radius:16px;background:radial-gradient(1200px 220px at 50% 0%,rgba(37,99,235,.15),transparent 55%),linear-gradient(180deg,#fefefe,#f5f7ff);border:1px solid rgba(0,0,0,.06);overflow:hidden;}
-    .ground{position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(180deg,rgba(34,197,94,.18),rgba(34,197,94,.28));}
-    .track{position:absolute;left:0;right:0;bottom:22%;height:10px;background:rgba(0,0,0,.08);}
-    .track::before,.track::after{content:"";position:absolute;left:0;right:0;height:2px;background:rgba(0,0,0,.18);}
-    .track::before{top:1px;}.track::after{bottom:1px;}
-    .cloud{position:absolute;top:14%;width:120px;height:44px;background:rgba(255,255,255,.75);border:1px solid rgba(0,0,0,.06);border-radius:999px;animation:float 10s linear infinite;}
-    .cloud::before,.cloud::after{content:"";position:absolute;background:rgba(255,255,255,.75);border:1px solid rgba(0,0,0,.06);border-radius:999px;}
-    .cloud::before{width:50px;height:50px;left:14px;top:-18px;}.cloud::after{width:70px;height:70px;left:48px;top:-34px;}
-    @keyframes float{0%{transform:translateX(-160px)}100%{transform:translateX(calc(100% + 160px))}}
-    .train{position:absolute;bottom:26%;left:0;display:flex;gap:6px;align-items:flex-end;will-change:transform;transform:translateX(-30%);}
-    .engine,.car{width:clamp(60px,12vw,80px);height:clamp(56px,11vw,74px);border-radius:14px;background:#fff;border:1px solid rgba(0,0,0,.08);box-shadow:0 6px 14px rgba(0,0,0,.10);position:relative;display:flex;align-items:center;justify-content:center;user-select:none;}
-    .engine{background:linear-gradient(180deg,var(--train-c1,rgba(37,99,235,.18)),var(--train-c2,rgba(37,99,235,.06)));}
-    .engine .label{position:absolute;top:4px;left:6px;font-size:10px;color:var(--train-label,rgba(37,99,235,.85));font-weight:900;letter-spacing:.02em;}
-    .wheel{position:absolute;bottom:-8px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.75);box-shadow:inset 0 0 0 2px rgba(255,255,255,.16);}
-    .wheel.w1{left:8px;}.wheel.w2{left:30px;}.wheel.w3{right:8px;}
-    .animal{width:clamp(36px,9vw,50px);height:clamp(36px,9vw,50px);cursor:pointer;filter:drop-shadow(0 4px 4px rgba(0,0,0,.10));transform:translateY(-2px);border-radius:8px;overflow:hidden;}
-    .animal img{width:100%;height:100%;object-fit:contain;}
-    .animal.tap{animation:pop .18s ease-out;}
-    @keyframes pop{0%{transform:translateY(-2px) scale(1)}60%{transform:translateY(-4px) scale(1.12)}100%{transform:translateY(-2px) scale(1)}}
-    .station{position:absolute;right:16px;bottom:23%;width:134px;height:148px;border-radius:18px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.07);box-shadow:0 12px 24px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;color:var(--muted);font-weight:900;}
-    .station span{display:block;font-size:12px;}.station strong{display:block;font-size:14px;color:var(--ink);margin-top:4px;}
-    .g2-answers{padding:12px 12px 14px;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
-    .g2-btn{border:0;border-radius:14px;padding:10px 6px;font-size:clamp(18px,3.5vw,26px);font-weight:900;background:rgba(37,99,235,.10);color:var(--ink);box-shadow:0 6px 16px rgba(0,0,0,.08);border:1px solid rgba(37,99,235,.18);cursor:pointer;user-select:none;}
-    .g2-btn:active{transform:translateY(1px);}.g2-btn[disabled]{opacity:.55;cursor:not-allowed;}
-    .g2-footerRow{padding:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;border-top:1px solid rgba(0,0,0,.06);background:rgba(249,250,251,.7);}
-    .g2-progress{display:flex;align-items:center;gap:10px;flex:1;min-width:240px;}
-    .g2-bar{height:12px;flex:1;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;border:1px solid rgba(0,0,0,.06);}
-    .g2-bar>i{display:block;height:100%;width:0%;background:rgba(22,163,74,.75);}
-    .g2-mini{display:flex;gap:8px;align-items:center;justify-content:flex-end;min-width:240px;flex-wrap:wrap;}
-    .g2-smallBtn{border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.75);padding:10px 12px;border-radius:14px;font-weight:900;cursor:pointer;box-shadow:0 10px 20px rgba(0,0,0,.06);white-space:nowrap;}
-    .g2-smallBtn:active{transform:translateY(1px);}
-    .g2-book{padding:12px 12px 14px;border-top:1px solid rgba(0,0,0,.06);background:rgba(255,255,255,.55);display:flex;flex-direction:column;gap:10px;}
-    .g2-bookTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
-    .g2-bookTitle{font-weight:900;display:flex;align-items:center;gap:8px;}
-    .g2-animalShelf{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-    .g2-chip{padding:6px 10px;border-radius:999px;background:rgba(37,99,235,.08);border:1px solid rgba(0,0,0,.06);font-weight:900;color:var(--muted);display:inline-flex;align-items:center;gap:4px;}
-    .g2-chip img{width:22px;height:22px;object-fit:contain;}
-    .g2-stickers{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;}
-    .g2-slot{height:34px;border-radius:10px;border:1px dashed rgba(0,0,0,.16);background:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;font-size:18px;user-select:none;}
-    .g2-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(17,24,39,.92);color:#fff;padding:10px 14px;border-radius:999px;font-weight:900;box-shadow:0 14px 30px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .18s ease;max-width:min(92vw,520px);text-align:center;z-index:80;}
-    .g2-toast.show{opacity:1;}
-    .g2-confetti{position:fixed;inset:0;pointer-events:none;z-index:90;overflow:hidden;}
-    .g2-confetti i{position:absolute;top:-10px;width:10px;height:14px;border-radius:3px;opacity:.9;animation:g2fall 950ms linear forwards;}
-    @keyframes g2fall{to{transform:translateY(calc(100vh + 30px)) rotate(540deg);opacity:.95;}}
-    .g2-modalBg{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:14px;z-index:100;}
-    .g2-modalBg.show{display:flex;}
-    .g2-modal{width:min(620px,96vw);background:rgba(255,255,255,.96);border:1px solid rgba(0,0,0,.08);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.22);overflow:hidden;}
-    .g2-modalHeader{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,.06);font-weight:900;}
-    .g2-modalBody{padding:14px;display:flex;flex-direction:column;gap:12px;}
-    .g2-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 12px;border:1px solid rgba(0,0,0,.06);background:rgba(249,250,251,.7);border-radius:14px;}
-    .g2-row label{font-weight:900;}.g2-row small{color:var(--muted);display:block;margin-top:2px;}
-    .g2-modalFooter{padding:12px 14px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid rgba(0,0,0,.06);background:rgba(249,250,251,.7);}
 
     /* ======== Game3 ======== */
     .g3-wrap{width:100%;max-width:500px;display:flex;flex-direction:column;align-items:center;gap:16px;}
@@ -240,10 +175,7 @@
       .btn.accent{font-size:20px;padding:18px 40px;}
       .game-cards{flex-direction:column;align-items:center;}
       .game-card{width:100%;max-width:340px;}
-      .station{display:none;}
-      .g2-mini{min-width:unset;width:100%;justify-content:space-between;}
-      .g2-progress{width:100%;}
-      .g2-stickers{grid-template-columns:repeat(5,1fr);}
+
     }
 
     /* ======== Game4: なきごえあてゲーム ======== */
@@ -737,8 +669,7 @@
   </div>
 </div>
 <div class="streak-msg" id="streakMsg"></div>
-<div class="g2-toast" id="g2Toast"></div>
-<div class="g2-confetti" id="g2Confetti"></div>
+
 <div class="g3-celeb" id="g3Celeb"></div>
 <div class="g3-traceOverlay" id="g3TraceOverlay">
   <canvas class="g3-traceCanvas" id="g3TraceCanvas" width="320" height="320"></canvas>
@@ -748,23 +679,6 @@
   </div>
 </div>
 
-<!-- Game2 Settings Modal -->
-<div class="g2-modalBg" id="g2ModalBg">
-  <div class="g2-modal">
-    <div class="g2-modalHeader"><div>せってい</div><button class="g2-iconBtn" id="g2CloseSettings">✕</button></div>
-    <div class="g2-modalBody">
-      <div class="g2-row"><div><label>かずの はんい</label><small>こたえの さいだいすう</small></div><select id="g2AgeMode"><option value="2">1〜2</option><option value="3">1〜3</option><option value="5">1〜5</option></select></div>
-      <div class="g2-row"><div><label>こえ（読み上げ）</label></div><input id="g2VoiceOn" type="checkbox"/></div>
-      <div class="g2-row"><div><label>やさしく自動調整</label><small>つまずいたら範囲を狭める</small></div><input id="g2AutoEase" type="checkbox"/></div>
-      <div class="g2-row"><div><label>れんしゅうモード</label><small>同じ数を 3回くり返す</small></div><input id="g2PracticeMode" type="checkbox"/></div>
-      <div class="g2-row"><div><label>えきで のる/おりる</label></div><input id="g2StationChange" type="checkbox"/></div>
-      <div class="g2-row"><div><label>たしざんモード</label><small>最初にN匹→駅でM匹のる→合計は？</small></div><input id="g2MathMode" type="checkbox"/></div>
-      <div class="g2-row"><div><label>スピードチャレンジ</label><small>列車が通りすぎる！記憶で答えよう</small></div><input id="g2SpeedMode" type="checkbox"/></div>
-      <div class="g2-row"><div><label>ごほうび演出</label></div><input id="g2FancyRewards" type="checkbox"/></div>
-    </div>
-    <div class="g2-modalFooter"><button class="g2-smallBtn" id="g2ApplySettings">OK</button></div>
-  </div>
-</div>
 
 <script>
 // ============================================================
@@ -813,8 +727,7 @@ const AudioCtx=window.AudioContext||window.webkitAudioContext;let audioCtx=null;
 function getAudioCtx(){if(!audioCtx)audioCtx=new AudioCtx();return audioCtx;}
 function playCorrectSound(){try{const c=getAudioCtx();[523.25,659.25,783.99].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0.15,c.currentTime);g.gain.exponentialRampToValueAtTime(0.01,c.currentTime+0.6);o.connect(g);g.connect(c.destination);o.start(c.currentTime+i*0.1);o.stop(c.currentTime+0.7+i*0.1);});}catch(e){}}
 function playWrongSound(){try{const c=getAudioCtx();const o=c.createOscillator(),g=c.createGain();o.type='square';o.frequency.value=200;g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.01,c.currentTime+0.4);o.connect(g);g.connect(c.destination);o.start(c.currentTime);o.stop(c.currentTime+0.4);}catch(e){}}
-function playTrainDepart(){try{const c=getAudioCtx();const o=c.createOscillator(),g=c.createGain();o.type='sawtooth';o.frequency.setValueAtTime(200,c.currentTime);o.frequency.linearRampToValueAtTime(600,c.currentTime+0.4);g.gain.setValueAtTime(0.08,c.currentTime);g.gain.exponentialRampToValueAtTime(0.01,c.currentTime+0.5);o.connect(g);g.connect(c.destination);o.start(c.currentTime);o.stop(c.currentTime+0.5);}catch(e){}}
-function playTrainBrake(){try{const c=getAudioCtx();const o=c.createOscillator(),g=c.createGain();o.type='sawtooth';o.frequency.setValueAtTime(500,c.currentTime);o.frequency.linearRampToValueAtTime(100,c.currentTime+0.5);g.gain.setValueAtTime(0.08,c.currentTime);g.gain.exponentialRampToValueAtTime(0.01,c.currentTime+0.6);o.connect(g);g.connect(c.destination);o.start(c.currentTime);o.stop(c.currentTime+0.6);}catch(e){}}
+
 
 // Confetti
 const cnv=document.getElementById('confetti'),cCtx=cnv.getContext('2d');let confettiParts=[],confettiAnim=null;
