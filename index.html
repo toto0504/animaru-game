@@ -159,6 +159,10 @@
     .g3-statCell{background:#fff;border-radius:10px;padding:6px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);font-family:'Zen Maru Gothic',sans-serif;}
     .g3-statCell .ch{font-size:22px;font-weight:900;}
     .g3-statCell .rt{font-size:10px;color:var(--muted);}
+    /* 文字えらぶ */
+    .g3-selChip{width:40px;height:40px;border-radius:10px;border:2px solid #e0e0e0;font-size:20px;font-weight:900;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;background:#fff;color:#bbb;transition:all .15s;display:flex;align-items:center;justify-content:center;padding:0;}
+    .g3-selChip.on{border-color:var(--accent);background:#fff0f3;color:var(--accent);}
+    .g3-selChip:active{transform:scale(.9);}
 
     /* 戻るボタン */
     .back-btn{position:fixed;top:14px;left:14px;z-index:50;background:rgba(255,255,255,.85);border:1px solid rgba(0,0,0,.1);border-radius:999px;padding:8px 16px;font-weight:900;font-size:14px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.08);display:none;}
@@ -464,6 +468,20 @@
         <button class="g3-charBtn active" data-set="basic">きほん</button>
         <button class="g3-charBtn" data-set="dakuten">だくおん</button>
         <button class="g3-charBtn" data-set="katakana">カタカナ</button>
+      </div>
+      <!-- 文字えらぶパネル -->
+      <div style="width:100%;max-width:500px;">
+        <div style="display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;">
+          <button class="g3-charBtn" id="g3SelToggle">▼ えらぶ</button>
+          <span id="g3SelCount" style="font-size:13px;font-weight:700;color:#888;"></span>
+        </div>
+        <div id="g3SelControls" style="display:none;margin-top:10px;">
+          <div style="display:flex;gap:8px;justify-content:center;margin-bottom:10px;">
+            <button class="g3-charBtn" id="g3SelAllBtn">全部えらぶ</button>
+            <button class="g3-charBtn" id="g3SelClearBtn">クリア</button>
+          </div>
+          <div id="g3SelGrid" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;"></div>
+        </div>
       </div>
       <div class="g3-modeRow" id="g3ModeRow">
         <button class="g3-modeBtn active" data-mode="flash">📖 みる</button>
@@ -1439,10 +1457,73 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
 
   function getData(){if(charSet==='dakuten')return DAKUTEN;if(charSet==='katakana')return KATAKANA;return BASIC;}
 
+  // 文字えらぶ機能
+  const selMap={basic:new Set(BASIC.map(x=>x.h)),dakuten:new Set(DAKUTEN.map(x=>x.h)),katakana:new Set(KATAKANA.map(x=>x.h))};
+  function getCurSel(){return selMap[charSet]||selMap.basic;}
+  function refreshCurData(){
+    const pool=getData(),sel=getCurSel();
+    const filtered=pool.filter(x=>sel.has(x.h));
+    curData=filtered.length?filtered:pool;
+  }
+  function updateSelCount(){
+    const sel=getCurSel(),total=getData().length;
+    $('g3SelCount').textContent=sel.size+' / '+total+' もじ';
+  }
+  function buildSelGrid(){
+    const grid=$('g3SelGrid');grid.textContent='';
+    const pool=getData(),sel=getCurSel();
+    pool.forEach(it=>{
+      const btn=document.createElement('button');
+      btn.className='g3-selChip'+(sel.has(it.h)?' on':'');
+      btn.textContent=it.h;
+      btn.addEventListener('click',()=>{
+        if(sel.has(it.h)){if(sel.size>1)sel.delete(it.h);}
+        else sel.add(it.h);
+        btn.classList.toggle('on',sel.has(it.h));
+        updateSelCount();
+        refreshCurData();
+        idx=0;seen.clear();
+        if(mode==='flash')updateCard();
+        else if(mode==='quiz'){qScore=0;quizCount=0;wrongList=[];wrongOnlyMode=false;$('g3WrongOnlyBtn').classList.remove('active');$('g3WrongOnlyBtn').textContent='❌ まちがいのみ';$('g3QuizMain').style.display='';$('g3QuizResult').style.display='none';genQuiz();}
+        else if(mode==='word'){wScore=0;genWord();}
+        else if(mode==='stats')renderStats();
+      });
+      grid.appendChild(btn);
+    });
+    updateSelCount();
+  }
+  let selOpen=false;
+  $('g3SelToggle').addEventListener('click',()=>{
+    selOpen=!selOpen;
+    $('g3SelControls').style.display=selOpen?'block':'none';
+    $('g3SelToggle').textContent=selOpen?'▲ とじる':'▼ えらぶ';
+    if(selOpen)buildSelGrid();
+  });
+  $('g3SelAllBtn').addEventListener('click',()=>{
+    const pool=getData(),sel=getCurSel();
+    pool.forEach(it=>sel.add(it.h));
+    buildSelGrid();refreshCurData();idx=0;seen.clear();
+    if(mode==='flash')updateCard();
+    else if(mode==='quiz'){qScore=0;quizCount=0;wrongList=[];wrongOnlyMode=false;$('g3WrongOnlyBtn').classList.remove('active');$('g3WrongOnlyBtn').textContent='❌ まちがいのみ';$('g3QuizMain').style.display='';$('g3QuizResult').style.display='none';genQuiz();}
+    else if(mode==='word'){wScore=0;genWord();}
+    else if(mode==='stats')renderStats();
+  });
+  $('g3SelClearBtn').addEventListener('click',()=>{
+    const pool=getData(),sel=getCurSel();
+    // 最低1文字は残す
+    sel.clear();sel.add(pool[0].h);
+    buildSelGrid();refreshCurData();idx=0;seen.clear();
+    if(mode==='flash')updateCard();
+    else if(mode==='quiz'){qScore=0;quizCount=0;wrongList=[];wrongOnlyMode=false;$('g3WrongOnlyBtn').classList.remove('active');$('g3WrongOnlyBtn').textContent='❌ まちがいのみ';$('g3QuizMain').style.display='';$('g3QuizResult').style.display='none';genQuiz();}
+    else if(mode==='word'){wScore=0;genWord();}
+    else if(mode==='stats')renderStats();
+  });
+
   // Char set buttons
   document.querySelectorAll('#g3CharRow .g3-charBtn').forEach(b=>b.addEventListener('click',()=>{
-    charSet=b.dataset.set;curData=getData();idx=0;seen.clear();
+    charSet=b.dataset.set;refreshCurData();idx=0;seen.clear();
     document.querySelectorAll('#g3CharRow .g3-charBtn').forEach(x=>x.classList.toggle('active',x===b));
+    if(selOpen)buildSelGrid();else updateSelCount();
     if(mode==='flash')updateCard();else if(mode==='quiz'){qScore=0;quizCount=0;wrongList=[];wrongOnlyMode=false;$('g3WrongOnlyBtn').classList.remove('active');$('g3WrongOnlyBtn').textContent='❌ まちがいのみ';$('g3QuizMain').style.display='';$('g3QuizResult').style.display='none';genQuiz();}else if(mode==='word'){wScore=0;genWord();}else if(mode==='stats')renderStats();
   }));
 
@@ -1616,7 +1697,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
 
   function showCeleb(text){const el=$('g3Celeb');const t=document.createElement('div');t.className='g3-celebText';t.textContent=text;el.textContent='';el.appendChild(t);setTimeout(()=>{el.textContent='';},1200);}
 
-  window.g3Init=function(){if(!initialized){initialized=true;updateCard();speakCard();}};
+  window.g3Init=function(){if(!initialized){initialized=true;updateSelCount();updateCard();speakCard();}};
 })();
 
 // ============================================================
