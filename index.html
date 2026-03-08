@@ -2602,16 +2602,6 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     // ト音記号
     c.fillStyle='#1a1a2e';c.font='58px serif';c.textAlign='left';c.textBaseline='alphabetic';
     c.fillText('\uD834\uDD1E',4,116);
-    // 右側ラベル（ド/レ/ミ の位置表示）
-    var sideLabels=[
-      {y:CD.noteYs[2],col:'#16a34a',text:'ミ'},
-      {y:CD.noteYs[1],col:'#b45309',text:'レ'},
-      {y:CD.noteYs[0],col:'#dc2626',text:'ド'}
-    ];
-    sideLabels.forEach(function(s){
-      c.fillStyle=s.col;c.font='bold 16px "Zen Maru Gothic",sans-serif';
-      c.textAlign='right';c.textBaseline='middle';c.fillText(s.text,CD.W-2,s.y);
-    });
     // 各音符
     var NUMS=['\u2460','\u2461','\u2462','\u2463','\u2464'];
     cdNotes.forEach(function(note,i){
@@ -2698,7 +2688,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     $('g8NoteQuizSection').style.display='none';$('g8NoteStaffSection').style.display='none';$('g8ColorSection').style.display='none';
     $('g8Keyboard').style.display='none';$('g8QuizLabel').style.display='none';$('g8LvSelect').style.display='none';
     cdCanvas=$('g8ColorCanvas');cdCtx=cdCanvas.getContext('2d');
-    var cw=Math.min(660,window.innerWidth-48);
+    var cw=Math.min(420,window.innerWidth-40);
     cdCanvas.width=cw;cdCanvas.height=Math.round(cw*CD.H/CD.W);
     setupColorNotes();
     $('g8ColorProgress').textContent='0 / 5';
