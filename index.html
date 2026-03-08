@@ -314,6 +314,27 @@
     .g8-nq-btn.wrong{background:#fffbeb;border-color:var(--ng);opacity:.6;}
     .g8-quiz-label{font-size:44px;font-weight:900;background:#fff;padding:10px 40px;
                    border-radius:999px;box-shadow:var(--shadow);letter-spacing:.05em;}
+
+    /* ======== GameD: きおく ゲーム ======== */
+    .gd-show-animal{display:flex;flex-direction:column;align-items:center;gap:6px;background:#fff;border-radius:18px;padding:14px;box-shadow:0 6px 20px rgba(0,0,0,.08);}
+    .gd-show-animal img{width:80px;height:80px;object-fit:contain;}
+    .gd-show-animal div{font-size:16px;font-weight:900;}
+    .gd-choice-btn{display:flex;flex-direction:column;align-items:center;gap:6px;background:#fff;border:3px solid #e0e0e0;border-radius:16px;padding:10px;cursor:pointer;transition:all .15s;font-weight:900;font-size:14px;font-family:inherit;}
+    .gd-choice-btn img{width:60px;height:60px;object-fit:contain;}
+    .gd-choice-btn:active{transform:scale(.95);}
+    .gd-choice-btn.selected{border-color:#3b82f6;background:#eff6ff;}
+    .gd-choice-btn.gd-correct{border-color:var(--ok);background:#f0fdf4;}
+    .gd-choice-btn.gd-wrong{border-color:var(--ng);background:#fffbeb;opacity:.7;}
+
+    /* ======== GameE: コップ ゲーム ======== */
+    .ge-stage{position:relative;width:min(380px,92vw);height:220px;margin:24px auto;}
+    .ge-cup-wrap{position:absolute;top:0;width:33.33%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;transition:left 0.45s ease;cursor:pointer;}
+    .ge-cup-body{display:flex;flex-direction:column;align-items:center;transition:transform 0.45s ease;z-index:2;position:relative;}
+    .ge-cup-top{width:90px;height:18px;background:linear-gradient(180deg,#f97316,#ea580c);border-radius:8px 8px 0 0;box-shadow:0 2px 8px rgba(234,88,12,.3);}
+    .ge-cup-mid{width:78px;height:82px;background:linear-gradient(180deg,#fb923c,#f97316);clip-path:polygon(5% 0%,95% 0%,100% 100%,0% 100%);box-shadow:2px 4px 12px rgba(249,115,22,.3);}
+    .ge-cup-base{width:82px;height:14px;background:linear-gradient(180deg,#ea580c,#c2410c);border-radius:0 0 10px 10px;}
+    .ge-cup-wrap.ge-lifted .ge-cup-body{transform:translateY(-95px);}
+    .ge-animal-img{width:72px;height:72px;object-fit:contain;position:absolute;bottom:14px;left:50%;transform:translateX(-50%);opacity:0;transition:opacity 0.3s;z-index:1;}
   </style>
 </head>
 <body>
@@ -328,9 +349,8 @@
     <div class="game-cards">
       <div class="game-card" id="cardG1"><div class="card-icon">🎯</div><div class="card-title">なまえ あてゲーム</div><div class="card-desc">どうぶつの えを みて<br>なまえを あてよう！</div></div>
       <div class="game-card" id="cardG8"><div class="card-icon">🎹</div><div class="card-title">どうぶつ ピアノ</div><div class="card-desc">どうぶつと いっしょに<br>ドレミを おぼえよう！</div></div>
-      <div class="game-card" id="cardGA"><div class="card-icon">🚗</div><div class="card-title">のりもの いろわけ</div><div class="card-desc">いろで のりものを<br>みつけよう！</div></div>
-      <div class="game-card" id="cardGB"><div class="card-icon">🚃</div><div class="card-title">でんしゃに のせよう</div><div class="card-desc">おなじ いろの どうぶつを<br>でんしゃに のせよう！</div></div>
-      <div class="game-card" id="cardGC"><div class="card-icon">🏎️</div><div class="card-title">くるま おおきさ ならべ</div><div class="card-desc">ちいさい じゅんに<br>くるまを タップしよう！</div></div>
+      <div class="game-card" id="cardGD"><div class="card-icon">🧠</div><div class="card-title">きおく ゲーム</div><div class="card-desc">どうぶつを おぼえて<br>えらぼう！</div></div>
+      <div class="game-card" id="cardGE"><div class="card-icon">🎩</div><div class="card-title">コップ ゲーム</div><div class="card-desc">どうぶつが かくれた<br>コップを あてよう！</div></div>
       <div class="game-card" id="cardG3"><div class="card-icon">✏️</div><div class="card-title">ひらがな おぼえよう</div><div class="card-desc">ひらがなの カードを みたり<br>クイズで あそぼう！</div></div>
       <div class="game-card" id="cardG4"><div class="card-icon">🔊</div><div class="card-title">なきごえ あてゲーム</div><div class="card-desc">どうぶつの なきごえを きいて<br>えを えらぼう！</div></div>
       <div class="game-card" id="cardG5"><div class="card-icon">🃏</div><div class="card-title">めくりあわせ</div><div class="card-desc">おなじ どうぶつを みつけよう！<br>ぜんぶ そろえてね！</div></div>
@@ -404,83 +424,71 @@
     <button class="btn" id="g1BookBack">← もどる</button>
   </div>
 
-  <!-- GameA: のりもの いろわけ -->
-  <div class="screen" id="gAScreen">
+  <!-- GameD: きおく ゲーム -->
+  <div class="screen" id="gDScreen">
     <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:600px;">
-      <div class="badge" id="gABadge">🚗 1/7</div>
-      <div class="badge" id="gAScoreBadge">⭐ 0</div>
-      <button class="btn" id="gAHomeBtn" style="padding:8px 14px;">🏠</button>
+      <div class="badge" id="gDBadge">🧠 0/5</div>
+      <div class="badge" id="gDScoreBadge">⭐ 0</div>
+      <button class="btn" id="gDHomeBtn" style="padding:8px 14px;">🏠</button>
     </div>
     <div style="display:flex;gap:8px;justify-content:center;">
-      <button class="btn lv active" id="gALv1Btn" style="font-size:13px;">Lv1 3いろ</button>
-      <button class="btn lv" id="gALv2Btn" style="font-size:13px;">Lv2 5いろ</button>
+      <button class="btn lv active" id="gDLv1Btn" style="font-size:13px;">Lv1 5びょう</button>
+      <button class="btn lv" id="gDLv2Btn" style="font-size:13px;">Lv2 3びょう</button>
     </div>
-    <div id="gAQuestion" style="font-size:26px;font-weight:900;color:#1a1a2e;margin:8px 0;"></div>
-    <div id="gACards" style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin:12px 0;"></div>
+    <div id="gDPrompt" style="font-size:24px;font-weight:900;color:#1a1a2e;margin:6px 0;"></div>
+    <div id="gDTimer" style="font-size:20px;font-weight:700;color:#ef4444;min-height:28px;"></div>
+    <div id="gDShowArea" style="display:none;flex-wrap:wrap;gap:16px;justify-content:center;margin:10px 0;max-width:480px;width:100%;"></div>
+    <div id="gDQuestion" style="display:none;font-size:18px;font-weight:900;color:#444;margin:8px 0;">タップして えらんでね！（3つ えらんでね）</div>
+    <div id="gDChoices" style="display:none;grid-template-columns:repeat(3,1fr);gap:12px;max-width:480px;width:100%;"></div>
+    <div id="gDProgress" style="font-size:16px;color:#888;margin-top:8px;"></div>
   </div>
-  <div class="screen" id="gAResultScreen">
+  <div class="screen" id="gDResultScreen">
     <div class="result-card">
-      <div id="gAMedal" style="font-size:72px;margin-bottom:4px;"></div>
-      <div style="font-size:28px;font-weight:900;" id="gAResultScore"></div>
-      <div style="font-size:18px;font-weight:900;margin:8px 0 20px;" id="gAResultSub"></div>
+      <div id="gDMedal" style="font-size:72px;margin-bottom:4px;"></div>
+      <div style="font-size:28px;font-weight:900;" id="gDResultScore"></div>
+      <div style="font-size:18px;font-weight:900;margin:8px 0 20px;" id="gDResultSub"></div>
       <div style="display:flex;gap:12px;">
-        <button class="btn accent" id="gARetryBtn">🚗 もういちど</button>
-        <button class="btn" id="gAResultHomeBtn">🏠 もどる</button>
+        <button class="btn accent" id="gDRetryBtn">🧠 もういちど</button>
+        <button class="btn" id="gDResultHomeBtn">🏠 もどる</button>
       </div>
     </div>
   </div>
 
-  <!-- GameB: どうぶつ でんしゃに のせよう -->
-  <div class="screen" id="gBScreen">
+  <!-- GameE: コップ ゲーム -->
+  <div class="screen" id="gEScreen">
     <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:600px;">
-      <div class="badge" id="gBBadge">🚃 1/7</div>
-      <div class="badge" id="gBScoreBadge">⭐ 0</div>
-      <button class="btn" id="gBHomeBtn" style="padding:8px 14px;">🏠</button>
+      <div class="badge" id="gEBadge">🎩 0/5</div>
+      <div class="badge" id="gEScoreBadge">⭐ 0</div>
+      <button class="btn" id="gEHomeBtn" style="padding:8px 14px;">🏠</button>
     </div>
     <div style="display:flex;gap:8px;justify-content:center;">
-      <button class="btn lv active" id="gBLv1Btn" style="font-size:13px;">Lv1 3いろ</button>
-      <button class="btn lv" id="gBLv2Btn" style="font-size:13px;">Lv2 5いろ</button>
+      <button class="btn lv active" id="gELv1Btn" style="font-size:13px;">Lv1 かんたん</button>
+      <button class="btn lv" id="gELv2Btn" style="font-size:13px;">Lv2 むずかしい</button>
     </div>
-    <div id="gBTrain" style="font-size:64px;margin:6px 0;text-align:center;line-height:1.2;"></div>
-    <div id="gBQuestion" style="font-size:22px;font-weight:900;color:#1a1a2e;margin:4px 0 12px;"></div>
-    <div id="gBCards" style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;"></div>
-  </div>
-  <div class="screen" id="gBResultScreen">
-    <div class="result-card">
-      <div id="gBMedal" style="font-size:72px;margin-bottom:4px;"></div>
-      <div style="font-size:28px;font-weight:900;" id="gBResultScore"></div>
-      <div style="font-size:18px;font-weight:900;margin:8px 0 20px;" id="gBResultSub"></div>
-      <div style="display:flex;gap:12px;">
-        <button class="btn accent" id="gBRetryBtn">🚃 もういちど</button>
-        <button class="btn" id="gBResultHomeBtn">🏠 もどる</button>
+    <div id="gEPrompt" style="font-size:22px;font-weight:900;color:#1a1a2e;margin:8px 0;min-height:30px;"></div>
+    <div class="ge-stage" id="gEStage">
+      <div class="ge-cup-wrap" id="gECup0">
+        <div class="ge-cup-body"><div class="ge-cup-top"></div><div class="ge-cup-mid"></div><div class="ge-cup-base"></div></div>
+        <img class="ge-animal-img" src="" alt="">
+      </div>
+      <div class="ge-cup-wrap" id="gECup1">
+        <div class="ge-cup-body"><div class="ge-cup-top"></div><div class="ge-cup-mid"></div><div class="ge-cup-base"></div></div>
+        <img class="ge-animal-img" src="" alt="">
+      </div>
+      <div class="ge-cup-wrap" id="gECup2">
+        <div class="ge-cup-body"><div class="ge-cup-top"></div><div class="ge-cup-mid"></div><div class="ge-cup-base"></div></div>
+        <img class="ge-animal-img" src="" alt="">
       </div>
     </div>
   </div>
-
-  <!-- GameC: くるま おおきさ ならべ -->
-  <div class="screen" id="gCScreen">
-    <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:600px;">
-      <div class="badge" id="gCBadge">🏎️ 1/5</div>
-      <div class="badge" id="gCScoreBadge">⭐ 0</div>
-      <button class="btn" id="gCHomeBtn" style="padding:8px 14px;">🏠</button>
-    </div>
-    <div style="display:flex;gap:8px;justify-content:center;">
-      <button class="btn lv active" id="gCLv1Btn" style="font-size:13px;">Lv1 3だい</button>
-      <button class="btn lv" id="gCLv2Btn" style="font-size:13px;">Lv2 5だい</button>
-    </div>
-    <div id="gCInstruction" style="font-size:22px;font-weight:900;color:#1a1a2e;margin:10px 0 4px;">ちいさい じゅんに タップしよう！</div>
-    <div id="gCProgress" style="font-size:16px;color:#666;margin-bottom:6px;"></div>
-    <div id="gCCars" style="display:flex;gap:20px;justify-content:center;align-items:flex-end;flex-wrap:wrap;margin:16px 0;min-height:120px;"></div>
-    <div id="gCMessage" style="font-size:22px;font-weight:900;min-height:32px;"></div>
-  </div>
-  <div class="screen" id="gCResultScreen">
+  <div class="screen" id="gEResultScreen">
     <div class="result-card">
-      <div id="gCMedal" style="font-size:72px;margin-bottom:4px;"></div>
-      <div style="font-size:28px;font-weight:900;" id="gCResultScore"></div>
-      <div style="font-size:18px;font-weight:900;margin:8px 0 20px;" id="gCResultSub"></div>
+      <div id="gEMedal" style="font-size:72px;margin-bottom:4px;"></div>
+      <div style="font-size:28px;font-weight:900;" id="gEResultScore"></div>
+      <div style="font-size:18px;font-weight:900;margin:8px 0 20px;" id="gEResultSub"></div>
       <div style="display:flex;gap:12px;">
-        <button class="btn accent" id="gCRetryBtn">🏎️ もういちど</button>
-        <button class="btn" id="gCResultHomeBtn">🏠 もどる</button>
+        <button class="btn accent" id="gERetryBtn">🎩 もういちど</button>
+        <button class="btn" id="gEResultHomeBtn">🏠 もどる</button>
       </div>
     </div>
   </div>
@@ -762,13 +770,12 @@
 // ============================================================
 //  共通
 // ============================================================
-const allScreens=['menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','gAScreen','gAResultScreen','gBScreen','gBResultScreen','gCScreen','gCResultScreen','g3Screen','g4Screen','g4ResultScreen','g5Screen','g6Screen','g6ResultScreen','g7Screen','g7ResultScreen','g8Screen','g8ResultScreen'];
+const allScreens=['menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','gDScreen','gDResultScreen','gEScreen','gEResultScreen','g3Screen','g4Screen','g4ResultScreen','g5Screen','g6Screen','g6ResultScreen','g7Screen','g7ResultScreen','g8Screen','g8ResultScreen'];
 function showScreen(id){allScreens.forEach(s=>document.getElementById(s).classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('backBtn').classList.toggle('visible',id!=='menuScreen');}
-function goHome(){showScreen('menuScreen');if(typeof gAStop==='function')gAStop();if(typeof gBStop==='function')gBStop();if(typeof gCStop==='function')gCStop();if(typeof g4Stop==='function')g4Stop();if(typeof g5Stop==='function')g5Stop();if(typeof g6Stop==='function')g6Stop();if(typeof g7Stop==='function')g7Stop();if(typeof g8Stop==='function')g8Stop();}
+function goHome(){showScreen('menuScreen');if(typeof gDStop==='function')gDStop();if(typeof gEStop==='function')gEStop();if(typeof g4Stop==='function')g4Stop();if(typeof g5Stop==='function')g5Stop();if(typeof g6Stop==='function')g6Stop();if(typeof g7Stop==='function')g7Stop();if(typeof g8Stop==='function')g8Stop();}
 function startGame1(){showScreen('g1StartScreen');g1RenderAnimalSelect();}
-function startGameA(){showScreen('gAScreen');if(typeof gAInit==='function')gAInit();}
-function startGameB(){showScreen('gBScreen');if(typeof gBInit==='function')gBInit();}
-function startGameC(){showScreen('gCScreen');if(typeof gCInit==='function')gCInit();}
+function startGameD(){showScreen('gDScreen');if(typeof gDInit==='function')gDInit();}
+function startGameE(){showScreen('gEScreen');if(typeof gEInit==='function')gEInit();}
 function startGame3(){showScreen('g3Screen');if(typeof g3Init==='function')g3Init();}
 function startGame4(){showScreen('g4Screen');if(typeof g4Init==='function')g4Init();}
 function startGame5(){showScreen('g5Screen');if(typeof g5Init==='function')g5Init();}
@@ -778,9 +785,8 @@ function startGame8(){showScreen('g8Screen');if(typeof g8Init==='function')g8Ini
 
 document.getElementById('backBtn').addEventListener('click',goHome);
 document.getElementById('cardG1').addEventListener('click',startGame1);
-document.getElementById('cardGA').addEventListener('click',startGameA);
-document.getElementById('cardGB').addEventListener('click',startGameB);
-document.getElementById('cardGC').addEventListener('click',startGameC);
+document.getElementById('cardGD').addEventListener('click',startGameD);
+document.getElementById('cardGE').addEventListener('click',startGameE);
 document.getElementById('cardG3').addEventListener('click',startGame3);
 document.getElementById('cardG4').addEventListener('click',startGame4);
 document.getElementById('cardG5').addEventListener('click',startGame5);
@@ -966,220 +972,308 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
 })();
 
 // ============================================================
-//  GameA: のりもの いろわけ
+//  GameD: きおく ゲーム
 // ============================================================
 (function(){
   var $=function(id){return document.getElementById(id);};
-  var COLORS_A=[
-    {name:'あか',  bg:'#fecaca',border:'#ef4444'},
-    {name:'あお',  bg:'#bfdbfe',border:'#3b82f6'},
-    {name:'きいろ',bg:'#fef08a',border:'#eab308'},
-    {name:'みどり',bg:'#bbf7d0',border:'#22c55e'},
-    {name:'オレンジ',bg:'#fed7aa',border:'#f97316'}
-  ];
-  var VEHICLES_A=['🚂','🚃','🚄','🚅','🚆','🚇','🚈','🚉','🚊','🚋','🚌','🚍','🚎','🚐','🚑','🚒','🚓','🚔','🚕','🚖','🚗','🚘','🚙','🚚','🚛','🚜'];
-  var gALevel=1,gARound=0,gAScore=0,gALocked=false,gATimer=null;
+  var ANIMALS_D=['inu','neko','kuma','zou','raion','pengin','kirin','hitsuji','buta','koara','uma','yagi','ushi','hiyoko'];
+  var NAMES_D={inu:'いぬ',neko:'ねこ',kuma:'くま',zou:'ぞう',raion:'らいおん',pengin:'ぺんぎん',kirin:'きりん',hitsuji:'ひつじ',buta:'ぶた',koara:'こあら',uma:'うま',yagi:'やぎ',ushi:'うし',hiyoko:'ひよこ'};
+  var gDLevel=1,gDRound=0,gDScore=0,gDTargets=[],gDSelected=[],gDLocked=false;
+  var gDShowTimeout=null,gDCountInterval=null;
+  var SHOW_COUNT=3,TOTAL_ROUNDS=5,CHOICE_COUNT=6;
+
   function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
-  function showResultA(){
-    showScreen('gAResultScreen');
-    var pct=Math.round(gAScore/7*100);
-    var medal=gAScore===7?'👑':pct>=80?'🥇':pct>=60?'🥈':pct>=40?'🥉':'💪';
-    $('gAMedal').textContent=medal;$('gAResultScore').textContent=gAScore+' / 7';
-    $('gAResultSub').textContent=gAScore===7?'パーフェクト！！':pct>=80?'すばらしい！':pct>=60?'がんばったね！':pct>=40?'おしい！':'つぎは がんばろう！';
-    if(gAScore===7)launchConfetti();speak(gAScore+'もん せいかい！');
+
+  function gDCleanup(){
+    if(gDShowTimeout){clearTimeout(gDShowTimeout);gDShowTimeout=null;}
+    if(gDCountInterval){clearInterval(gDCountInterval);gDCountInterval=null;}
   }
-  function newRoundA(){
-    if(gARound>=7){showResultA();return;}
-    gALocked=false;gARound++;
-    $('gABadge').textContent='🚗 '+gARound+'/7';
-    var pool=(gALevel===1?COLORS_A.slice(0,3):COLORS_A);
-    var shown=shuffle(pool).slice(0,3);
-    var target=shown[Math.floor(Math.random()*shown.length)];
-    var vehicles=shuffle(VEHICLES_A).slice(0,3);
-    $('gAQuestion').textContent=target.name+' の のりものは どれ？';
-    speak(target.name+' の のりものは どれ？');
-    var cards=$('gACards');cards.textContent='';
-    shown.forEach(function(col,i){
+
+  function showResultD(){
+    gDCleanup();
+    showScreen('gDResultScreen');
+    var pct=Math.round(gDScore/TOTAL_ROUNDS*100);
+    var medal=gDScore===TOTAL_ROUNDS?'👑':pct>=80?'🥇':pct>=60?'🥈':pct>=40?'🥉':'💪';
+    $('gDMedal').textContent=medal;
+    $('gDResultScore').textContent=gDScore+' / '+TOTAL_ROUNDS;
+    $('gDResultSub').textContent=gDScore===TOTAL_ROUNDS?'パーフェクト！！':pct>=80?'すばらしい！':pct>=60?'がんばったね！':'つぎは がんばろう！';
+    if(gDScore===TOTAL_ROUNDS)launchConfetti();
+    speak(gDScore+'もん せいかい！');
+  }
+
+  function startShowPhase(){
+    gDLocked=false;
+    gDSelected=[];
+    $('gDShowArea').style.display='flex';
+    $('gDQuestion').style.display='none';
+    $('gDChoices').style.display='none';
+    $('gDPrompt').textContent='よく みてね！';
+    var showTime=gDLevel===1?5000:3000;
+    var remaining=Math.ceil(showTime/1000);
+    $('gDTimer').textContent=remaining+'びょう';
+    gDCountInterval=setInterval(function(){
+      remaining--;
+      if(remaining>0){$('gDTimer').textContent=remaining+'びょう';}
+      else{clearInterval(gDCountInterval);gDCountInterval=null;}
+    },1000);
+    gDShowTimeout=setTimeout(function(){gDShowTimeout=null;startChoicePhase();},showTime);
+  }
+
+  function startChoicePhase(){
+    gDCleanup();
+    $('gDShowArea').style.display='none';
+    $('gDTimer').textContent='';
+    $('gDPrompt').textContent='どの どうぶつ だったでしょうか？';
+    var wrong=shuffle(ANIMALS_D.filter(function(a){return gDTargets.indexOf(a)===-1;}));
+    var choices=shuffle(gDTargets.concat(wrong.slice(0,CHOICE_COUNT-SHOW_COUNT)));
+    var choicesEl=$('gDChoices');
+    choicesEl.innerHTML='';
+    choicesEl.style.display='grid';
+    choices.forEach(function(key){
       var btn=document.createElement('button');
-      btn.style.cssText='background:'+col.bg+';border:5px solid '+col.border+';border-radius:24px;width:130px;height:130px;font-size:64px;cursor:pointer;transition:transform .1s,outline .1s;display:flex;align-items:center;justify-content:center;';
-      btn.textContent=vehicles[i];btn.type='button';
-      btn.addEventListener('click',function(){
-        if(gALocked)return;
-        if(col===target){
-          gALocked=true;gAScore++;$('gAScoreBadge').textContent='⭐ '+gAScore;
-          btn.style.outline='6px solid #22c55e';speak('せいかい！');
-          if(gATimer)clearTimeout(gATimer);gATimer=setTimeout(newRoundA,900);
-        }else{
-          btn.style.outline='6px solid #ef4444';speak('おしい！もういちど！');
-          setTimeout(function(){btn.style.outline='';},800);
-        }
-      });
-      cards.appendChild(btn);
-    });
-  }
-  window.gAInit=function(){
-    if(gATimer)clearTimeout(gATimer);gATimer=null;
-    gARound=0;gAScore=0;gALocked=false;
-    $('gABadge').textContent='🚗 1/7';$('gAScoreBadge').textContent='⭐ 0';
-    newRoundA();
-  };
-  window.gAStop=function(){gALocked=true;if(gATimer)clearTimeout(gATimer);gATimer=null;};
-  $('gAHomeBtn').addEventListener('click',goHome);
-  $('gALv1Btn').addEventListener('click',function(){gALevel=1;$('gALv1Btn').classList.add('active');$('gALv2Btn').classList.remove('active');window.gAInit();});
-  $('gALv2Btn').addEventListener('click',function(){gALevel=2;$('gALv2Btn').classList.add('active');$('gALv1Btn').classList.remove('active');window.gAInit();});
-  $('gARetryBtn').addEventListener('click',function(){showScreen('gAScreen');window.gAInit();});
-  $('gAResultHomeBtn').addEventListener('click',goHome);
-})();
-
-// ============================================================
-//  GameB: どうぶつ でんしゃに のせよう
-// ============================================================
-(function(){
-  var $=function(id){return document.getElementById(id);};
-  var ANIMALS_B=[
-    {key:'inu',name:'いぬ'},{key:'neko',name:'ねこ'},{key:'kuma',name:'くま'},
-    {key:'zou',name:'ぞう'},{key:'raion',name:'らいおん'},{key:'pengin',name:'ぺんぎん'},
-    {key:'kirin',name:'きりん'},{key:'hitsuji',name:'ひつじ'},{key:'buta',name:'ぶた'},
-    {key:'koara',name:'コアラ'},{key:'uma',name:'うま'},{key:'yagi',name:'やぎ'}
-  ];
-  var COLORS_B=[
-    {name:'あか',  trainBg:'#fca5a5',cardBg:'#fecaca',border:'#ef4444'},
-    {name:'あお',  trainBg:'#93c5fd',cardBg:'#bfdbfe',border:'#3b82f6'},
-    {name:'きいろ',trainBg:'#fde047',cardBg:'#fef08a',border:'#eab308'},
-    {name:'みどり',trainBg:'#86efac',cardBg:'#bbf7d0',border:'#22c55e'},
-    {name:'オレンジ',trainBg:'#fdba74',cardBg:'#fed7aa',border:'#f97316'}
-  ];
-  var gBLevel=1,gBRound=0,gBScore=0,gBLocked=false,gBTimer=null;
-  function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
-  function showResultB(){
-    showScreen('gBResultScreen');
-    var pct=Math.round(gBScore/7*100);
-    var medal=gBScore===7?'👑':pct>=80?'🥇':pct>=60?'🥈':pct>=40?'🥉':'💪';
-    $('gBMedal').textContent=medal;$('gBResultScore').textContent=gBScore+' / 7';
-    $('gBResultSub').textContent=gBScore===7?'パーフェクト！！':pct>=80?'すばらしい！':pct>=60?'がんばったね！':pct>=40?'おしい！':'つぎは がんばろう！';
-    if(gBScore===7)launchConfetti();speak(gBScore+'もん せいかい！');
-  }
-  function newRoundB(){
-    if(gBRound>=7){showResultB();return;}
-    gBLocked=false;gBRound++;
-    $('gBBadge').textContent='🚃 '+gBRound+'/7';
-    var colorPool=(gBLevel===1?COLORS_B.slice(0,3):COLORS_B);
-    var colors=shuffle(colorPool);
-    var target=colors[0];
-    var shownColors=shuffle([target].concat(shuffle(colors.filter(function(c){return c!==target;})).slice(0,2)));
-    var animals=shuffle(ANIMALS_B).slice(0,3);
-    var trainDiv=document.createElement('div');
-    trainDiv.style.cssText='display:inline-flex;align-items:center;justify-content:center;background:'+target.trainBg+';border:5px solid '+target.border+';border-radius:20px;padding:10px 32px;font-size:72px;';
-    trainDiv.textContent='🚃';
-    $('gBTrain').textContent='';$('gBTrain').appendChild(trainDiv);
-    $('gBQuestion').textContent=target.name+' の でんしゃに のる どうぶつは どれ？';
-    speak(target.name+' の でんしゃに のる どうぶつは どれ？');
-    var cards=$('gBCards');cards.textContent='';
-    animals.forEach(function(animal,i){
-      var col=shownColors[i];var isCorrect=(col===target);
-      var card=document.createElement('button');
-      card.style.cssText='background:'+col.cardBg+';border:5px solid '+col.border+';border-radius:20px;width:110px;padding:12px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:outline .1s;';
-      card.type='button';
+      btn.className='gd-choice-btn';
+      btn.dataset.key=key;
       var img=document.createElement('img');
-      img.src='イラスト/'+animal.key+'.png';img.alt=animal.name;
-      img.style.cssText='width:72px;height:72px;object-fit:contain;';img.draggable=false;
-      var nameEl=document.createElement('div');
-      nameEl.style.cssText='font-size:14px;font-weight:900;color:#1a1a2e;';
-      nameEl.textContent=animal.name;
-      card.appendChild(img);card.appendChild(nameEl);
-      card.addEventListener('click',function(){
-        if(gBLocked)return;
-        if(isCorrect){
-          gBLocked=true;gBScore++;$('gBScoreBadge').textContent='⭐ '+gBScore;
-          card.style.outline='6px solid #22c55e';speak('せいかい！');
-          if(gBTimer)clearTimeout(gBTimer);gBTimer=setTimeout(newRoundB,900);
-        }else{
-          card.style.outline='6px solid #ef4444';speak('おしい！もういちど！');
-          setTimeout(function(){card.style.outline='';},800);
-        }
-      });
-      cards.appendChild(card);
+      img.src='イラスト/'+key+'.png';
+      img.alt=NAMES_D[key]||key;
+      var name=document.createElement('div');
+      name.textContent=NAMES_D[key]||key;
+      btn.appendChild(img);
+      btn.appendChild(name);
+      btn.addEventListener('click',function(){onChoiceD(key,btn);});
+      choicesEl.appendChild(btn);
     });
+    $('gDQuestion').style.display='';
   }
-  window.gBInit=function(){
-    if(gBTimer)clearTimeout(gBTimer);gBTimer=null;
-    gBRound=0;gBScore=0;gBLocked=false;
-    $('gBBadge').textContent='🚃 1/7';$('gBScoreBadge').textContent='⭐ 0';
-    newRoundB();
-  };
-  window.gBStop=function(){gBLocked=true;if(gBTimer)clearTimeout(gBTimer);gBTimer=null;};
-  $('gBHomeBtn').addEventListener('click',goHome);
-  $('gBLv1Btn').addEventListener('click',function(){gBLevel=1;$('gBLv1Btn').classList.add('active');$('gBLv2Btn').classList.remove('active');window.gBInit();});
-  $('gBLv2Btn').addEventListener('click',function(){gBLevel=2;$('gBLv2Btn').classList.add('active');$('gBLv1Btn').classList.remove('active');window.gBInit();});
-  $('gBRetryBtn').addEventListener('click',function(){showScreen('gBScreen');window.gBInit();});
-  $('gBResultHomeBtn').addEventListener('click',goHome);
-})();
 
-// ============================================================
-//  GameC: くるま おおきさ ならべ
-// ============================================================
-(function(){
-  var $=function(id){return document.getElementById(id);};
-  var SIZES_LV1=[36,62,96];
-  var SIZES_LV2=[26,42,60,80,104];
-  var gCLevel=1,gCRound=0,gCScore=0,gCAnswerIdx=0,gCItems=[],gCLocked=false,gCTimer=null;
-  function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
-  function showResultC(){
-    showScreen('gCResultScreen');
-    var total=5;var pct=Math.round(gCScore/total*100);
-    var medal=gCScore===total?'👑':pct>=80?'🥇':pct>=60?'🥈':pct>=40?'🥉':'💪';
-    $('gCMedal').textContent=medal;$('gCResultScore').textContent=gCScore+' / '+total;
-    $('gCResultSub').textContent=gCScore===total?'パーフェクト！！':pct>=80?'すばらしい！':pct>=60?'がんばったね！':pct>=40?'おしい！':'つぎは がんばろう！';
-    if(gCScore===total)launchConfetti();speak(gCScore+'もん せいかい！');
-  }
-  function onCarClick(btn,rank){
-    if(gCLocked)return;
-    if(rank===gCAnswerIdx){
-      gCAnswerIdx++;
-      btn.style.background='#bbf7d0';btn.style.borderColor='#22c55e';btn.disabled=true;
-      if(gCAnswerIdx>=gCItems.length){
-        gCLocked=true;gCScore++;$('gCScoreBadge').textContent='⭐ '+gCScore;
-        $('gCMessage').textContent='せいかい！🎉';speak('せいかい！');
-        if(gCTimer)clearTimeout(gCTimer);gCTimer=setTimeout(newRoundC,1200);
-      }
-    }else{
-      btn.style.borderColor='#ef4444';
-      $('gCMessage').textContent='ちがう！ちいさい じゅんに！';speak('ちいさい じゅんに おしてね！');
-      setTimeout(function(){btn.style.borderColor='transparent';$('gCMessage').textContent='';},900);
+  function onChoiceD(key,btn){
+    if(gDLocked)return;
+    var idx=gDSelected.indexOf(key);
+    if(idx>=0){gDSelected.splice(idx,1);btn.classList.remove('selected');}
+    else{gDSelected.push(key);btn.classList.add('selected');}
+    if(gDSelected.length===SHOW_COUNT){
+      gDLocked=true;
+      var correct=gDTargets.every(function(t){return gDSelected.indexOf(t)>=0;});
+      var allBtns=document.querySelectorAll('.gd-choice-btn');
+      allBtns.forEach(function(b){
+        var k=b.dataset.key;
+        if(gDTargets.indexOf(k)>=0){b.classList.add('gd-correct');}
+        else if(gDSelected.indexOf(k)>=0){b.classList.add('gd-wrong');}
+      });
+      if(correct){gDScore++;$('gDScoreBadge').textContent='⭐ '+gDScore;playCorrectSound();speak('せいかい！');}
+      else{playWrongSound();speak('ざんねん！');}
+      setTimeout(function(){newRoundD();},1600);
     }
   }
-  function newRoundC(){
-    if(gCRound>=5){showResultC();return;}
-    gCLocked=false;gCRound++;gCAnswerIdx=0;
-    $('gCBadge').textContent='🏎️ '+gCRound+'/5';$('gCMessage').textContent='';
-    var sizes=(gCLevel===1?SIZES_LV1:SIZES_LV2);
-    gCItems=sizes.map(function(s,i){return{size:s,rank:i};});
-    var displayOrder=shuffle(gCItems.slice());
-    var count=gCItems.length;
-    $('gCProgress').textContent='（'+count+'だい）';
-    var cars=$('gCCars');cars.textContent='';
-    displayOrder.forEach(function(item){
-      var btn=document.createElement('button');
-      btn.style.cssText='font-size:'+item.size+'px;background:none;border:4px solid transparent;border-radius:16px;padding:8px 12px;cursor:pointer;transition:all .15s;line-height:1;';
-      btn.textContent='🚗';btn.type='button';
-      btn.addEventListener('click',function(){onCarClick(btn,item.rank);});
-      cars.appendChild(btn);
+
+  function newRoundD(){
+    if(gDRound>=TOTAL_ROUNDS){showResultD();return;}
+    gDRound++;
+    $('gDProgress').textContent=gDRound+' / '+TOTAL_ROUNDS;
+    $('gDBadge').textContent='🧠 '+gDRound+'/'+TOTAL_ROUNDS;
+    gDTargets=shuffle(ANIMALS_D).slice(0,SHOW_COUNT);
+    var showArea=$('gDShowArea');
+    showArea.innerHTML='';
+    gDTargets.forEach(function(key){
+      var div=document.createElement('div');
+      div.className='gd-show-animal';
+      var img=document.createElement('img');
+      img.src='イラスト/'+key+'.png';
+      img.alt=NAMES_D[key]||key;
+      var name=document.createElement('div');
+      name.textContent=NAMES_D[key]||key;
+      div.appendChild(img);
+      div.appendChild(name);
+      showArea.appendChild(div);
     });
+    startShowPhase();
   }
-  window.gCInit=function(){
-    if(gCTimer)clearTimeout(gCTimer);gCTimer=null;
-    gCRound=0;gCScore=0;gCLocked=false;gCAnswerIdx=0;
-    $('gCBadge').textContent='🏎️ 1/5';$('gCScoreBadge').textContent='⭐ 0';$('gCMessage').textContent='';
-    newRoundC();
+
+  window.gDInit=function(){
+    gDLevel=1;gDRound=0;gDScore=0;gDLocked=false;
+    gDCleanup();
+    $('gDBadge').textContent='🧠 0/'+TOTAL_ROUNDS;
+    $('gDScoreBadge').textContent='⭐ 0';
+    $('gDLv1Btn').classList.add('active');$('gDLv2Btn').classList.remove('active');
+    $('gDShowArea').style.display='none';
+    $('gDQuestion').style.display='none';
+    $('gDChoices').style.display='none';
+    $('gDTimer').textContent='';
+    $('gDPrompt').textContent='ようい はじめ！';
+    setTimeout(function(){newRoundD();},400);
   };
-  window.gCStop=function(){gCLocked=true;if(gCTimer)clearTimeout(gCTimer);gCTimer=null;};
-  $('gCHomeBtn').addEventListener('click',goHome);
-  $('gCLv1Btn').addEventListener('click',function(){gCLevel=1;$('gCLv1Btn').classList.add('active');$('gCLv2Btn').classList.remove('active');window.gCInit();});
-  $('gCLv2Btn').addEventListener('click',function(){gCLevel=2;$('gCLv2Btn').classList.add('active');$('gCLv1Btn').classList.remove('active');window.gCInit();});
-  $('gCRetryBtn').addEventListener('click',function(){showScreen('gCScreen');window.gCInit();});
-  $('gCResultHomeBtn').addEventListener('click',goHome);
+  window.gDStop=function(){gDLocked=true;gDCleanup();};
+
+  $('gDHomeBtn').addEventListener('click',goHome);
+  $('gDLv1Btn').addEventListener('click',function(){gDLevel=1;$('gDLv1Btn').classList.add('active');$('gDLv2Btn').classList.remove('active');gDRound=0;gDScore=0;gDCleanup();gDLocked=false;newRoundD();});
+  $('gDLv2Btn').addEventListener('click',function(){gDLevel=2;$('gDLv2Btn').classList.add('active');$('gDLv1Btn').classList.remove('active');gDRound=0;gDScore=0;gDCleanup();gDLocked=false;newRoundD();});
+  $('gDRetryBtn').addEventListener('click',function(){showScreen('gDScreen');window.gDInit();});
+  $('gDResultHomeBtn').addEventListener('click',goHome);
 })();
 
+// ============================================================
+//  GameE: コップ ゲーム
+// ============================================================
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var ANIMALS_E=['inu','neko','kuma','zou','raion','pengin','kirin','hitsuji','buta','koara'];
+  var NAMES_E={inu:'いぬ',neko:'ねこ',kuma:'くま',zou:'ぞう',raion:'らいおん',pengin:'ぺんぎん',kirin:'きりん',hitsuji:'ひつじ',buta:'ぶた',koara:'こあら'};
+  var gELevel=1,gERound=0,gEScore=0,gELocked=false;
+  var gEAnimalKey='',gEAnimalCup=0;
+  var gECupPos=[0,1,2];
+  var gEShuffleTimers=[];
+  var SLOT_PCT=[0,33.34,66.67];
+  var TOTAL_ROUNDS=5;
+
+  function gECleanup(){gEShuffleTimers.forEach(function(t){clearTimeout(t);});gEShuffleTimers=[];}
+
+  function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+
+  function showResultE(){
+    gECleanup();
+    showScreen('gEResultScreen');
+    var pct=Math.round(gEScore/TOTAL_ROUNDS*100);
+    var medal=gEScore===TOTAL_ROUNDS?'👑':pct>=80?'🥇':pct>=60?'🥈':pct>=40?'🥉':'💪';
+    $('gEMedal').textContent=medal;
+    $('gEResultScore').textContent=gEScore+' / '+TOTAL_ROUNDS;
+    $('gEResultSub').textContent=gEScore===TOTAL_ROUNDS?'パーフェクト！！':pct>=80?'すばらしい！':pct>=60?'がんばったね！':'つぎは がんばろう！';
+    if(gEScore===TOTAL_ROUNDS)launchConfetti();
+    speak(gEScore+'もん せいかい！');
+  }
+
+  function updateCupPositions(animated){
+    for(var i=0;i<3;i++){
+      var cupEl=$('gECup'+i);
+      cupEl.style.transition=animated?'left 0.45s ease':'none';
+      cupEl.style.left=SLOT_PCT[gECupPos[i]]+'%';
+    }
+  }
+
+  function liftCup(cupIdx,cb){
+    var cupEl=$('gECup'+cupIdx);
+    cupEl.classList.add('ge-lifted');
+    var imgEl=cupEl.querySelector('.ge-animal-img');
+    if(imgEl)imgEl.style.opacity='1';
+    var t=setTimeout(function(){
+      cupEl.classList.remove('ge-lifted');
+      if(imgEl)imgEl.style.opacity='0';
+      if(cb)cb();
+    },1300);
+    gEShuffleTimers.push(t);
+  }
+
+  function runShuffle(moves,delay,cb){
+    if(moves<=0){if(cb)cb();return;}
+    var a=Math.floor(Math.random()*3);
+    var b;do{b=Math.floor(Math.random()*3);}while(b===a);
+    var tmp=gECupPos[a];gECupPos[a]=gECupPos[b];gECupPos[b]=tmp;
+    updateCupPositions(true);
+    var t=setTimeout(function(){runShuffle(moves-1,delay,cb);},delay);
+    gEShuffleTimers.push(t);
+  }
+
+  function enableCupClick(){
+    for(var i=0;i<3;i++){
+      (function(idx){
+        var cupEl=$('gECup'+idx);
+        cupEl.style.cursor='pointer';
+        cupEl.onclick=function(){onCupClick(idx);};
+      })(i);
+    }
+  }
+
+  function disableCupClick(){
+    for(var i=0;i<3;i++){
+      $('gECup'+i).onclick=null;
+      $('gECup'+i).style.cursor='default';
+    }
+  }
+
+  function onCupClick(cupIdx){
+    if(gELocked)return;
+    gELocked=true;
+    disableCupClick();
+    if(cupIdx===gEAnimalCup){
+      gEScore++;
+      $('gEScoreBadge').textContent='⭐ '+gEScore;
+      liftCup(cupIdx,function(){
+        playCorrectSound();speak('せいかい！');
+        var t=setTimeout(function(){newRoundE();},800);
+        gEShuffleTimers.push(t);
+      });
+    } else {
+      liftCup(gEAnimalCup,function(){
+        playWrongSound();speak('ざんねん！');
+        var t=setTimeout(function(){newRoundE();},800);
+        gEShuffleTimers.push(t);
+      });
+    }
+  }
+
+  function newRoundE(){
+    gECleanup();
+    if(gERound>=TOTAL_ROUNDS){showResultE();return;}
+    gERound++;
+    gELocked=true;
+    $('gEBadge').textContent='🎩 '+gERound+'/'+TOTAL_ROUNDS;
+    disableCupClick();
+    var animals=shuffle(ANIMALS_E);
+    gEAnimalKey=animals[0];
+    gEAnimalCup=Math.floor(Math.random()*3);
+    gECupPos=[0,1,2];
+    for(var i=0;i<3;i++){
+      var cupEl=$('gECup'+i);
+      cupEl.classList.remove('ge-lifted');
+      var imgEl=cupEl.querySelector('.ge-animal-img');
+      if(imgEl){
+        if(i===gEAnimalCup){imgEl.src='イラスト/'+gEAnimalKey+'.png';imgEl.alt=NAMES_E[gEAnimalKey]||gEAnimalKey;}
+        else{imgEl.src='';imgEl.alt='';}
+        imgEl.style.opacity='0';
+      }
+    }
+    updateCupPositions(false);
+    var animalName=NAMES_E[gEAnimalKey]||gEAnimalKey;
+    $('gEPrompt').textContent=animalName+'は どこでしょうか？';
+    speak(animalName+'は どこかな？');
+    var t1=setTimeout(function(){
+      liftCup(gEAnimalCup,function(){
+        var moves=gELevel===1?5:9;
+        var delay=gELevel===1?600:380;
+        runShuffle(moves,delay,function(){
+          gELocked=false;
+          enableCupClick();
+          speak('どこかな？');
+        });
+      });
+    },600);
+    gEShuffleTimers.push(t1);
+  }
+
+  window.gEInit=function(){
+    gELevel=1;gERound=0;gEScore=0;gELocked=false;
+    gECleanup();
+    $('gEBadge').textContent='🎩 0/'+TOTAL_ROUNDS;
+    $('gEScoreBadge').textContent='⭐ 0';
+    $('gELv1Btn').classList.add('active');$('gELv2Btn').classList.remove('active');
+    $('gEPrompt').textContent='コップ ゲーム スタート！';
+    gECupPos=[0,1,2];
+    updateCupPositions(false);
+    disableCupClick();
+    for(var i=0;i<3;i++){
+      var imgEl=$('gECup'+i).querySelector('.ge-animal-img');
+      if(imgEl){imgEl.src='';imgEl.style.opacity='0';}
+      $('gECup'+i).classList.remove('ge-lifted');
+    }
+    setTimeout(function(){newRoundE();},500);
+  };
+  window.gEStop=function(){gELocked=true;gECleanup();disableCupClick();};
+
+  $('gEHomeBtn').addEventListener('click',goHome);
+  $('gELv1Btn').addEventListener('click',function(){gELevel=1;$('gELv1Btn').classList.add('active');$('gELv2Btn').classList.remove('active');gERound=0;gEScore=0;gECleanup();window.gEInit();});
+  $('gELv2Btn').addEventListener('click',function(){gELevel=2;$('gELv2Btn').classList.add('active');$('gELv1Btn').classList.remove('active');gERound=0;gEScore=0;gECleanup();window.gEInit();});
+  $('gERetryBtn').addEventListener('click',function(){showScreen('gEScreen');window.gEInit();});
+  $('gEResultHomeBtn').addEventListener('click',goHome);
+})();
 
 // ============================================================
 //  Game3: ひらがな おぼえよう
@@ -2377,9 +2471,9 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   // ============================================================
   //  いろ音符ゲーム (Color Drag)
   // ============================================================
-  var CD={W:540,H:300,
+  var CD={W:540,H:265,
     staffLines:[28,48,68,88,108],     // 五線（20px間隔）
-    noteYs:[200,152,108],             // 0=ド(ledger下), 1=レ(スペース広め), 2=ミ(下の線)
+    noteYs:[178,142,108],             // 0=ド(ledger下), 1=レ(スペース広め), 2=ミ(下の線)
     noteXs:[86,172,258,348,435],      // 5音符（等間隔）
     COLORS:['#ef4444','#f5c518','#22c55e'],
     NAMES:['ド','レ','ミ'],
