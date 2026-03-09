@@ -244,6 +244,14 @@
     .g8-key.guide{background:#fff9c4;border-color:#fbbf24;animation:g8guide .55s ease-in-out infinite alternate;}
     @keyframes g8guide{from{transform:scaleY(1)}to{transform:scaleY(1.06)}}
     .g8-key.melody-active{background:#e0f2fe;border-color:#38bdf8;}
+    /* ======== GameP: えあわせパズル ======== */
+    .gP-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px 8px;}
+    #gPBoard{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:min(310px,90vw);}
+    .gP-tile{aspect-ratio:1;overflow:hidden;border-radius:14px;border:5px solid #e2e8f0;cursor:pointer;position:relative;transition:transform .12s,border-color .12s,box-shadow .12s;box-shadow:0 3px 10px rgba(0,0,0,.1);}
+    .gP-tile:active{transform:scale(.93);}
+    .gP-tile.gP-sel{border-color:#fbbf24;box-shadow:0 0 0 4px rgba(251,191,36,.5);transform:scale(1.07);}
+    .gP-inner{position:absolute;top:0;left:0;width:200%;height:200%;pointer-events:none;}
+    .gP-inner svg{width:100%;height:100%;display:block;}
     .g8-nq-btn{font-size:26px;font-weight:900;padding:14px 22px;border-radius:18px;background:#fff;border:3px solid #ddd;cursor:pointer;min-width:76px;transition:all .15s;box-shadow:0 4px 12px rgba(0,0,0,.08);font-family:inherit;}
     .g8-nq-btn:active{transform:scale(.95);}
     .g8-nq-btn.correct{background:#f0fdf4;border-color:var(--ok);}
@@ -306,6 +314,7 @@
       <div class="game-card" id="cardG5"><div class="card-icon">🃏</div><div class="card-title">めくりあわせ</div><div class="card-desc">おなじ どうぶつを みつけよう！<br>ぜんぶ そろえてね！</div></div>
       <div class="game-card" id="cardG6"><div class="card-icon">📏</div><div class="card-title">おおきさ くらべ</div><div class="card-desc">どっちの どうぶつが<br>おおきいかな？</div></div>
       <div class="game-card" id="cardG7"><div class="card-icon">✏️</div><div class="card-title">ことば かんせい</div><div class="card-desc">どうぶつの なまえの<br>もじを えらんでね！</div></div>
+      <div class="game-card" id="cardGP"><div class="card-icon">🧩</div><div class="card-title">えあわせ パズル</div><div class="card-desc">どうぶつの えを<br>かんせいさせよう！</div></div>
     </div>
   </div>
 
@@ -718,6 +727,16 @@
       </div>
     </div>
   </div>
+  <!-- GameP: えあわせパズル -->
+  <div class="screen" id="gPScreen">
+    <div class="gP-wrap">
+      <div style="font-size:22px;font-weight:900;text-align:center;color:var(--text);" id="gPTitle">🧩 えあわせ パズル</div>
+      <div style="font-size:15px;color:var(--muted);text-align:center;min-height:22px;" id="gPMsg"></div>
+      <div id="gPBoard"></div>
+      <div style="font-size:14px;color:#94a3b8;text-align:center;min-height:18px;" id="gPHint">2つ えらんで いれかえよう！</div>
+      <button class="btn accent" id="gPDoneBtn" style="display:none;font-size:20px;padding:16px 40px;">もういちど あそぶ！</button>
+    </div>
+  </div>
 </div>
 <div class="streak-msg" id="streakMsg"></div>
 
@@ -735,9 +754,9 @@
 // ============================================================
 //  共通
 // ============================================================
-const allScreens=['menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','gDScreen','gDResultScreen','gEScreen','gEResultScreen','g3Screen','g4Screen','g4ResultScreen','g5Screen','g6Screen','g6ResultScreen','g7Screen','g7ResultScreen','g8Screen','g8ResultScreen'];
+const allScreens=['menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','gDScreen','gDResultScreen','gEScreen','gEResultScreen','g3Screen','g4Screen','g4ResultScreen','g5Screen','g6Screen','g6ResultScreen','g7Screen','g7ResultScreen','g8Screen','g8ResultScreen','gPScreen'];
 function showScreen(id){allScreens.forEach(s=>document.getElementById(s).classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('backBtn').classList.toggle('visible',id!=='menuScreen');}
-function goHome(){showScreen('menuScreen');if(typeof gDStop==='function')gDStop();if(typeof gEStop==='function')gEStop();if(typeof g4Stop==='function')g4Stop();if(typeof g5Stop==='function')g5Stop();if(typeof g6Stop==='function')g6Stop();if(typeof g7Stop==='function')g7Stop();if(typeof g8Stop==='function')g8Stop();}
+function goHome(){showScreen('menuScreen');if(typeof gDStop==='function')gDStop();if(typeof gEStop==='function')gEStop();if(typeof g4Stop==='function')g4Stop();if(typeof g5Stop==='function')g5Stop();if(typeof g6Stop==='function')g6Stop();if(typeof g7Stop==='function')g7Stop();if(typeof g8Stop==='function')g8Stop();if(typeof gPStop==='function')gPStop();}
 function startGame1(){showScreen('g1StartScreen');g1RenderAnimalSelect();}
 function startGameD(){showScreen('gDScreen');if(typeof gDInit==='function')gDInit();}
 function startGameE(){showScreen('gEScreen');if(typeof gEInit==='function')gEInit();}
@@ -747,6 +766,7 @@ function startGame5(){showScreen('g5Screen');if(typeof g5Init==='function')g5Ini
 function startGame6(){showScreen('g6Screen');if(typeof g6Init==='function')g6Init();}
 function startGame7(){showScreen('g7Screen');if(typeof g7Init==='function')g7Init();}
 function startGame8(){showScreen('g8Screen');if(typeof g8Init==='function')g8Init();}
+function startGameP(){showScreen('gPScreen');if(typeof gPInit==='function')gPInit();}
 
 document.getElementById('backBtn').addEventListener('click',goHome);
 document.getElementById('cardG1').addEventListener('click',startGame1);
@@ -758,6 +778,7 @@ document.getElementById('cardG5').addEventListener('click',startGame5);
 document.getElementById('cardG6').addEventListener('click',startGame6);
 document.getElementById('cardG7').addEventListener('click',startGame7);
 document.getElementById('cardG8').addEventListener('click',startGame8);
+document.getElementById('cardGP').addEventListener('click',startGameP);
 
 // TTS (Google翻訳TTS優先、ネイティブTTSにフォールバック)
 let _ttsAudio=null,_nativeVoice=null;
@@ -2323,7 +2344,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
       return;
     }
     noteQuizRound++;
-    var count=LEVEL_COUNT[level];
+    var count=Math.min(4,LEVEL_COUNT[level]);
     if(noteQuizRound<=4){
       if(noteQuizBag.length===0){
         for(var nbi=0;nbi<count;nbi++)noteQuizBag.push(nbi);
@@ -2469,7 +2490,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
       return;
     }
     staffQuizRound++;
-    var count=LEVEL_COUNT[level];
+    var count=Math.min(4,LEVEL_COUNT[level]);
     if(staffQuizRound<=4){
       if(staffQuizBag.length===0){
         for(var bi=0;bi<count;bi++)staffQuizBag.push(bi);
@@ -2928,6 +2949,110 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     ng.style.display='';
   };
   window.g8Stop=function(){if(g8Timer){clearTimeout(g8Timer);g8Timer=null;}stopMelody();};
+})();
+
+// ============================================================
+// GameP: えあわせパズル
+// ============================================================
+(function(){
+  function $(id){return document.getElementById(id);}
+
+  var CAT='<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="300" fill="#fce7f3"/><polygon points="48,82 76,6 128,74" fill="#fda4af"/><polygon points="63,72 80,24 115,67" fill="#fce7f3"/><polygon points="252,82 224,6 172,74" fill="#fda4af"/><polygon points="237,72 220,24 185,67" fill="#fce7f3"/><circle cx="150" cy="188" r="120" fill="#fda4af"/><ellipse cx="104" cy="128" rx="26" ry="22" fill="white"/><circle cx="104" cy="131" r="15" fill="#1e293b"/><circle cx="112" cy="123" r="6" fill="white"/><ellipse cx="196" cy="128" rx="26" ry="22" fill="white"/><circle cx="196" cy="131" r="15" fill="#1e293b"/><circle cx="204" cy="123" r="6" fill="white"/><polygon points="143,192 157,192 150,206" fill="#be185d"/><path d="M133,214 Q150,230 167,214" stroke="#be185d" stroke-width="3.5" fill="none"/><line x1="28" y1="194" x2="128" y2="198" stroke="#be185d" stroke-width="2.5"/><line x1="28" y1="210" x2="128" y2="208" stroke="#be185d" stroke-width="2.5"/><line x1="272" y1="194" x2="172" y2="198" stroke="#be185d" stroke-width="2.5"/><line x1="272" y1="210" x2="172" y2="208" stroke="#be185d" stroke-width="2.5"/></svg>';
+  var DOG='<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="300" fill="#fef3c7"/><ellipse cx="58" cy="158" rx="45" ry="96" fill="#d97706" transform="rotate(-12 58 158)"/><ellipse cx="242" cy="158" rx="45" ry="96" fill="#d97706" transform="rotate(12 242 158)"/><circle cx="150" cy="175" r="120" fill="#fde68a"/><ellipse cx="104" cy="128" rx="26" ry="23" fill="white"/><circle cx="104" cy="131" r="15" fill="#1e293b"/><circle cx="112" cy="123" r="6" fill="white"/><ellipse cx="196" cy="128" rx="26" ry="23" fill="white"/><circle cx="196" cy="131" r="15" fill="#1e293b"/><circle cx="204" cy="123" r="6" fill="white"/><ellipse cx="150" cy="202" rx="34" ry="25" fill="#d97706"/><circle cx="137" cy="200" r="8" fill="#92400e"/><circle cx="163" cy="200" r="8" fill="#92400e"/><path d="M125,217 Q150,235 175,217" stroke="#92400e" stroke-width="3.5" fill="none"/></svg>';
+  var CHICK='<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="300" fill="#fefce8"/><circle cx="116" cy="74" r="19" fill="#fde047"/><circle cx="150" cy="58" r="23" fill="#fde047"/><circle cx="184" cy="74" r="19" fill="#fde047"/><circle cx="150" cy="175" r="118" fill="#fde047"/><ellipse cx="104" cy="128" rx="24" ry="21" fill="white"/><circle cx="104" cy="131" r="14" fill="#1e293b"/><circle cx="112" cy="123" r="5" fill="white"/><ellipse cx="196" cy="128" rx="24" ry="21" fill="white"/><circle cx="196" cy="131" r="14" fill="#1e293b"/><circle cx="204" cy="123" r="5" fill="white"/><polygon points="126,182 150,164 174,182 150,206" fill="#f97316"/><ellipse cx="66" cy="232" rx="42" ry="23" fill="#fbbf24" transform="rotate(-30 66 232)"/><ellipse cx="234" cy="232" rx="42" ry="23" fill="#fbbf24" transform="rotate(30 234 232)"/></svg>';
+
+  var PUZZLES=[
+    {title:'🐱 ねこ',svg:CAT},
+    {title:'🐶 いぬ',svg:DOG},
+    {title:'🐥 ひよこ',svg:CHICK}
+  ];
+  var parser=new DOMParser();
+  var parsedSvgs=PUZZLES.map(function(pz){
+    return parser.parseFromString(pz.svg,'image/svg+xml').documentElement;
+  });
+
+  var currentPuzzle=0,positions=[0,1,2,3],selected=-1,completed=false,gPTimer=null;
+
+  function shuffle(arr){
+    var a=arr.slice();
+    for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+    return a;
+  }
+  function isSolved(){return positions[0]===0&&positions[1]===1&&positions[2]===2&&positions[3]===3;}
+
+  function makeTile(slot,preview){
+    var pi=preview?slot:positions[slot];
+    var tile=document.createElement('div');
+    tile.className='gP-tile'+(selected===slot&&!preview?' gP-sel':'');
+    var inner=document.createElement('div');
+    inner.className='gP-inner';
+    inner.style.left=(pi%2)*-100+'%';
+    inner.style.top=Math.floor(pi/2)*-100+'%';
+    inner.appendChild(document.importNode(parsedSvgs[currentPuzzle],true));
+    tile.appendChild(inner);
+    if(!preview)(function(s){tile.addEventListener('click',function(){onTap(s);});})(slot);
+    return tile;
+  }
+
+  function render(preview){
+    var b=$('gPBoard');b.textContent='';
+    for(var i=0;i<4;i++)b.appendChild(makeTile(i,preview));
+  }
+
+  function onTap(slot){
+    if(completed)return;
+    if(selected===-1){selected=slot;render(false);}
+    else if(selected===slot){selected=-1;render(false);}
+    else{
+      var tmp=positions[selected];positions[selected]=positions[slot];positions[slot]=tmp;
+      selected=-1;render(false);
+      if(isSolved()){
+        completed=true;
+        launchConfetti();
+        speak('やったー！すごい！');
+        $('gPHint').textContent='🎉 できた！すごーい！';
+        gPTimer=setTimeout(function(){
+          currentPuzzle++;
+          if(currentPuzzle>=PUZZLES.length){
+            $('gPTitle').textContent='🌟 ぜんぶ できたよ！';
+            $('gPMsg').textContent='さいこうだよ！！';
+            $('gPHint').textContent='';
+            $('gPDoneBtn').style.display='';
+            speak('ぜんぶ できたよ！さいこう！');
+          }else{
+            startPuzzle(currentPuzzle);
+          }
+        },2600);
+      }
+    }
+  }
+
+  function startPuzzle(idx){
+    completed=false;selected=-1;
+    $('gPTitle').textContent=PUZZLES[idx].title+' パズル（'+(idx+1)+' / 3）';
+    $('gPMsg').textContent='よく みてね！';
+    $('gPHint').textContent='';
+    $('gPDoneBtn').style.display='none';
+    positions=[0,1,2,3];
+    render(true);
+    speak('よく みてね');
+    gPTimer=setTimeout(function(){
+      do{positions=shuffle([0,1,2,3]);}while(isSolved());
+      $('gPMsg').textContent='バラバラに なったよ！';
+      $('gPHint').textContent='2つ えらんで いれかえよう！';
+      render(false);
+    },2200);
+  }
+
+  window.gPInit=function(){
+    if(gPTimer){clearTimeout(gPTimer);gPTimer=null;}
+    currentPuzzle=0;
+    $('gPDoneBtn').style.display='none';
+    startPuzzle(0);
+  };
+  window.gPStop=function(){if(gPTimer){clearTimeout(gPTimer);gPTimer=null;}};
+
+  $('gPDoneBtn').addEventListener('click',function(){window.gPInit();});
 })();
 </script>
 </body>
