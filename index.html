@@ -670,9 +670,10 @@
         <div id="g8ColorQuestion" style="font-size:26px;font-weight:900;color:#1a1a2e;">① の おんぷは なにかな？</div>
         <canvas id="g8ColorCanvas" style="width:100%;max-width:660px;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.1);display:block;"></canvas>
         <div id="g8ColorChoices" style="display:flex;gap:24px;justify-content:center;">
-          <button id="g8CcDo" style="background:#ef4444;color:#fff;font-size:28px;padding:20px 44px;border:none;border-radius:22px;cursor:pointer;font-weight:900;font-family:inherit;box-shadow:0 5px 16px rgba(239,68,68,.4);">🔴 ド</button>
-          <button id="g8CcRe" style="background:#f5c518;color:#1a1a2e;font-size:28px;padding:20px 44px;border:none;border-radius:22px;cursor:pointer;font-weight:900;font-family:inherit;box-shadow:0 5px 16px rgba(245,197,24,.4);">🟡 レ</button>
-          <button id="g8CcMi" style="background:#22c55e;color:#fff;font-size:28px;padding:20px 44px;border:none;border-radius:22px;cursor:pointer;font-weight:900;font-family:inherit;box-shadow:0 5px 16px rgba(34,197,94,.4);">🟢 ミ</button>
+          <button id="g8CcDo" style="background:#ef4444;color:#fff;font-size:24px;padding:16px 28px;border:none;border-radius:22px;cursor:pointer;font-weight:900;font-family:inherit;box-shadow:0 5px 16px rgba(239,68,68,.4);">🔴 ド</button>
+          <button id="g8CcRe" style="background:#f5c518;color:#1a1a2e;font-size:24px;padding:16px 28px;border:none;border-radius:22px;cursor:pointer;font-weight:900;font-family:inherit;box-shadow:0 5px 16px rgba(245,197,24,.4);">🟡 レ</button>
+          <button id="g8CcMi" style="background:#22c55e;color:#fff;font-size:24px;padding:16px 28px;border:none;border-radius:22px;cursor:pointer;font-weight:900;font-family:inherit;box-shadow:0 5px 16px rgba(34,197,94,.4);">🟢 ミ</button>
+          <button id="g8CcFa" style="background:#3b82f6;color:#fff;font-size:24px;padding:16px 28px;border:none;border-radius:22px;cursor:pointer;font-weight:900;font-family:inherit;box-shadow:0 5px 16px rgba(59,130,246,.4);">🔵 ファ</button>
         </div>
         <div style="font-size:18px;font-weight:700;color:#555;" id="g8ColorProgress">0 / 5</div>
       </div>
@@ -683,6 +684,7 @@
         <button class="btn" id="g8StaffListenBtn">🔊 おとを きく</button>
         <div id="g8StaffChoices" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"></div>
       </div>
+      <div id="g8NoteGuide" style="width:100%;max-width:580px;margin:4px 0;"></div>
       <div class="g8-keyboard" id="g8Keyboard"></div>
       <button class="btn accent" id="g8StartQuizBtn">🎹 ドレミ クイズ！</button>
       <button class="btn" id="g8StartNoteQuizBtn">🎵 おとあて クイズ！</button>
@@ -2178,6 +2180,83 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     setTimeout(function(){el.classList.remove('dancing');},700);
   }
 
+  function buildNoteGuide(){
+    var NS='http://www.w3.org/2000/svg';
+    var W=560,H=160;
+    var svg=document.createElementNS(NS,'svg');
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    svg.style.cssText='width:100%;height:auto;display:block;border-radius:12px;';
+    var bg=document.createElementNS(NS,'rect');
+    bg.setAttribute('x','0');bg.setAttribute('y','0');
+    bg.setAttribute('width',String(W));bg.setAttribute('height',String(H));
+    bg.setAttribute('fill','#fffef5');bg.setAttribute('rx','12');
+    svg.appendChild(bg);
+    // 五線 (y=40,55,70,85,100)
+    [40,55,70,85,100].forEach(function(y){
+      var ln=document.createElementNS(NS,'line');
+      ln.setAttribute('x1','30');ln.setAttribute('y1',String(y));
+      ln.setAttribute('x2',String(W-8));ln.setAttribute('y2',String(y));
+      ln.setAttribute('stroke','#999');ln.setAttribute('stroke-width','1.5');
+      svg.appendChild(ln);
+    });
+    // ト音記号
+    var clef=document.createElementNS(NS,'text');
+    clef.setAttribute('x','0');clef.setAttribute('y','108');
+    clef.setAttribute('font-size','68');clef.setAttribute('font-family','serif');
+    clef.setAttribute('fill','#444');
+    clef.textContent='𝄞';
+    svg.appendChild(clef);
+    // 音符データ: ド〜高ド（cy=五線内の位置, stemUp=符幹の向き）
+    // 五線間隔15px → 各ステップ7.5px
+    // Line1(ミ)=100, Space1(ファ)=92.5, Line2(ソ)=85, Space2(ラ)=77.5
+    // Line3(シ)=70, Space3(高ド)=62.5
+    // SpaceBelow(レ)=107.5, LedgerLine(ド)=115
+    var noteInfos=[
+      {name:'ド',  cy:115, ledger:true, stemUp:true},
+      {name:'レ',  cy:108, ledger:false, stemUp:true},
+      {name:'ミ',  cy:100, ledger:false, stemUp:true},
+      {name:'ファ', cy:92, ledger:false, stemUp:true},
+      {name:'ソ',  cy:85,  ledger:false, stemUp:false},
+      {name:'ラ',  cy:77,  ledger:false, stemUp:false},
+      {name:'シ',  cy:70,  ledger:false, stemUp:false},
+      {name:'高ド', cy:62, ledger:false, stemUp:false},
+    ];
+    var xs=[55,120,185,250,315,380,445,510];
+    noteInfos.forEach(function(ni,i){
+      var cx=xs[i];
+      if(ni.ledger){
+        var ledger=document.createElementNS(NS,'line');
+        ledger.setAttribute('x1',String(cx-14));ledger.setAttribute('y1',String(ni.cy));
+        ledger.setAttribute('x2',String(cx+14));ledger.setAttribute('y2',String(ni.cy));
+        ledger.setAttribute('stroke','#999');ledger.setAttribute('stroke-width','1.5');
+        svg.appendChild(ledger);
+      }
+      var stem=document.createElementNS(NS,'line');
+      if(ni.stemUp){
+        stem.setAttribute('x1',String(cx+8));stem.setAttribute('y1',String(ni.cy-7));
+        stem.setAttribute('x2',String(cx+8));stem.setAttribute('y2',String(ni.cy-30));
+      }else{
+        stem.setAttribute('x1',String(cx-8));stem.setAttribute('y1',String(ni.cy+7));
+        stem.setAttribute('x2',String(cx-8));stem.setAttribute('y2',String(ni.cy+30));
+      }
+      stem.setAttribute('stroke','#333');stem.setAttribute('stroke-width','2');
+      svg.appendChild(stem);
+      var ellipse=document.createElementNS(NS,'ellipse');
+      ellipse.setAttribute('cx',String(cx));ellipse.setAttribute('cy',String(ni.cy));
+      ellipse.setAttribute('rx','9');ellipse.setAttribute('ry','7');
+      ellipse.setAttribute('fill','#1e293b');
+      svg.appendChild(ellipse);
+      var label=document.createElementNS(NS,'text');
+      label.setAttribute('x',String(cx));label.setAttribute('y',String(H-4));
+      label.setAttribute('text-anchor','middle');label.setAttribute('font-size','13');
+      label.setAttribute('font-weight','bold');label.setAttribute('fill','#555');
+      label.setAttribute('font-family','"Zen Maru Gothic",sans-serif');
+      label.textContent=ni.name;
+      svg.appendChild(label);
+    });
+    return svg;
+  }
+
   function stopMelody(){
     melodyTimers.forEach(function(id){clearTimeout(id);});
     melodyTimers=[];
@@ -2204,7 +2283,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     $('g8StartNoteQuizBtn').style.display='none';
     $('g8StartNoteStaffBtn').style.display='none';$('g8StartColorBtn').style.display='none';
     $('g8RensouBtn').style.display='none';
-    $('g8FreeTip').style.display='none';
+    $('g8NoteGuide').style.display='none';$('g8FreeTip').style.display='none';
     $('g8MelodySection').style.display='none';
     $('g8AgainBtn').style.display='none';
     $('g8NoteQuizSection').style.display='flex';
@@ -2227,7 +2306,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
         $('g8StartNoteQuizBtn').style.display='';
         $('g8StartNoteStaffBtn').style.display='';$('g8StartColorBtn').style.display='';
         $('g8RensouBtn').style.display='';
-        $('g8FreeTip').style.display='';
+        $('g8NoteGuide').style.display='';$('g8FreeTip').style.display='';
         $('g8MelodySection').style.display='flex';
         $('g8LvSelect').style.display='';
       },2500);
@@ -2339,7 +2418,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     $('g8StartNoteQuizBtn').style.display='none';
     $('g8StartNoteStaffBtn').style.display='none';$('g8StartColorBtn').style.display='none';
     $('g8RensouBtn').style.display='none';
-    $('g8FreeTip').style.display='none';
+    $('g8NoteGuide').style.display='none';$('g8FreeTip').style.display='none';
     $('g8MelodySection').style.display='none';
     $('g8AgainBtn').style.display='none';
     $('g8NoteQuizSection').style.display='none';
@@ -2363,7 +2442,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
         $('g8StartNoteQuizBtn').style.display='';
         $('g8StartNoteStaffBtn').style.display='';$('g8StartColorBtn').style.display='';
         $('g8RensouBtn').style.display='';
-        $('g8FreeTip').style.display='';
+        $('g8NoteGuide').style.display='';$('g8FreeTip').style.display='';
         $('g8MelodySection').style.display='flex';
         $('g8Keyboard').style.display='';
         $('g8LvSelect').style.display='';
@@ -2435,7 +2514,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     $('g8StartNoteQuizBtn').style.display='none';
     $('g8StartNoteStaffBtn').style.display='none';$('g8StartColorBtn').style.display='none';
     $('g8RensouBtn').style.display='none';
-    $('g8FreeTip').style.display='none';
+    $('g8NoteGuide').style.display='none';$('g8FreeTip').style.display='none';
     $('g8MelodySection').style.display='none';
     $('g8LvSelect').style.display='none';
     showGuide(rensouIdx);
@@ -2518,7 +2597,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
           $('g8StartNoteQuizBtn').style.display='';
           $('g8StartNoteStaffBtn').style.display='';$('g8StartColorBtn').style.display='';
           $('g8RensouBtn').style.display='';
-          $('g8FreeTip').style.display='';
+          $('g8NoteGuide').style.display='';$('g8FreeTip').style.display='';
           $('g8MelodySection').style.display='flex';
           $('g8LvSelect').style.display='';
         },2000);
@@ -2577,7 +2656,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     $('g8StartNoteQuizBtn').style.display='none';
     $('g8StartNoteStaffBtn').style.display='none';$('g8StartColorBtn').style.display='none';
     $('g8RensouBtn').style.display='none';
-    $('g8FreeTip').style.display='none';
+    $('g8NoteGuide').style.display='none';$('g8FreeTip').style.display='none';
     $('g8MelodySection').style.display='none';
     $('g8AgainBtn').style.display='none';
     $('g8NoteQuizSection').style.display='none';
@@ -2645,17 +2724,17 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   // ============================================================
   var CD={W:540,H:265,
     staffLines:[28,48,68,88,108],     // 五線（20px間隔）
-    noteYs:[178,142,108],             // 0=ド(ledger下), 1=レ(スペース広め), 2=ミ(下の線)
+    noteYs:[178,142,108,98],          // 0=ド(ledger下), 1=レ, 2=ミ(下の線), 3=ファ(第1スペース)
     noteXs:[86,172,258,348,435],      // 5音符（等間隔）
-    COLORS:['#ef4444','#f5c518','#22c55e'],
-    NAMES:['ド','レ','ミ'],
+    COLORS:['#ef4444','#f5c518','#22c55e','#3b82f6'],
+    NAMES:['ド','レ','ミ','ファ'],
     NR:24
   };
   var cdNotes=[],cdScore=0,cdQIdx=0,cdCanvas=null,cdCtx=null;
 
   function setupColorNotes(){
-    // 5音符：ド0・レ1・ミ2 を最低1個ずつ＋ランダム2個追加
-    var types=[0,1,2,Math.floor(Math.random()*3),Math.floor(Math.random()*3)];
+    // 5音符：ド0・レ1・ミ2・ファ3 を最低1個ずつ＋ランダム1個追加
+    var types=[0,1,2,3,Math.floor(Math.random()*4)];
     for(var j=types.length-1;j>0;j--){var k=Math.floor(Math.random()*(j+1));var tmp=types[j];types[j]=types[k];types[k]=tmp;}
     cdNotes=types.map(function(t,i){return{typeIdx:t,answered:false,x:CD.noteXs[i],y:CD.noteYs[t]};});
     cdScore=0;cdQIdx=0;
@@ -2668,9 +2747,10 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     c.save();c.scale(scale,scale);
     // 背景
     c.fillStyle='#fffef5';c.fillRect(0,0,CD.W,CD.H);
-    // ド/レ/ミ ポジションゾーン（薄い色帯）
+    // ド/レ/ミ/ファ ポジションゾーン（薄い色帯）
     var zones=[
-      {y:CD.noteYs[2],col:'rgba(34,197,94,.10)'},   // ミ：緑
+      {y:CD.noteYs[3],col:'rgba(59,130,246,.10)'},   // ファ：青
+      {y:CD.noteYs[2],col:'rgba(34,197,94,.10)'},    // ミ：緑
       {y:CD.noteYs[1],col:'rgba(245,197,24,.13)'},   // レ：黄
       {y:CD.noteYs[0],col:'rgba(239,68,68,.10)'}     // ド：赤
     ];
@@ -2756,7 +2836,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     launchConfetti();speak('ぜんぶ せいかい！すごいね！');
     $('g8StartQuizBtn').style.display='';$('g8StartNoteQuizBtn').style.display='';
     $('g8StartNoteStaffBtn').style.display='';$('g8StartColorBtn').style.display='';
-    $('g8RensouBtn').style.display='';$('g8FreeTip').style.display='';
+    $('g8RensouBtn').style.display='';$('g8NoteGuide').style.display='';$('g8FreeTip').style.display='';
     $('g8Keyboard').style.display='';$('g8MelodySection').style.display='flex';$('g8LvSelect').style.display='';
   }
 
@@ -2764,7 +2844,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     mode='colordrag';stopMelody();
     $('g8StartQuizBtn').style.display='none';$('g8StartNoteQuizBtn').style.display='none';
     $('g8StartNoteStaffBtn').style.display='none';$('g8StartColorBtn').style.display='none';
-    $('g8RensouBtn').style.display='none';$('g8FreeTip').style.display='none';
+    $('g8RensouBtn').style.display='none';$('g8NoteGuide').style.display='none';$('g8FreeTip').style.display='none';
     $('g8MelodySection').style.display='none';$('g8AgainBtn').style.display='none';
     $('g8NoteQuizSection').style.display='none';$('g8NoteStaffSection').style.display='none';$('g8ColorSection').style.display='none';
     $('g8Keyboard').style.display='none';$('g8QuizLabel').style.display='none';$('g8LvSelect').style.display='none';
@@ -2783,6 +2863,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   $('g8CcDo').addEventListener('click',function(){onColorChoice(0);});
   $('g8CcRe').addEventListener('click',function(){onColorChoice(1);});
   $('g8CcMi').addEventListener('click',function(){onColorChoice(2);});
+  $('g8CcFa').addEventListener('click',function(){onColorChoice(3);});
   $('g8StaffListenBtn').addEventListener('click',function(){
     if(staffQuizNote)playNote(staffQuizNote.freq,0.8);
   });
@@ -2797,7 +2878,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     $('g8StartNoteQuizBtn').style.display='';
     $('g8StartNoteStaffBtn').style.display='';$('g8StartColorBtn').style.display='';
     $('g8RensouBtn').style.display='';
-    $('g8FreeTip').style.display='';
+    $('g8NoteGuide').style.display='';$('g8FreeTip').style.display='';
     $('g8QuizLabel').style.display='none';
     $('g8AgainBtn').style.display='none';
     $('g8NoteQuizSection').style.display='none';
@@ -2806,6 +2887,8 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     $('g8MelodySection').style.display='flex';
     $('g8LvSelect').style.display='';
     setLevel('easy');
+    var ng=$('g8NoteGuide');ng.textContent='';ng.appendChild(buildNoteGuide());
+    ng.style.display='';
   };
   window.g8Stop=function(){if(g8Timer){clearTimeout(g8Timer);g8Timer=null;}stopMelody();};
 })();
