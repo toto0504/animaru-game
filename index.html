@@ -2080,7 +2080,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     {note:'シ',  freq:493.88,key:'ushi',  name:'うし',   sound:'音声/ushi.mp3'},
     {note:'高ド',freq:523.25,key:'zou',   name:'ぞう',   sound:'音声/zou.mp3'},
   ];
-  var LEVEL_COUNT={easy:3,normal:5,hard:8};
+  var LEVEL_COUNT={easy:4,normal:5,hard:8};
   var TOTAL=8;
   // きらきらぼし: [noteIdx, durationMs]  (0=ド,1=レ,2=ミ,3=ファ,4=ソ,5=ラ,6=シ,7=高ド)
   var MELODIES=[
@@ -2245,6 +2245,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
       ellipse.setAttribute('cx',String(cx));ellipse.setAttribute('cy',String(ni.cy));
       ellipse.setAttribute('rx','9');ellipse.setAttribute('ry','7');
       ellipse.setAttribute('fill','#1e293b');
+      ellipse.setAttribute('id','g8ng'+i);
       svg.appendChild(ellipse);
       var label=document.createElementNS(NS,'text');
       label.setAttribute('x',String(cx));label.setAttribute('y',String(H-4));
@@ -2559,6 +2560,18 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
     }
   }
 
+  var guideNoteTimer=null;
+  function highlightGuideNote(idx){
+    if(guideNoteTimer){clearTimeout(guideNoteTimer);guideNoteTimer=null;}
+    for(var gi=0;gi<8;gi++){var ge=document.getElementById('g8ng'+gi);if(ge)ge.setAttribute('fill','#1e293b');}
+    var el=document.getElementById('g8ng'+idx);
+    if(el){el.setAttribute('fill','#fbbf24');}
+    guideNoteTimer=setTimeout(function(){
+      for(var gj=0;gj<8;gj++){var gf=document.getElementById('g8ng'+gj);if(gf)gf.setAttribute('fill','#1e293b');}
+      guideNoteTimer=null;
+    },800);
+  }
+
   function onKeyPress(n,keyEl,idx){
     var count=LEVEL_COUNT[level];
     if(idx>=count)return;
@@ -2580,6 +2593,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
       playNote(n.freq);
       flashKey(keyEl,'correct');
       danceKey(keyEl);
+      if(mode==='free')highlightGuideNote(idx);
     }else if(mode==='rensou'){
       if(idx!==rensouIdx)return;
       keyEls[rensouIdx].classList.remove('guide');
