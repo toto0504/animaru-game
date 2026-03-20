@@ -175,6 +175,12 @@
     .age-desc{font-size:13px;color:var(--muted);line-height:1.7;}
     .age-card img.age-photo{width:110px;height:110px;border-radius:50%;object-fit:cover;border:4px solid #e0e0e0;}
     .age-card.papa-card{border-color:#f59e0b;}
+    .papa-menu-card{background:#fff;border-radius:28px;box-shadow:0 12px 48px rgba(0,0,0,.12);padding:36px 28px;width:210px;cursor:pointer;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;align-items:center;gap:14px;border:4px solid transparent;text-align:center;}
+    .papa-menu-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,.18);border-color:#f59e0b;}
+    .papa-menu-card:active{transform:scale(.96);}
+    .papa-menu-card .pm-icon{font-size:72px;}
+    .papa-menu-card .pm-title{font-size:22px;font-weight:900;}
+    .papa-menu-card .pm-desc{font-size:13px;color:var(--muted);line-height:1.7;}
     #rouletteOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:0;}
     #rouletteBox{background:#fff;border-radius:28px;padding:28px 24px;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:320px;width:90%;}
     #rouletteTitle{font-size:22px;font-weight:900;text-align:center;}
@@ -352,6 +358,18 @@
         <div style="font-size:68px;">🎰</div>
         <div class="age-num">パパ</div>
         <div class="age-desc">YES か NO か<br>ルーレットで きめよう！</div>
+      </div>
+    </div>
+  </div>
+  <!-- パパ画面 -->
+  <div class="screen" id="papaScreen">
+    <div style="font-size:32px;font-weight:900;text-align:center;">🎮 パパ ゾーン</div>
+    <div style="font-size:15px;color:var(--muted);text-align:center;">あそびを えらんでね！</div>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;margin-top:16px;">
+      <div class="papa-menu-card" id="papaRouletteCard">
+        <div class="pm-icon">🎰</div>
+        <div class="pm-title">YES / NO</div>
+        <div class="pm-desc">ルーレットで<br>きめよう！</div>
       </div>
     </div>
   </div>
@@ -807,7 +825,7 @@
 // ============================================================
 //  共通
 // ============================================================
-const allScreens=['ageSelectScreen','menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','gDScreen','gDResultScreen','g3Screen','g5Screen','g6Screen','g6ResultScreen','g8Screen','g8ResultScreen','gKScreen','gMScreen','gVScreen','gSScreen'];
+const allScreens=['ageSelectScreen','papaScreen','menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','gDScreen','gDResultScreen','g3Screen','g5Screen','g6Screen','g6ResultScreen','g8Screen','g8ResultScreen','gKScreen','gMScreen','gVScreen','gSScreen'];
 function showScreen(id){allScreens.forEach(s=>document.getElementById(s).classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('backBtn').classList.toggle('visible',id!=='ageSelectScreen');}
 function goHome(){showScreen('menuScreen');if(typeof g1Stop==='function')g1Stop();if(typeof g3Stop==='function')g3Stop();if(typeof gDStop==='function')gDStop();if(typeof g5Stop==='function')g5Stop();if(typeof g6Stop==='function')g6Stop();if(typeof g8Stop==='function')g8Stop();if(typeof gKStop==='function')gKStop();if(typeof gMStop==='function')gMStop();if(typeof gVStop==='function')gVStop();if(typeof gSStop==='function')gSStop();}
 function startGame1(){showScreen('g1StartScreen');g1RenderAnimalSelect();}
@@ -823,6 +841,8 @@ function startGameS(){showScreen('gSScreen');if(typeof gSInit==='function')gSIni
 
 document.getElementById('backBtn').addEventListener('click',function(){
   if(document.getElementById('menuScreen').classList.contains('active')){
+    showScreen('ageSelectScreen');
+  }else if(document.getElementById('papaScreen').classList.contains('active')){
     showScreen('ageSelectScreen');
   }else{
     goHome();
@@ -840,7 +860,8 @@ function applyAgeFilter(){
 }
 document.getElementById('ageCard2').addEventListener('click',function(){selectedAge='bo';applyAgeFilter();showScreen('menuScreen');});
 document.getElementById('ageCard4').addEventListener('click',function(){selectedAge='kan';applyAgeFilter();showScreen('menuScreen');});
-document.getElementById('ageCardPapa').addEventListener('click',function(){rouletteOpen();});
+document.getElementById('ageCardPapa').addEventListener('click',function(){showScreen('papaScreen');});
+document.getElementById('papaRouletteCard').addEventListener('click',function(){rouletteOpen();});
 document.getElementById('cardG1').addEventListener('click',startGame1);
 document.getElementById('cardGD').addEventListener('click',startGameD);
 document.getElementById('cardG3').addEventListener('click',startGame3);
