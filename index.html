@@ -970,7 +970,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   }
 
   const STREAK_MSGS={3:'すごい！🔥',4:'いいね！✨',5:'てんさい！🌟'};
-  let streakTimer=null;
+  let streakTimer=null,feedbackTimer=null;
   function showStreak(n){const msg=STREAK_MSGS[n];if(!msg)return;const el=$('streakMsg');el.textContent=msg;el.classList.add('show');if(streakTimer)clearTimeout(streakTimer);streakTimer=setTimeout(()=>el.classList.remove('show'),1200);}
 
   function onAnswer(item,btnEl){
@@ -993,7 +993,8 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
       roundResults.push({correct:false,animal:current});
     }
     $('feedback').classList.add('show');updateHUD();
-    setTimeout(()=>{$('feedback').classList.remove('show');$('bigIcon').className='big-icon';nextRound();},ok?1500:4000);
+    if(feedbackTimer)clearTimeout(feedbackTimer);
+    feedbackTimer=setTimeout(()=>{feedbackTimer=null;$('feedback').classList.remove('show');$('bigIcon').className='big-icon';nextRound();},ok?1500:4000);
   }
 
   function showResult(){
@@ -1026,7 +1027,7 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
       grid.appendChild(item);
     });
   }
-  window.g1Stop=function(){if(streakTimer){clearTimeout(streakTimer);streakTimer=null;}};
+  window.g1Stop=function(){if(streakTimer){clearTimeout(streakTimer);streakTimer=null;}if(feedbackTimer){clearTimeout(feedbackTimer);feedbackTimer=null;}};
 })();
 
 // ============================================================
@@ -1549,10 +1550,11 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   });
   $('g3TraceClose').addEventListener('click',()=>{$('g3TraceOverlay').classList.remove('show');});
 
-  function showCeleb(text){const el=$('g3Celeb');const t=document.createElement('div');t.className='g3-celebText';t.textContent=text;el.textContent='';el.appendChild(t);setTimeout(()=>{el.textContent='';},1200);}
+  let g3CelebTimer=null;
+  function showCeleb(text){const el=$('g3Celeb');const t=document.createElement('div');t.className='g3-celebText';t.textContent=text;el.textContent='';el.appendChild(t);if(g3CelebTimer)clearTimeout(g3CelebTimer);g3CelebTimer=setTimeout(()=>{el.textContent='';g3CelebTimer=null;},1200);}
 
   window.g3Init=function(){if(!initialized){initialized=true;buildSelGrid();updateCard();speakCard();}};
-  window.g3Stop=function(){$('g3TraceOverlay').classList.remove('show');};
+  window.g3Stop=function(){$('g3TraceOverlay').classList.remove('show');if(g3CelebTimer){clearTimeout(g3CelebTimer);g3CelebTimer=null;$('g3Celeb').textContent='';}};
 })();
 
 // ============================================================
