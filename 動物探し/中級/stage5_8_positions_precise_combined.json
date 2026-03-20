@@ -1,0 +1,41 @@
+{
+  "coordinate_mode": "strict_face_center_small_hit_zone",
+  "stages": [
+    {
+      "scene": "jungle_ruins",
+      "image": "stage5_jungle_ruins.png",
+      "animals": [
+        { "name": "chameleon", "x": 0.100, "y": 0.240, "w": 0.205, "h": 0.172 },
+        { "name": "tiger", "x": 0.833, "y": 0.252, "w": 0.130, "h": 0.154 },
+        { "name": "snake", "x": 0.851, "y": 0.746, "w": 0.120, "h": 0.120 }
+      ]
+    },
+    {
+      "scene": "market_town",
+      "image": "stage6_market_town.png",
+      "animals": [
+        { "name": "cat", "x": 0.219, "y": 0.557, "w": 0.112, "h": 0.134 },
+        { "name": "hedgehog", "x": 0.198, "y": 0.846, "w": 0.138, "h": 0.120 },
+        { "name": "pigeon", "x": 0.840, "y": 0.869, "w": 0.122, "h": 0.144 }
+      ]
+    },
+    {
+      "scene": "autumn_camp",
+      "image": "stage7_autumn_camp.png",
+      "animals": [
+        { "name": "owl", "x": 0.091, "y": 0.159, "w": 0.103, "h": 0.121 },
+        { "name": "fox", "x": 0.780, "y": 0.670, "w": 0.150, "h": 0.188 },
+        { "name": "squirrel", "x": 0.155, "y": 0.784, "w": 0.112, "h": 0.116 }
+      ]
+    },
+    {
+      "scene": "coral_cove",
+      "image": "stage8_coral_cove.png",
+      "animals": [
+        { "name": "clownfish", "x": 0.214, "y": 0.739, "w": 0.148, "h": 0.170 },
+        { "name": "seahorse", "x": 0.610, "y": 0.840, "w": 0.084, "h": 0.146 },
+        { "name": "sea_turtle", "x": 0.720, "y": 0.560, "w": 0.184, "h": 0.176 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "coordinate_mode": "strict_face_center_small_hit_zone",
+  "stages": [
+    {
+      "scene": "rainforest_depths",
+      "image": "stage9_rainforest_depths.png",
+      "animals": [
+        { "name": "owl",      "x": 0.087, "y": 0.112, "w": 0.060, "h": 0.072 },
+        { "name": "wolf",     "x": 0.857, "y": 0.154, "w": 0.058, "h": 0.070 },
+        { "name": "parrot",   "x": 0.895, "y": 0.396, "w": 0.060, "h": 0.074 },
+        { "name": "anaconda", "x": 0.764, "y": 0.838, "w": 0.072, "h": 0.060 }
+      ]
+    },
+    {
+      "scene": "night_forest",
+      "image": "stage10_night_forest.png",
+      "animals": [
+        { "name": "tanuki", "x": 0.173, "y": 0.417, "w": 0.070, "h": 0.082 },
+        { "name": "bear",   "x": 0.840, "y": 0.206, "w": 0.076, "h": 0.090 },
+        { "name": "boar",   "x": 0.818, "y": 0.686, "w": 0.078, "h": 0.090 },
+        { "name": "snake",  "x": 0.776, "y": 0.860, "w": 0.086, "h": 0.064 }
+      ]
+    },
+    {
+      "scene": "snowy_mountain",
+      "image": "stage11_snowy_mountain.png",
+      "animals": [
+        { "name": "snow_leopard", "x": 0.186, "y": 0.278, "w": 0.082, "h": 0.094 },
+        { "name": "ptarmigan",    "x": 0.754, "y": 0.279, "w": 0.066, "h": 0.078 },
+        { "name": "fox",          "x": 0.255, "y": 0.793, "w": 0.074, "h": 0.086 },
+        { "name": "white_hare",   "x": 0.789, "y": 0.831, "w": 0.062, "h": 0.072 }
+      ]
+    },
+    {
+      "scene": "deep_sea",
+      "image": "stage12_deep_sea.png",
+      "animals": [
+        { "name": "anglerfish", "x": 0.245, "y": 0.321, "w": 0.078, "h": 0.090 },
+        { "name": "jellyfish",  "x": 0.611, "y": 0.182, "w": 0.066, "h": 0.084 },
+        { "name": "octopus",    "x": 0.214, "y": 0.776, "w": 0.074, "h": 0.086 },
+        { "name": "coelacanth", "x": 0.739, "y": 0.712, "w": 0.080, "h": 0.082 }
+      ]
+    }
+  ]
+},
+    {
+      "scene": "cherry_blossom_park",
+      "image": "stage13_cherry_blossom_park.png",
+      "animals": [
+        { "name": "tanuki",          "x": 0.244, "y": 0.823, "w": 0.088, "h": 0.094 },
+        { "name": "sparrow",         "x": 0.631, "y": 0.516, "w": 0.070, "h": 0.078 },
+        { "name": "flying_squirrel", "x": 0.845, "y": 0.239, "w": 0.084, "h": 0.096 },
+        { "name": "ladybug",         "x": 0.721, "y": 0.803, "w": 0.046, "h": 0.046 }
+      ]
+    },
+    {
+      "scene": "ancient_temple",
+      "image": "stage14_ancient_temple.png",
+      "animals": [
+        { "name": "cobra",   "x": 0.151, "y": 0.442, "w": 0.082, "h": 0.098 },
+        { "name": "peacock", "x": 0.669, "y": 0.390, "w": 0.086, "h": 0.100 },
+        { "name": "monkey",  "x": 0.846, "y": 0.244, "w": 0.080, "h": 0.090 },
+        { "name": "lizard",  "x": 0.736, "y": 0.735, "w": 0.092, "h": 0.078 }
+      ]
+    },
+    {
+      "scene": "bamboo_forest",
+      "image": "stage15_bamboo_forest.png",
+      "animals": [
+        { "name": "panda", "x": 0.152, "y": 0.257, "w": 0.096, "h": 0.102 },
+        { "name": "snake", "x": 0.214, "y": 0.561, "w": 0.086, "h": 0.094 },
+        { "name": "frog",  "x": 0.760, "y": 0.771, "w": 0.070, "h": 0.076 },
+        { "name": "deer",  "x": 0.844, "y": 0.305, "w": 0.084, "h": 0.096 }
+      ]
+    }
+  ]
+}
