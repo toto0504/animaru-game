@@ -653,6 +653,625 @@
   padding: 0 0 2px;
   transition: opacity 0.3s;
 }
+/* のりものならべ！ のCSS */
+#gNScreen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Hiragino Maru Gothic Pro', 'BIZ UDPGothic', sans-serif;
+  background: #87CEEB;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#gN-bg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+#gN-title {
+  position: relative;
+  z-index: 10;
+  font-size: clamp(18px, 4vw, 28px);
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 2px 2px 0 #e67e22, -1px -1px 0 #e67e22, 1px -1px 0 #e67e22, -1px 1px 0 #e67e22;
+  margin: 8px 0 4px;
+  letter-spacing: 2px;
+}
+
+#gN-instruction {
+  position: relative;
+  z-index: 10;
+  font-size: clamp(11px, 2.5vw, 16px);
+  color: #fff;
+  text-shadow: 1px 1px 0 #555;
+  margin-bottom: 6px;
+  background: rgba(0,0,0,0.25);
+  padding: 3px 12px;
+  border-radius: 20px;
+}
+
+#gN-slots-area {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: flex-end;
+  margin: 6px 0;
+  background: rgba(255,255,255,0.3);
+  border-radius: 20px;
+  padding: 10px 16px 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.gN-slot-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.gN-slot-label {
+  font-size: clamp(10px, 2.5vw, 15px);
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 1px 1px 0 #888;
+}
+
+.gN-slot {
+  border: 4px dashed #f39c12;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.gN-slot.drag-over {
+  background: rgba(255,255,0,0.55);
+  border-color: #e74c3c;
+}
+
+.gN-slot.correct {
+  border-color: #2ecc71;
+  background: rgba(46,204,113,0.25);
+}
+
+.gN-slot.wrong {
+  border-color: #e74c3c;
+  background: rgba(231,76,60,0.2);
+}
+
+.gN-slot-hint {
+  font-size: clamp(18px, 5vw, 36px);
+  opacity: 0.3;
+  user-select: none;
+  pointer-events: none;
+}
+
+.gN-slot-img {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  pointer-events: none;
+  animation: gN-placed-bounce 0.4s ease;
+}
+
+@keyframes gN-placed-bounce {
+  0%   { transform: scale(1.3); }
+  60%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+#gN-cards-area {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 20px;
+  min-height: 80px;
+  margin: 6px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.gN-card {
+  border: none;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  touch-action: none;
+  user-select: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.gN-card:active, .gN-card.dragging {
+  transform: scale(1.08) rotate(3deg);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+  cursor: grabbing;
+  z-index: 100;
+}
+
+.gN-card.shake {
+  animation: gN-shake 0.5s ease;
+}
+
+@keyframes gN-shake {
+  0%,100% { transform: translateX(0); }
+  15%      { transform: translateX(-8px) rotate(-3deg); }
+  30%      { transform: translateX(8px) rotate(3deg); }
+  45%      { transform: translateX(-6px) rotate(-2deg); }
+  60%      { transform: translateX(6px) rotate(2deg); }
+  75%      { transform: translateX(-4px); }
+  90%      { transform: translateX(4px); }
+}
+
+.gN-card img {
+  width: 85%;
+  height: 85%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.gN-card-emoji {
+  font-size: clamp(24px, 7vw, 48px);
+  pointer-events: none;
+}
+
+#gN-success-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+
+#gN-success-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#gN-success-msg {
+  font-size: clamp(28px, 7vw, 52px);
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 3px 3px 0 #e67e22;
+  text-align: center;
+  margin-bottom: 10px;
+  animation: gN-pop 0.5s ease;
+}
+
+@keyframes gN-pop {
+  0%   { transform: scale(0.3); opacity: 0; }
+  70%  { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+#gN-success-img {
+  width: min(280px, 70vw);
+  animation: gN-spin-in 0.6s ease;
+}
+
+@keyframes gN-spin-in {
+  0%   { transform: scale(0) rotate(-30deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+#gN-success-stars {
+  font-size: clamp(24px, 6vw, 42px);
+  animation: gN-twinkle 0.8s ease infinite alternate;
+  margin-top: 8px;
+  letter-spacing: 6px;
+}
+
+@keyframes gN-twinkle {
+  from { transform: scale(1); }
+  to   { transform: scale(1.2); filter: brightness(1.3); }
+}
+
+#gN-retry-btn {
+  margin-top: 18px;
+  padding: 14px 36px;
+  font-size: clamp(16px, 4vw, 22px);
+  font-weight: 900;
+  color: #fff;
+  background: linear-gradient(135deg, #f39c12, #e74c3c);
+  border: none;
+  border-radius: 40px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+  cursor: pointer;
+  touch-action: manipulation;
+  letter-spacing: 2px;
+  transition: transform 0.1s;
+}
+
+#gN-retry-btn:active {
+  transform: scale(0.95);
+}
+
+#gN-bo-btn {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  z-index: 20;
+  width: clamp(56px, 13vw, 80px);
+  height: clamp(56px, 13vw, 80px);
+  background: #fff;
+  border: 4px solid #f39c12;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(26px, 6vw, 40px);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  touch-action: manipulation;
+  transition: transform 0.15s;
+}
+
+#gN-bo-btn:active {
+  transform: scale(0.9);
+}
+
+#gN-bo-bubble {
+  position: absolute;
+  bottom: calc(14px + clamp(56px,13vw,80px) + 8px);
+  right: 14px;
+  z-index: 21;
+  background: #fff;
+  border: 3px solid #f39c12;
+  border-radius: 16px;
+  padding: 8px 12px;
+  font-size: clamp(11px, 2.8vw, 16px);
+  font-weight: 700;
+  color: #e67e22;
+  max-width: 180px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: none;
+  pointer-events: none;
+}
+
+#gN-score-area {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.gN-star-indicator {
+  font-size: clamp(18px, 4.5vw, 28px);
+  opacity: 0.35;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.gN-star-indicator.filled {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+#gN-animate-road {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 28%;
+  z-index: 5;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.gN-road-vehicle {
+  position: absolute;
+  object-fit: contain;
+  animation: gN-drive 2.5s linear forwards;
+  opacity: 0;
+}
+
+@keyframes gN-drive {
+  0%   { left: -20%; opacity: 0; }
+  10%  { opacity: 1; }
+  100% { left: 110%; opacity: 1; }
+}
+
+#gN-back-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 20;
+  background: rgba(255,255,255,0.85);
+  border: 3px solid #f39c12;
+  border-radius: 50px;
+  padding: 6px 14px;
+  font-size: clamp(13px, 3vw, 18px);
+  font-weight: 800;
+  color: #e67e22;
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  transition: transform 0.1s;
+}
+
+#gN-back-btn:active {
+  transform: scale(0.93);
+}
+/* きれいにあらおう！あわあわシャワー のCSS */
+#gWScreen {
+  position: relative;
+  width: 100%; height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  font-family: 'Rounded Mplus 1c', 'Noto Sans JP', sans-serif;
+}
+
+#gWScreen .gw-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+#gWScreen .gw-top-bar {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px 4px 18px;
+  box-sizing: border-box;
+}
+
+#gWScreen .gw-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 2px 6px #3399cc, 0 1px 0 #0077aa;
+  letter-spacing: 0.03em;
+}
+
+#gWScreen .gw-shower-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 64px; height: 64px;
+  filter: drop-shadow(0 2px 6px #0099cc);
+  transition: transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+#gWScreen .gw-shower-btn:active { transform: scale(0.88); }
+#gWScreen .gw-shower-btn img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+}
+#gWScreen .gw-shower-btn.off {
+  filter: grayscale(1) drop-shadow(0 2px 4px #aaa);
+  opacity: 0.65;
+}
+
+#gWScreen .gw-progress-wrap {
+  position: relative;
+  z-index: 10;
+  width: 82%;
+  height: 16px;
+  background: rgba(255,255,255,0.45);
+  border-radius: 10px;
+  margin: 2px auto 0 auto;
+  border: 2px solid #ffffffaa;
+  overflow: hidden;
+  box-shadow: 0 2px 6px #00aaff44;
+}
+#gWScreen .gw-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #66ddff, #33aaee, #00ccbb);
+  border-radius: 10px;
+  transition: width 0.18s;
+}
+
+#gWScreen .gw-canvas-wrap {
+  position: relative;
+  z-index: 5;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+#gWScreen .gw-animal-area {
+  position: relative;
+  width: min(260px, 52vw);
+  height: min(260px, 52vw);
+}
+#gWScreen .gw-animal-area img {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+#gWScreen .gw-animal-dirty  { z-index: 2; }
+#gWScreen .gw-animal-clean  { z-index: 3; opacity: 0; }
+
+#gWScreen .gw-draw-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+#gWScreen .gw-bubbles-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.gw-bubble {
+  position: absolute;
+  pointer-events: none;
+  animation: gwBubbleFloat 1.1s ease-out forwards;
+  will-change: transform, opacity;
+}
+@keyframes gwBubbleFloat {
+  0%   { transform: scale(0.4) translateY(0);   opacity: 1; }
+  60%  { transform: scale(1.1) translateY(-22px); opacity: 0.85; }
+  100% { transform: scale(0.7) translateY(-44px); opacity: 0; }
+}
+
+#gWScreen .gw-sparkle-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  display: none;
+  overflow: hidden;
+}
+.gw-sparkle {
+  position: absolute;
+  animation: gwSparkle 0.9s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes gwSparkle {
+  0%   { transform: scale(0) rotate(0deg);   opacity: 1; }
+  60%  { transform: scale(1.3) rotate(180deg); opacity: 1; }
+  100% { transform: scale(0.5) rotate(360deg); opacity: 0; }
+}
+
+#gWScreen .gw-water-drops-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 18;
+  pointer-events: none;
+  overflow: hidden;
+}
+.gw-waterdrop {
+  position: absolute;
+  font-size: 1.1rem;
+  animation: gwDropFall 0.55s ease-in forwards;
+  pointer-events: none;
+}
+@keyframes gwDropFall {
+  0%   { transform: translateY(-10px); opacity: 1; }
+  100% { transform: translateY(60px);  opacity: 0; }
+}
+
+#gWScreen .gw-jump-anim {
+  animation: gwJump 0.5s ease-in-out infinite alternate;
+}
+@keyframes gwJump {
+  0%   { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-28px) scale(1.08); }
+}
+
+#gWScreen .gw-celebration-text {
+  position: absolute;
+  z-index: 35;
+  bottom: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #ff6699;
+  text-shadow: 0 2px 8px #fff, 0 0 16px #ffaacc;
+  white-space: nowrap;
+  display: none;
+  animation: gwTextPop 0.5s ease-out forwards;
+}
+@keyframes gwTextPop {
+  0%   { transform: translateX(-50%) scale(0.5); opacity: 0; }
+  70%  { transform: translateX(-50%) scale(1.15); opacity: 1; }
+  100% { transform: translateX(-50%) scale(1);   opacity: 1; }
+}
+
+#gWScreen .gw-replay-btn {
+  position: absolute;
+  z-index: 40;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #ff88bb, #ff4499);
+  border: none;
+  border-radius: 50px;
+  padding: 14px 38px;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 3px #cc0055;
+  box-shadow: 0 4px 16px #ff449966;
+  cursor: pointer;
+  display: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s;
+}
+#gWScreen .gw-replay-btn:active { transform: translateX(-50%) scale(0.93); }
+
+#gWScreen .gw-hint {
+  position: relative;
+  z-index: 10;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 4px #0077aa;
+  margin: 4px 0 6px 0;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+#gWScreen .gw-hint.hidden { opacity: 0; }
+
+#gWScreen .gw-back-btn {
+  position: absolute;
+  z-index: 50;
+  top: 10px;
+  left: 10px;
+  background: rgba(255,255,255,0.82);
+  border: none;
+  border-radius: 50%;
+  width: 44px; height: 44px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #0002;
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
 </style>
 </head>
 <body>
@@ -800,6 +1419,118 @@
   <button class="back-btn" onclick="if(typeof gRStop==='function')gRStop();showScreen('menuScreen');">もどる</button>
 
 </div>
+<div class="screen" id="gNScreen">
+  <!-- 背景 -->
+  <img id="gN-bg" src="生成画像/gN/road_bg.png" alt="背景" onerror="this.style.background='linear-gradient(180deg,#87CEEB 60%,#90EE90 60%,#90EE90 72%,#aaa 72%)';this.style.opacity='0.7';">
+
+  <!-- 戻るボタン -->
+  <button id="gN-back-btn">&#9664; もどる</button>
+
+  <!-- タイトル -->
+  <div id="gN-title">🚗 のりものならべ！ 🚌</div>
+  <div id="gN-instruction">おおきさじゅんに ならべてね！</div>
+
+  <!-- スロットエリア -->
+  <div id="gN-slots-area">
+    <!-- slot 0: 小 -->
+    <div class="gN-slot-wrap">
+      <div class="gN-slot-label">ちいさい</div>
+      <div class="gN-slot" id="gN-slot-0" data-index="0">
+        <span class="gN-slot-hint">🔲</span>
+      </div>
+    </div>
+    <!-- slot 1: 中 -->
+    <div class="gN-slot-wrap">
+      <div class="gN-slot-label">ふつう</div>
+      <div class="gN-slot" id="gN-slot-1" data-index="1">
+        <span class="gN-slot-hint">🔲</span>
+      </div>
+    </div>
+    <!-- slot 2: 大 -->
+    <div class="gN-slot-wrap">
+      <div class="gN-slot-label">おおきい</div>
+      <div class="gN-slot" id="gN-slot-2" data-index="2">
+        <span class="gN-slot-hint">🔲</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- スコア -->
+  <div id="gN-score-area">
+    <span class="gN-star-indicator" id="gN-star-0">⭐</span>
+    <span class="gN-star-indicator" id="gN-star-1">⭐</span>
+    <span class="gN-star-indicator" id="gN-star-2">⭐</span>
+  </div>
+
+  <!-- カードエリア -->
+  <div id="gN-cards-area">
+    <!-- JS で生成 -->
+  </div>
+
+  <!-- 走行アニメーション道路レーン -->
+  <div id="gN-animate-road"></div>
+
+  <!-- 成功オーバーレイ -->
+  <div id="gN-success-overlay">
+    <div id="gN-success-msg">🎉 せいかい！ 🎉</div>
+    <img id="gN-success-img" src="生成画像/gN/success_effect.png" alt="成功エフェクト" onerror="this.style.display='none';">
+    <div id="gN-success-stars">⭐⭐⭐</div>
+    <button id="gN-retry-btn">もういちど あそぶ！</button>
+  </div>
+
+  <!-- ぼーちゃんガイド -->
+  <div id="gN-bo-bubble">ちいさい じゅんに ならべてね！🚗🚕🚌</div>
+  <button id="gN-bo-btn" title="ヒント">🐻</button>
+</div>
+<div class="screen" id="gWScreen">
+  <!-- 背景 -->
+  <img class="gw-bg" src="生成画像/tmp_1774107038/bathroom_bg.png" alt="お風呂場の背景">
+
+  <!-- 戻るボタン -->
+  <button class="gw-back-btn" id="gwBackBtn" aria-label="もどる">◀</button>
+
+  <!-- 上部バー -->
+  <div class="gw-top-bar">
+    <span class="gw-title" id="gwTitle">🛁 あわあわシャワー</span>
+    <button class="gw-shower-btn" id="gwShowerBtn" aria-label="シャワーオン/オフ">
+      <img src="生成画像/tmp_1774107038/shower_icon.png" alt="シャワー">
+    </button>
+  </div>
+
+  <!-- 進行バー -->
+  <div class="gw-progress-wrap">
+    <div class="gw-progress-bar" id="gwProgressBar"></div>
+  </div>
+
+  <!-- ヒントテキスト -->
+  <div class="gw-hint" id="gwHint">シャワーをタップして、ゆびでなぞってね！💧</div>
+
+  <!-- メインエリア -->
+  <div class="gw-canvas-wrap">
+    <!-- スパークル演出レイヤー -->
+    <div class="gw-sparkle-layer" id="gwSparkleLayer"></div>
+
+    <!-- 動物キャラエリア -->
+    <div class="gw-animal-area" id="gwAnimalArea">
+      <img class="gw-animal-dirty" id="gwAnimalDirty"
+           src="生成画像/tmp_1774107038/animal_dirty.png" alt="よごれたくま">
+      <img class="gw-animal-clean" id="gwAnimalClean"
+           src="生成画像/tmp_1774107038/animal_clean.png" alt="きれいなくま">
+      <!-- 泡レイヤー -->
+      <div class="gw-bubbles-layer" id="gwBubblesLayer"></div>
+      <!-- 水しぶきレイヤー -->
+      <div class="gw-water-drops-layer" id="gwWaterDropsLayer"></div>
+      <!-- 描画キャンバス（タッチ受付） -->
+      <canvas class="gw-draw-canvas" id="gwDrawCanvas"></canvas>
+    </div>
+
+    <!-- お祝いテキスト -->
+    <div class="gw-celebration-text" id="gwCelebText">✨ きれいになったよ！ ✨</div>
+  </div>
+
+  <!-- もういちどボタン -->
+  <button class="gw-replay-btn" id="gwReplayBtn">🔄 もういちど！</button>
+</div>
   <!-- メニュー -->
   <div class="screen" id="menuScreen">
     <div class="menu-title">🎮 キッズ ゲーム</div>
@@ -815,7 +1546,22 @@
       <div class="game-card" id="cardGM"><div class="card-icon">🔨</div><div class="card-title">もぐら たたき</div><div class="card-desc">でてきた もぐらを<br>すばやく たたこう！</div></div>
       <div class="game-card" id="cardGV"><div class="card-icon">🚂</div><div class="card-title">のりもの わけわけ</div><div class="card-desc">でんしゃ と くるま を<br>わけてみよう！</div></div>
       <div class="game-card" id="cardGS"><div class="card-icon">🛒</div><div class="card-title">おつかい ゲーム</div><div class="card-desc">おかあさんに たのまれた<br>ものを かってこよう！</div></div>
-      <div class="game-card" id="cardGR"><div class="card-icon">🚗</div><div class="card-title">のりもの ならべっこ！</div><div class="card-desc">のりものを ならべて<br>あそぼう！</div></div>
+      <div class="game-card" id="cardGR">
+        <div class="card-icon">🚗</div>
+        <div class="card-title">のりもの ならべっこ！</div>
+        <div class="card-desc">のりものを ならべて<br>あそぼう！</div>
+      </div>
+      <div class="game-card" id="cardGN">
+        <div class="card-icon">🚌</div>
+        <div class="card-title">のりものならべ！</div>
+        <div class="card-desc">おおきさじゅんに ならべよう</div>
+      </div>
+      <div class="game-card" id="cardGW">
+  <div class="card-inner">
+    <div class="card-icon">🛁</div>
+    <div class="card-label">あわあわシャワー</div>
+  </div>
+</div>
     </div>
   </div>
 
@@ -1253,9 +1999,9 @@
 // ============================================================
 //  共通
 // ============================================================
-const allScreens=['ageSelectScreen','papaScreen','analyticsScreen','menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','gDScreen','gDResultScreen','g3Screen','g5Screen','g6Screen','g6ResultScreen','g8Screen','g8ResultScreen','gKScreen','gMScreen','gVScreen','gSScreen','gRScreen'];
+const allScreens=['ageSelectScreen','papaScreen','analyticsScreen','menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','gDScreen','gDResultScreen','g3Screen','g5Screen','g6Screen','g6ResultScreen','g8Screen','g8ResultScreen','gKScreen','gMScreen','gVScreen','gSScreen','gRScreen','gNScreen','gWScreen'];
 function showScreen(id){allScreens.forEach(s=>document.getElementById(s).classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('backBtn').classList.toggle('visible',id!=='ageSelectScreen');}
-function goHome(){showScreen('menuScreen');if(typeof gRStop==='function')gRStop();if(typeof g1Stop==='function')g1Stop();if(typeof g3Stop==='function')g3Stop();if(typeof gDStop==='function')gDStop();if(typeof g5Stop==='function')g5Stop();if(typeof g6Stop==='function')g6Stop();if(typeof g8Stop==='function')g8Stop();if(typeof gKStop==='function')gKStop();if(typeof gMStop==='function')gMStop();if(typeof gVStop==='function')gVStop();if(typeof gSStop==='function')gSStop();}
+function goHome(){showScreen('menuScreen');if(typeof gWStop==='function')gWStop();if(typeof gNStop==='function')gNStop();if(typeof gRStop==='function')gRStop();if(typeof g1Stop==='function')g1Stop();if(typeof g3Stop==='function')g3Stop();if(typeof gDStop==='function')gDStop();if(typeof g5Stop==='function')g5Stop();if(typeof g6Stop==='function')g6Stop();if(typeof g8Stop==='function')g8Stop();if(typeof gKStop==='function')gKStop();if(typeof gMStop==='function')gMStop();if(typeof gVStop==='function')gVStop();if(typeof gSStop==='function')gSStop();}
 function startGame1(){showScreen('g1StartScreen');g1RenderAnimalSelect();}
 function startGameD(){showScreen('gDScreen');if(typeof gDInit==='function')gDInit();}
 function startGame3(){showScreen('g3Screen');if(typeof g3Init==='function')g3Init();}
@@ -1280,7 +2026,7 @@ document.getElementById('backBtn').addEventListener('click',function(){
 });
 var selectedAge='bo';
 function applyAgeFilter(){
-  var bo=['cardG1','cardG8','cardGK','cardGM','cardGV','cardGR'];
+  var bo=['cardG1','cardG8','cardGK','cardGM','cardGV','cardGR','cardGN','cardGW'];
   var kan=['cardG8','cardGD','cardG3','cardG5','cardGK','cardGM','cardGS'];
   var show=selectedAge==='bo'?bo:kan;
   ['cardG1','cardGD','cardG3','cardG5','cardG6','cardG8','cardGK','cardGM','cardGV','cardGS'].forEach(function(id){
@@ -1305,6 +2051,8 @@ document.getElementById('cardGV').addEventListener('click',startGameV);
 document.getElementById('cardGS').addEventListener('click',startGameS);
 
 document.getElementById('cardGR').addEventListener('click',function(){showScreen('gRScreen');if(typeof gRInit==='function')gRInit();});
+document.getElementById('cardGN').addEventListener('click',function(){showScreen('gNScreen');if(typeof gNInit==='function')gNInit();});
+document.getElementById('cardGW').addEventListener('click',function(){showScreen('gWScreen');if(typeof gWInit==='function')gWInit();});
 // TTS (Google翻訳TTS優先、ネイティブTTSにフォールバック)
 let _ttsAudio=null,_nativeVoice=null;
 (function(){
@@ -4114,6 +4862,957 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   if(cardGR){
     cardGR.addEventListener('click',function(){logGameStart('gR');});
   }
+})();
+
+// のりものならべ！
+(function(){
+  'use strict';
+
+  // ---- 定数 ----
+  var VEHICLES = [
+    { id: 'small',  label: 'じてんしゃ', size: 0, src: '生成画像/gN/vehicle_small.png',  emoji: '🚲', slotSize: 0 },
+    { id: 'medium', label: 'タクシー',   size: 1, src: '生成画像/gN/vehicle_medium.png', emoji: '🚕', slotSize: 1 },
+    { id: 'large',  label: 'バス',       size: 2, src: '生成画像/gN/vehicle_large.png',  emoji: '🚌', slotSize: 2 }
+  ];
+
+  // スロットサイズ設定 (小・中・大)
+  var SLOT_SIZES = [
+    { w: 'clamp(60px,14vw,90px)',  h: 'clamp(50px,12vw,75px)'  },
+    { w: 'clamp(80px,18vw,115px)', h: 'clamp(60px,14vw,85px)'  },
+    { w: 'clamp(100px,22vw,145px)',h: 'clamp(70px,16vw,100px)' }
+  ];
+
+  var CARD_SIZES = [
+    { w: 'clamp(60px,14vw,88px)',  h: 'clamp(55px,13vw,82px)'  },
+    { w: 'clamp(80px,18vw,110px)', h: 'clamp(65px,15vw,95px)'  },
+    { w: 'clamp(100px,22vw,135px)',h: 'clamp(75px,17vw,110px)' }
+  ];
+
+  // ---- 状態 ----
+  var timers = [];
+  var slotContents = [null, null, null]; // 各スロットに置かれたvehicle.id
+  var dragTarget = null;
+  var dragOriginCardArea = false;
+  var dragOriginSlot = -1;
+  var touchOffsetX = 0;
+  var touchOffsetY = 0;
+  var dragClone = null;
+  var correctCount = 0;
+  var shuffledOrder = [];
+
+  // ---- ユーティリティ ----
+  function $(id){ return document.getElementById(id); }
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  function addTimer(id){
+    timers.push(id);
+  }
+
+  function clearAllTimers(){
+    for(var i = 0; i < timers.length; i++){
+      clearTimeout(timers[i]);
+      clearInterval(timers[i]);
+    }
+    timers = [];
+  }
+
+  // ---- 音 (Web Audio API) ----
+  var audioCtx = null;
+  function getAudioCtx(){
+    if(!audioCtx){
+      try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
+    }
+    return audioCtx;
+  }
+
+  function playBeep(freq, dur, type, vol){
+    var ctx = getAudioCtx();
+    if(!ctx) return;
+    try {
+      var o = ctx.createOscillator();
+      var g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = type || 'sine';
+      o.frequency.setValueAtTime(freq, ctx.currentTime);
+      g.gain.setValueAtTime(vol || 0.3, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+      o.start(ctx.currentTime);
+      o.stop(ctx.currentTime + dur);
+    } catch(e){}
+  }
+
+  function playPlaceSound(){
+    playBeep(520, 0.12, 'sine', 0.25);
+  }
+
+  function playWrongSound(){
+    playBeep(200, 0.18, 'sawtooth', 0.2);
+    var t = setTimeout(function(){ playBeep(180, 0.18, 'sawtooth', 0.2); }, 120);
+    addTimer(t);
+  }
+
+  function playSuccessSound(){
+    var notes = [523, 659, 784, 1047];
+    for(var i = 0; i < notes.length; i++){
+      (function(note, idx){
+        var t = setTimeout(function(){ playBeep(note, 0.25, 'sine', 0.3); }, idx * 130);
+        addTimer(t);
+      })(notes[i], i);
+    }
+  }
+
+  function playHornSound(){
+    playBeep(440, 0.15, 'square', 0.2);
+    var t1 = setTimeout(function(){ playBeep(350, 0.2, 'square', 0.2); }, 160);
+    var t2 = setTimeout(function(){ playBeep(440, 0.15, 'square', 0.2); }, 380);
+    addTimer(t1); addTimer(t2);
+  }
+
+  function speakHint(){
+    if(!window.speechSynthesis) return;
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance('ちいさいのりものから じゅんばんに ならべてみよう！');
+      u.lang = 'ja-JP';
+      u.rate = 0.85;
+      u.pitch = 1.2;
+      window.speechSynthesis.speak(u);
+    } catch(e){}
+  }
+
+  // ---- 初期化 ----
+  function buildUI(){
+    // スロットサイズ設定
+    for(var i = 0; i < 3; i++){
+      var slot = $('gN-slot-' + i);
+      if(!slot) continue;
+      slot.style.width  = SLOT_SIZES[i].w;
+      slot.style.height = SLOT_SIZES[i].h;
+    }
+
+    // カードをシャッフルして表示
+    shuffledOrder = shuffle([0, 1, 2]);
+    var area = $('gN-cards-area');
+    if(!area) return;
+    area.innerHTML = '';
+
+    for(var j = 0; j < shuffledOrder.length; j++){
+      var v = VEHICLES[shuffledOrder[j]];
+      var card = document.createElement('div');
+      card.className = 'gN-card';
+      card.id = 'gN-card-' + v.id;
+      card.setAttribute('data-vid', v.id);
+      card.setAttribute('data-size', v.size);
+      card.style.width  = CARD_SIZES[v.size].w;
+      card.style.height = CARD_SIZES[v.size].h;
+      card.draggable = true;
+
+      // 画像を試みる、失敗したら絵文字
+      var img = document.createElement('img');
+      img.src = v.src;
+      img.alt = v.label;
+      img.style.width = '85%';
+      img.style.height = '85%';
+      img.style.objectFit = 'contain';
+      img.style.pointerEvents = 'none';
+      img.onerror = (function(card, emoji){
+        return function(){
+          card.innerHTML = '';
+          var em = document.createElement('span');
+          em.className = 'gN-card-emoji';
+          em.textContent = emoji;
+          card.appendChild(em);
+        };
+      })(card, v.emoji);
+
+      card.appendChild(img);
+      area.appendChild(card);
+
+      // ドラッグイベント (マウス)
+      card.addEventListener('dragstart', onCardDragStart);
+      // タッチイベント
+      card.addEventListener('touchstart', onTouchStart, { passive: false });
+    }
+
+    // スロットイベント
+    for(var k = 0; k < 3; k++){
+      (function(idx){
+        var sl = $('gN-slot-' + idx);
+        if(!sl) return;
+        sl.addEventListener('dragover', function(e){ e.preventDefault(); sl.classList.add('drag-over'); });
+        sl.addEventListener('dragleave', function(){ sl.classList.remove('drag-over'); });
+        sl.addEventListener('drop', function(e){ e.preventDefault(); sl.classList.remove('drag-over'); onDropToSlot(idx); });
+      })(k);
+    }
+
+    // リセットスロット内容
+    slotContents = [null, null, null];
+    correctCount = 0;
+    updateStars();
+  }
+
+  // ---- ドラッグ (マウス) ----
+  var dragVehicleId = null;
+  var dragFromSlot = -1;
+
+  function onCardDragStart(e){
+    dragVehicleId = e.currentTarget.getAttribute('data-vid');
+    dragFromSlot = -1;
+    e.dataTransfer.effectAllowed = 'move';
+  }
+
+  function onDropToSlot(slotIdx){
+    if(dragVehicleId === null) return;
+    placeVehicleToSlot(dragVehicleId, slotIdx, dragFromSlot);
+    dragVehicleId = null;
+    dragFromSlot = -1;
+  }
+
+  // ---- タッチ drag ----
+  function onTouchStart(e){
+    e.preventDefault();
+    var card = e.currentTarget;
+    dragVehicleId = card.getAttribute('data-vid');
+    dragFromSlot = -1;
+
+    var touch = e.touches[0];
+    var rect = card.getBoundingClientRect();
+    touchOffsetX = touch.clientX - rect.left - rect.width / 2;
+    touchOffsetY = touch.clientY - rect.top  - rect.height / 2;
+
+    // クローン作成
+    dragClone = card.cloneNode(true);
+    dragClone.style.position = 'fixed';
+    dragClone.style.width  = rect.width  + 'px';
+    dragClone.style.height = rect.height + 'px';
+    dragClone.style.left   = (touch.clientX - rect.width  / 2) + 'px';
+    dragClone.style.top    = (touch.clientY - rect.height / 2) + 'px';
+    dragClone.style.zIndex = '999';
+    dragClone.style.opacity = '0.85';
+    dragClone.style.pointerEvents = 'none';
+    dragClone.style.transition = 'none';
+    dragClone.style.transform = 'scale(1.1) rotate(3deg)';
+    document.body.appendChild(dragClone);
+
+    card.style.opacity = '0.4';
+
+    document.addEventListener('touchmove', onTouchMove, { passive: false });
+    document.addEventListener('touchend',  onTouchEnd);
+  }
+
+  function onTouchMove(e){
+    e.preventDefault();
+    if(!dragClone) return;
+    var touch = e.touches[0];
+    var w = parseFloat(dragClone.style.width);
+    var h = parseFloat(dragClone.style.height);
+    dragClone.style.left = (touch.clientX - w / 2) + 'px';
+    dragClone.style.top  = (touch.clientY - h / 2) + 'px';
+
+    // スロットハイライト
+    for(var i = 0; i < 3; i++){
+      var sl = $('gN-slot-' + i);
+      if(!sl) continue;
+      var r = sl.getBoundingClientRect();
+      if(touch.clientX >= r.left && touch.clientX <= r.right &&
+         touch.clientY >= r.top  && touch.clientY <= r.bottom){
+        sl.classList.add('drag-over');
+      } else {
+        sl.classList.remove('drag-over');
+      }
+    }
+  }
+
+  function onTouchEnd(e){
+    document.removeEventListener('touchmove', onTouchMove);
+    document.removeEventListener('touchend', onTouchEnd);
+
+    if(dragClone){ dragClone.parentNode && dragClone.parentNode.removeChild(dragClone); dragClone = null; }
+
+    // 元のカードを表示に戻す
+    var origCard = $('gN-card-' + dragVehicleId);
+    if(origCard) origCard.style.opacity = '1';
+
+    if(!e.changedTouches || !e.changedTouches[0]) { dragVehicleId = null; return; }
+    var touch = e.changedTouches[0];
+
+    // どのスロットに落としたか
+    for(var i = 0; i < 3; i++){
+      var sl = $('gN-slot-' + i);
+      if(!sl) continue;
+      sl.classList.remove('drag-over');
+      var r = sl.getBoundingClientRect();
+      if(touch.clientX >= r.left && touch.clientX <= r.right &&
+         touch.clientY >= r.top  && touch.clientY <= r.bottom){
+        placeVehicleToSlot(dragVehicleId, i, dragFromSlot);
+        dragVehicleId = null;
+        dragFromSlot = -1;
+        return;
+      }
+    }
+    dragVehicleId = null;
+    dragFromSlot = -1;
+  }
+
+  // ---- 配置ロジック ----
+  function placeVehicleToSlot(vid, slotIdx, fromSlot){
+    var vehicle = null;
+    for(var i = 0; i < VEHICLES.length; i++){
+      if(VEHICLES[i].id === vid){ vehicle = VEHICLES[i]; break; }
+    }
+    if(!vehicle) return;
+
+    // スロットが既に埋まっている場合ははじく（同じビークルでなければ）
+    if(slotContents[slotIdx] !== null && slotContents[slotIdx] !== vid){
+      shakeCard(vid);
+      playWrongSound();
+      return;
+    }
+
+    // 正解チェック: スロット0=size0, 1=size1, 2=size2
+    if(vehicle.size !== slotIdx){
+      // 不正解
+      shakeCard(vid);
+      playWrongSound();
+      showWrongFeedback(slotIdx);
+      return;
+    }
+
+    // 正解
+    playPlaceSound();
+    slotContents[slotIdx] = vid;
+
+    // カードをスロットに配置表示
+    putCardInSlot(vehicle, slotIdx);
+
+    // 元のカードを消す
+    var origCard = $('gN-card-' + vid);
+    if(origCard){
+      origCard.style.transition = 'opacity 0.3s';
+      origCard.style.opacity = '0';
+      var t = setTimeout(function(){
+        if(origCard.parentNode) origCard.parentNode.removeChild(origCard);
+      }, 300);
+      addTimer(t);
+    }
+
+    correctCount++;
+    updateStars();
+
+    if(correctCount === 3){
+      var t2 = setTimeout(onAllCorrect, 600);
+      addTimer(t2);
+    }
+  }
+
+  function putCardInSlot(vehicle, slotIdx){
+    var slot = $('gN-slot-' + slotIdx);
+    if(!slot) return;
+    slot.innerHTML = '';
+    slot.classList.add('correct');
+
+    var img = document.createElement('img');
+    img.src = vehicle.src;
+    img.alt = vehicle.label;
+    img.className = 'gN-slot-img';
+    img.onerror = (function(slot, emoji){
+      return function(){
+        slot.innerHTML = '';
+        var em = document.createElement('span');
+        em.style.fontSize = 'clamp(24px,7vw,48px)';
+        em.style.animation = 'gN-placed-bounce 0.4s ease';
+        em.textContent = emoji;
+        slot.appendChild(em);
+      };
+    })(slot, vehicle.emoji);
+    slot.appendChild(img);
+  }
+
+  function shakeCard(vid){
+    var card = $('gN-card-' + vid);
+    if(!card) return;
+    card.classList.remove('shake');
+    // reflow
+    void card.offsetWidth;
+    card.classList.add('shake');
+    var t = setTimeout(function(){ card.classList.remove('shake'); }, 550);
+    addTimer(t);
+  }
+
+  function showWrongFeedback(slotIdx){
+    var slot = $('gN-slot-' + slotIdx);
+    if(!slot) return;
+    slot.classList.add('wrong');
+    var t = setTimeout(function(){ slot.classList.remove('wrong'); }, 600);
+    addTimer(t);
+  }
+
+  function updateStars(){
+    for(var i = 0; i < 3; i++){
+      var s = $('gN-star-' + i);
+      if(!s) continue;
+      if(i < correctCount){ s.classList.add('filled'); }
+      else { s.classList.remove('filled'); }
+    }
+  }
+
+  // ---- 全問正解 ----
+  function onAllCorrect(){
+    playSuccessSound();
+
+    // 走行アニメーション
+    var road = $('gN-animate-road');
+    if(road){
+      road.innerHTML = '';
+      var heights = ['15%', '32%', '50%'];
+      var delays  = [0, 400, 800];
+      for(var i = 0; i < VEHICLES.length; i++){
+        (function(v, bottomPct, delay){
+          var t = setTimeout(function(){
+            playHornSound();
+            var ri = document.createElement('img');
+            ri.src = v.src;
+            ri.alt = v.label;
+            ri.className = 'gN-road-vehicle';
+            var h = 'clamp(' + (30 + v.size * 14) + 'px,' + (8 + v.size * 3) + 'vw,' + (50 + v.size * 20) + 'px)';
+            ri.style.height = h;
+            ri.style.bottom = bottomPct;
+            ri.onerror = function(){
+              ri.parentNode && ri.parentNode.removeChild(ri);
+              var em = document.createElement('span');
+              em.textContent = v.emoji;
+              em.style.cssText = 'position:absolute;font-size:clamp(28px,8vw,54px);bottom:' + bottomPct + ';animation:gN-drive 2.5s linear forwards;opacity:0;';
+              road.appendChild(em);
+            };
+            road.appendChild(ri);
+          }, delay);
+          addTimer(t);
+        })(VEHICLES[i], heights[i], delays[i]);
+      }
+    }
+
+    // 成功オーバーレイ表示
+    var t3 = setTimeout(function(){
+      var overlay = $('gN-success-overlay');
+      if(overlay) overlay.classList.add('show');
+    }, 1200);
+    addTimer(t3);
+  }
+
+  // ---- リトライ ----
+  function onRetry(){
+    var overlay = $('gN-success-overlay');
+    if(overlay) overlay.classList.remove('show');
+
+    // スロットリセット
+    for(var i = 0; i < 3; i++){
+      var slot = $('gN-slot-' + i);
+      if(!slot) continue;
+      slot.classList.remove('correct','wrong');
+      slot.innerHTML = '';
+      var hint = document.createElement('span');
+      hint.className = 'gN-slot-hint';
+      hint.textContent = '🔲';
+      slot.appendChild(hint);
+    }
+
+    // 走行道路リセット
+    var road = $('gN-animate-road');
+    if(road) road.innerHTML = '';
+
+    buildUI();
+  }
+
+  // ---- ぼーちゃんヒント ----
+  var bubbleTimer = null;
+  function onBoBtn(){
+    speakHint();
+    var bubble = $('gN-bo-bubble');
+    if(!bubble) return;
+    bubble.style.display = 'block';
+    if(bubbleTimer) clearTimeout(bubbleTimer);
+    bubbleTimer = setTimeout(function(){ bubble.style.display = 'none'; }, 3000);
+    addTimer(bubbleTimer);
+  }
+
+  // ---- 公開 API ----
+  window.gNInit = function(){
+    clearAllTimers();
+    // 成功オーバーレイ非表示
+    var overlay = $('gN-success-overlay');
+    if(overlay) overlay.classList.remove('show');
+
+    // 走行道路リセット
+    var road = $('gN-animate-road');
+    if(road) road.innerHTML = '';
+
+    // スロットリセット
+    for(var i = 0; i < 3; i++){
+      var slot = $('gN-slot-' + i);
+      if(!slot) continue;
+      slot.classList.remove('correct','wrong');
+      slot.innerHTML = '';
+      var hint = document.createElement('span');
+      hint.className = 'gN-slot-hint';
+      hint.textContent = '🔲';
+      slot.appendChild(hint);
+    }
+
+    buildUI();
+
+    // イベントバインド (重複しないよう replace-node trick)
+    var retryBtn = $('gN-retry-btn');
+    if(retryBtn){
+      var newRetry = retryBtn.cloneNode(true);
+      retryBtn.parentNode.replaceChild(newRetry, retryBtn);
+      newRetry.addEventListener('click', onRetry);
+    }
+
+    var boBtn = $('gN-bo-btn');
+    if(boBtn){
+      var newBo = boBtn.cloneNode(true);
+      boBtn.parentNode.replaceChild(newBo, boBtn);
+      newBo.addEventListener('click', onBoBtn);
+    }
+
+    var backBtn = $('gN-back-btn');
+    if(backBtn){
+      var newBack = backBtn.cloneNode(true);
+      backBtn.parentNode.replaceChild(newBack, backBtn);
+      newBack.addEventListener('click', function(){
+        if(typeof gNStop === 'function') gNStop();
+        if(typeof showScreen === 'function') showScreen('menuScreen');
+      });
+    }
+  };
+
+  window.gNStop = function(){
+    clearAllTimers();
+    if(bubbleTimer){ clearTimeout(bubbleTimer); bubbleTimer = null; }
+    if(dragClone && dragClone.parentNode){ dragClone.parentNode.removeChild(dragClone); dragClone = null; }
+    document.removeEventListener('touchmove', onTouchMove);
+    document.removeEventListener('touchend', onTouchEnd);
+    if(window.speechSynthesis) try{ window.speechSynthesis.cancel(); }catch(e){}
+  };
+
+})();
+
+// きれいにあらおう！あわあわシャワー
+(function(){
+  'use strict';
+
+  /* ===== タイマー管理 ===== */
+  var _timers = [];
+  function _st(fn, ms){ var id = setTimeout(fn, ms); _timers.push(id); return id; }
+  function _si(fn, ms){ var id = setInterval(fn, ms); _timers.push(id); return id; }
+  function _clearAll(){
+    _timers.forEach(function(id){ clearTimeout(id); clearInterval(id); });
+    _timers = [];
+  }
+
+  /* ===== Audio Context ===== */
+  var _audioCtx = null;
+  function _getAC(){
+    if(!_audioCtx){
+      try{ _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){}
+    }
+    return _audioCtx;
+  }
+  function _playTone(freq, type, dur, vol){
+    var ac = _getAC(); if(!ac) return;
+    try{
+      var osc = ac.createOscillator();
+      var gain = ac.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.setValueAtTime(freq, ac.currentTime);
+      gain.gain.setValueAtTime((vol||0.18), ac.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + (dur||0.25));
+      osc.connect(gain); gain.connect(ac.destination);
+      osc.start(); osc.stop(ac.currentTime + (dur||0.25));
+    }catch(e){}
+  }
+  function _playWater(){
+    var ac = _getAC(); if(!ac) return;
+    try{
+      var buf = ac.createBuffer(1, ac.sampleRate * 0.18, ac.sampleRate);
+      var d = buf.getChannelData(0);
+      for(var i=0;i<d.length;i++) d[i] = (Math.random()*2-1)*0.12;
+      var src = ac.createBufferSource();
+      var gain = ac.createGain();
+      gain.gain.setValueAtTime(0.22, ac.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+0.18);
+      src.buffer = buf;
+      src.connect(gain); gain.connect(ac.destination);
+      src.start();
+    }catch(e){}
+  }
+  function _playCelebration(){
+    var notes = [523,659,784,1047];
+    notes.forEach(function(f,i){
+      _st(function(){ _playTone(f,'triangle',0.32,0.22); }, i*120);
+    });
+  }
+
+  /* ===== ゲーム状態 ===== */
+  var CLEAN_THRESHOLD = 100; // 必要なタッチポイント数
+  var _showerOn    = false;
+  var _isDrawing   = false;
+  var _touchCount  = 0;
+  var _finished    = false;
+  var _bubblePool  = [];
+  var _lastDropTime = 0;
+
+  /* ===== 要素取得 ===== */
+  function _getEl(id){ return document.getElementById(id); }
+
+  /* ===== 初期化 ===== */
+  function _init(){
+    _clearAll();
+    _showerOn   = false;
+    _isDrawing  = false;
+    _touchCount = 0;
+    _finished   = false;
+    _bubblePool = [];
+
+    var dirtyImg  = _getEl('gwAnimalDirty');
+    var cleanImg  = _getEl('gwAnimalClean');
+    var progBar   = _getEl('gwProgressBar');
+    var celebText = _getEl('gwCelebText');
+    var replayBtn = _getEl('gwReplayBtn');
+    var sparkle   = _getEl('gwSparkleLayer');
+    var hint      = _getEl('gwHint');
+    var showerBtn = _getEl('gwShowerBtn');
+    var bubblesL  = _getEl('gwBubblesLayer');
+    var dropsL    = _getEl('gwWaterDropsLayer');
+    var canvas    = _getEl('gwDrawCanvas');
+
+    if(!dirtyImg||!cleanImg||!progBar||!canvas) return;
+
+    // リセット表示
+    dirtyImg.style.opacity  = '1';
+    cleanImg.style.opacity  = '0';
+    progBar.style.width     = '0%';
+    celebText.style.display = 'none';
+    replayBtn.style.display = 'none';
+    sparkle.style.display   = 'none';
+    sparkle.innerHTML       = '';
+    bubblesL.innerHTML      = '';
+    dropsL.innerHTML        = '';
+    hint.textContent        = 'シャワーをタップして、ゆびでなぞってね！💧';
+    hint.classList.remove('hidden');
+    showerBtn.classList.add('off');
+    dirtyImg.classList.remove('gw-jump-anim');
+    cleanImg.classList.remove('gw-jump-anim');
+
+    // キャンバスサイズ合わせ
+    _resizeCanvas();
+
+    // イベント設定
+    _setupEvents();
+
+    // 水滴アニメ（シャワーON中のみ）
+    _si(function(){
+      if(_showerOn && !_finished) _spawnWaterDrop();
+    }, 80);
+  }
+
+  function _resizeCanvas(){
+    var canvas = _getEl('gwDrawCanvas');
+    if(!canvas) return;
+    var area = _getEl('gwAnimalArea');
+    if(!area) return;
+    canvas.width  = area.offsetWidth  || 260;
+    canvas.height = area.offsetHeight || 260;
+  }
+
+  /* ===== シャワーON/OFF ===== */
+  function _toggleShower(){
+    if(_finished) return;
+    _showerOn = !_showerOn;
+    var btn = _getEl('gwShowerBtn');
+    var hint = _getEl('gwHint');
+    if(_showerOn){
+      btn.classList.remove('off');
+      hint.textContent = 'ゆびでなぞってあらってあげてね！🚿';
+      _playTone(880,'sine',0.2,0.15);
+    } else {
+      btn.classList.add('off');
+      hint.textContent = 'シャワーをタップしてね！💧';
+      _playTone(440,'sine',0.15,0.1);
+    }
+  }
+
+  /* ===== 描画・泡生成 ===== */
+  function _onStart(px, py){
+    if(!_showerOn || _finished) return;
+    _isDrawing = true;
+    _processPoint(px, py);
+  }
+  function _onMove(px, py){
+    if(!_isDrawing || !_showerOn || _finished) return;
+    _processPoint(px, py);
+  }
+  function _onEnd(){
+    _isDrawing = false;
+  }
+
+  function _processPoint(px, py){
+    _spawnBubble(px, py);
+    _touchCount++;
+    var progress = Math.min(_touchCount / CLEAN_THRESHOLD, 1);
+    _updateProgress(progress);
+    // 周辺の汚れを消す（キャンバスに透明円を描く）
+    _eraseOnCanvas(px, py);
+    // ランダムで水音
+    if(Math.random() < 0.18) _playWater();
+    if(_touchCount >= CLEAN_THRESHOLD && !_finished){
+      _onClear();
+    }
+  }
+
+  function _updateProgress(ratio){
+    var bar = _getEl('gwProgressBar');
+    if(bar) bar.style.width = (ratio*100).toFixed(1) + '%';
+    // 汚れ具合をアニメーション
+    var dirty = _getEl('gwAnimalDirty');
+    var clean = _getEl('gwAnimalClean');
+    if(dirty) dirty.style.opacity = String(Math.max(0, 1 - ratio * 1.2));
+    if(clean)  clean.style.opacity = String(Math.min(1, ratio * 1.2));
+  }
+
+  /* キャンバス上に汚れを消す描画（視覚的フィードバック） */
+  function _eraseOnCanvas(px, py){
+    var canvas = _getEl('gwDrawCanvas');
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
+    // 半透明の水色円で塗る
+    ctx.beginPath();
+    ctx.arc(px, py, 22, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(130,220,255,0.13)';
+    ctx.fill();
+  }
+
+  /* 泡スポーン */
+  function _spawnBubble(px, py){
+    var layer = _getEl('gwBubblesLayer');
+    if(!layer) return;
+    var el = document.createElement('img');
+    el.src = '生成画像/tmp_1774107038/bubble_effect.png';
+    el.className = 'gw-bubble';
+    var size = 28 + Math.random()*28;
+    el.style.width  = size + 'px';
+    el.style.height = size + 'px';
+    el.style.left   = (px - size/2 + (Math.random()-0.5)*24) + 'px';
+    el.style.top    = (py - size/2 + (Math.random()-0.5)*24) + 'px';
+    layer.appendChild(el);
+    // 一定時間後に削除
+    _st(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 1200);
+    // プールが大きくなりすぎたら古いのを消す
+    _bubblePool.push(el);
+    if(_bubblePool.length > 40){
+      var old = _bubblePool.shift();
+      if(old && old.parentNode) old.parentNode.removeChild(old);
+    }
+  }
+
+  /* 水しぶきスポーン */
+  function _spawnWaterDrop(){
+    var layer = _getEl('gwWaterDropsLayer');
+    if(!layer) return;
+    var now = Date.now();
+    if(now - _lastDropTime < 70) return;
+    _lastDropTime = now;
+    var el = document.createElement('div');
+    el.className = 'gw-waterdrop';
+    el.textContent = '💧';
+    var area = _getEl('gwAnimalArea');
+    var w = area ? (area.offsetWidth||260) : 260;
+    el.style.left = (Math.random()*w*0.8 + w*0.1) + 'px';
+    el.style.top  = '0px';
+    layer.appendChild(el);
+    _st(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 600);
+  }
+
+  /* ===== クリア演出 ===== */
+  function _onClear(){
+    _finished = true;
+    _isDrawing = false;
+    _showerOn  = false;
+    var btn = _getEl('gwShowerBtn');
+    if(btn) btn.classList.add('off');
+
+    // 進行バーを100%に
+    var bar = _getEl('gwProgressBar');
+    if(bar) bar.style.width = '100%';
+
+    // 汚れ→きれい
+    var dirty = _getEl('gwAnimalDirty');
+    var clean = _getEl('gwAnimalClean');
+    if(dirty) dirty.style.opacity = '0';
+    if(clean){
+      clean.style.opacity = '1';
+      _st(function(){ clean.classList.add('gw-jump-anim'); }, 300);
+    }
+
+    // ヒント非表示
+    var hint = _getEl('gwHint');
+    if(hint) hint.classList.add('hidden');
+
+    // スパークル
+    _st(function(){ _showSparkles(); }, 200);
+
+    // お祝いテキスト
+    var celebText = _getEl('gwCelebText');
+    _st(function(){
+      if(celebText){
+        celebText.style.display = 'block';
+        celebText.style.animation = 'none';
+        void celebText.offsetHeight;
+        celebText.style.animation = '';
+      }
+      _playCelebration();
+    }, 400);
+
+    // もういちどボタン
+    var replayBtn = _getEl('gwReplayBtn');
+    _st(function(){
+      if(replayBtn) replayBtn.style.display = 'block';
+    }, 1800);
+  }
+
+  function _showSparkles(){
+    var layer = _getEl('gwSparkleLayer');
+    if(!layer) return;
+    layer.style.display = 'block';
+    layer.innerHTML = '';
+    var emojis = ['✨','⭐','🌟','💫','🌈','🎉'];
+    var count = 18;
+    for(var i=0; i<count; i++){
+      (function(idx){
+        _st(function(){
+          var el = document.createElement('img');
+          el.src = '生成画像/tmp_1774107038/sparkle_burst.png';
+          el.className = 'gw-sparkle';
+          var size = 40 + Math.random()*50;
+          el.style.width  = size + 'px';
+          el.style.height = size + 'px';
+          var area = _getEl('gwAnimalArea');
+          var w = area ? (area.offsetWidth||260)  : 260;
+          var h = area ? (area.offsetHeight||260) : 260;
+          el.style.left = (Math.random()*(w-size)) + 'px';
+          el.style.top  = (Math.random()*(h-size)) + 'px';
+          layer.appendChild(el);
+          // 絵文字テキストも重ねる
+          var eEl = document.createElement('div');
+          eEl.className = 'gw-sparkle';
+          eEl.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+          eEl.style.fontSize = (22 + Math.random()*18) + 'px';
+          eEl.style.left = (Math.random()*(w-30)) + 'px';
+          eEl.style.top  = (Math.random()*(h-30)) + 'px';
+          layer.appendChild(eEl);
+          _st(function(){
+            if(el.parentNode)   el.parentNode.removeChild(el);
+            if(eEl.parentNode)  eEl.parentNode.removeChild(eEl);
+          }, 950);
+        }, idx * 90);
+      })(i);
+    }
+  }
+
+  /* ===== タッチ/マウス イベント設定 ===== */
+  function _setupEvents(){
+    var canvas    = _getEl('gwDrawCanvas');
+    var showerBtn = _getEl('gwShowerBtn');
+    var replayBtn = _getEl('gwReplayBtn');
+    var backBtn   = _getEl('gwBackBtn');
+
+    if(!canvas) return;
+
+    // Canvas タッチ
+    function _getPos(e, target){
+      var rect = (target||canvas).getBoundingClientRect();
+      var src  = e.touches ? e.touches[0] : e;
+      return {
+        x: src.clientX - rect.left,
+        y: src.clientY - rect.top
+      };
+    }
+
+    canvas.addEventListener('mousedown', function(e){
+      var p = _getPos(e); _onStart(p.x, p.y);
+    });
+    canvas.addEventListener('mousemove', function(e){
+      var p = _getPos(e); _onMove(p.x, p.y);
+    });
+    canvas.addEventListener('mouseup',   _onEnd);
+    canvas.addEventListener('mouseleave',_onEnd);
+
+    canvas.addEventListener('touchstart', function(e){
+      e.preventDefault();
+      var p = _getPos(e); _onStart(p.x, p.y);
+    }, {passive:false});
+    canvas.addEventListener('touchmove', function(e){
+      e.preventDefault();
+      var p = _getPos(e); _onMove(p.x, p.y);
+    }, {passive:false});
+    canvas.addEventListener('touchend', function(e){
+      e.preventDefault(); _onEnd();
+    }, {passive:false});
+
+    // シャワーボタン
+    if(showerBtn){
+      showerBtn.addEventListener('click', _toggleShower);
+      showerBtn.addEventListener('touchend', function(e){
+        e.preventDefault(); _toggleShower();
+      }, {passive:false});
+    }
+
+    // もういちどボタン
+    if(replayBtn){
+      replayBtn.addEventListener('click', function(){ _init(); });
+      replayBtn.addEventListener('touchend', function(e){
+        e.preventDefault(); _init();
+      }, {passive:false});
+    }
+
+    // 戻るボタン
+    if(backBtn){
+      backBtn.addEventListener('click', function(){
+        if(typeof gWStop === 'function') gWStop();
+        if(typeof showScreen === 'function') showScreen('menuScreen');
+      });
+    }
+
+    // リサイズ対応
+    window.addEventListener('resize', _resizeCanvas);
+  }
+
+  /* ===== グローバル公開 ===== */
+  window.gWInit = function(){
+    _init();
+  };
+
+  window.gWStop = function(){
+    _clearAll();
+    _isDrawing = false;
+    _finished  = false;
+    window.removeEventListener('resize', _resizeCanvas);
+    if(_audioCtx){
+      try{ _audioCtx.close(); }catch(e){}
+      _audioCtx = null;
+    }
+  };
+
+  // gWInit() はカードクリック時に呼ばれる
+
 })();
 
 </script>
