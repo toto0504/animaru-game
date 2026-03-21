@@ -181,6 +181,21 @@
     .papa-menu-card .pm-icon{font-size:72px;}
     .papa-menu-card .pm-title{font-size:22px;font-weight:900;}
     .papa-menu-card .pm-desc{font-size:13px;color:var(--muted);line-height:1.7;}
+    /* ── 分析画面 ── */
+    #analyticsScreen{gap:12px;}
+    .an-title{font-size:24px;font-weight:900;text-align:center;}
+    .an-sub{font-size:13px;color:var(--muted);text-align:center;}
+    .an-cards{display:flex;flex-direction:column;gap:10px;width:100%;max-width:420px;}
+    .an-card{background:#fff;border-radius:16px;padding:14px 18px;box-shadow:0 4px 16px rgba(0,0,0,.07);display:flex;flex-direction:column;gap:6px;}
+    .an-card-header{display:flex;align-items:center;gap:8px;}
+    .an-card-icon{font-size:28px;}
+    .an-card-name{font-size:16px;font-weight:900;flex:1;}
+    .an-card-count{font-size:13px;color:var(--muted);}
+    .an-bar-wrap{background:#f1f5f9;border-radius:99px;height:10px;overflow:hidden;}
+    .an-bar{height:100%;border-radius:99px;background:var(--accent);transition:width .5s;}
+    .an-meta{font-size:12px;color:var(--muted);display:flex;gap:12px;}
+    .an-empty{text-align:center;color:var(--muted);font-size:15px;padding:32px;}
+    .an-clear-btn{background:#fee2e2;color:#dc2626;border:none;border-radius:12px;padding:10px 24px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:4px;}
     #rouletteOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:0;}
     #rouletteBox{background:#fff;border-radius:28px;padding:28px 24px;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:320px;width:90%;}
     #rouletteTitle{font-size:22px;font-weight:900;text-align:center;}
@@ -332,7 +347,313 @@
     .gd-choice-btn.gd-correct{border-color:var(--ok);background:#f0fdf4;}
     .gd-choice-btn.gd-wrong{border-color:var(--ng);background:#fffbeb;opacity:.7;}
 
-  </style>
+  /* のりもの ならべっこ！ CSS */
+#gRScreen {
+  background: linear-gradient(160deg, #e0f7fa 0%, #b2ebf2 40%, #e8f5e9 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 進行アイコンエリア */
+#gR-progress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0 4px;
+  z-index: 10;
+  flex-shrink: 0;
+}
+.gR-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #b0bec5;
+  transition: background 0.4s, transform 0.3s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.gR-dot.done {
+  background: #fdd835;
+  transform: scale(1.2);
+  box-shadow: 0 2px 10px rgba(253,216,53,0.7);
+}
+.gR-dot.current {
+  background: #ff7043;
+  transform: scale(1.3);
+  box-shadow: 0 2px 12px rgba(255,112,67,0.7);
+}
+
+/* お題ゾーン */
+#gR-question-area {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 92%;
+  max-width: 380px;
+  margin: 6px auto 8px;
+  position: relative;
+}
+#gR-question-label {
+  font-size: 1.05rem;
+  color: #5d4037;
+  font-weight: bold;
+  margin-bottom: 4px;
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+}
+#gR-question-frame {
+  position: relative;
+  width: 100%;
+  padding-bottom: 62%;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+  border: 4px solid #fff;
+  overflow: visible;
+}
+#gR-question-inner {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fffde7 0%, #e3f2fd 100%);
+}
+#gR-question-emoji {
+  font-size: clamp(72px, 22vw, 130px);
+  line-height: 1;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.18));
+  transition: transform 0.3s;
+  user-select: none;
+}
+
+/* キラキラ装飾 */
+.gR-sparkle {
+  position: absolute;
+  font-size: 1.5rem;
+  pointer-events: none;
+  animation: gRSparkleFloat 2s ease-in-out infinite alternate;
+  z-index: 5;
+}
+.gR-sparkle:nth-child(1)  { top: -14px; left: 10%;  animation-delay: 0s; }
+.gR-sparkle:nth-child(2)  { top: -14px; right: 10%; animation-delay: 0.4s; }
+.gR-sparkle:nth-child(3)  { top: 30%;   left: -16px; animation-delay: 0.8s; }
+.gR-sparkle:nth-child(4)  { top: 30%;  right: -16px; animation-delay: 1.2s; }
+.gR-sparkle:nth-child(5)  { bottom: -14px; left: 25%; animation-delay: 0.6s; }
+.gR-sparkle:nth-child(6)  { bottom: -14px; right: 25%; animation-delay: 1.0s; }
+@keyframes gRSparkleFloat {
+  from { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.7; }
+  to   { transform: translateY(-6px) rotate(20deg) scale(1.2); opacity: 1; }
+}
+
+/* 選択肢ゾーン */
+#gR-choices-area {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: stretch;
+  gap: 14px;
+  width: 96%;
+  max-width: 420px;
+  margin: 0 auto 8px;
+  padding: 0 4px;
+}
+.gR-choice-btn {
+  flex: 1;
+  max-width: 140px;
+  min-width: 80px;
+  aspect-ratio: 1 / 1;
+  border-radius: 22px;
+  border: 4px solid #fff;
+  background: linear-gradient(135deg, #fff9c4 0%, #ffe0b2 100%);
+  box-shadow: 0 5px 18px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  overflow: visible;
+  padding: 0;
+}
+.gR-choice-btn:active {
+  transform: scale(0.95);
+}
+.gR-choice-emoji {
+  font-size: clamp(44px, 14vw, 78px);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 正解アニメーション */
+@keyframes gRJump {
+  0%   { transform: translateY(0) scale(1); }
+  25%  { transform: translateY(-28px) scale(1.12); }
+  50%  { transform: translateY(-10px) scale(1.06); }
+  75%  { transform: translateY(-20px) scale(1.10); }
+  100% { transform: translateY(0) scale(1); }
+}
+.gR-choice-btn.correct {
+  animation: gRJump 0.6s ease;
+  border-color: #fdd835;
+  background: linear-gradient(135deg, #fff9c4 0%, #fffde7 100%);
+  box-shadow: 0 8px 30px rgba(253,216,53,0.7);
+}
+
+/* 不正解アニメーション */
+@keyframes gRShake {
+  0%   { transform: translateX(0); }
+  15%  { transform: translateX(-10px) rotate(-3deg); }
+  30%  { transform: translateX(10px)  rotate(3deg); }
+  45%  { transform: translateX(-8px)  rotate(-2deg); }
+  60%  { transform: translateX(8px)   rotate(2deg); }
+  75%  { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
+}
+.gR-choice-btn.wrong {
+  animation: gRShake 0.5s ease;
+  border-color: #ef9a9a;
+  background: linear-gradient(135deg, #fce4ec 0%, #ffe0b2 100%);
+}
+
+/* 星パーティクル */
+#gR-stars-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 20;
+}
+.gR-star-particle {
+  position: absolute;
+  font-size: 1.6rem;
+  animation: gRStarFly 1.1s ease forwards;
+  pointer-events: none;
+}
+@keyframes gRStarFly {
+  0%   { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(-120px) scale(0.5) rotate(360deg); }
+}
+
+/* ゴール画面 */
+#gR-goal-screen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, #fffde7 0%, #e3f2fd 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s;
+}
+#gR-goal-screen.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+#gR-goal-title {
+  font-size: clamp(2.2rem, 10vw, 3.5rem);
+  font-weight: bold;
+  color: #f57f17;
+  text-shadow: 0 3px 10px rgba(255,160,0,0.4);
+  margin-bottom: 16px;
+  letter-spacing: 0.12em;
+}
+#gR-goal-road {
+  width: 92%;
+  max-width: 380px;
+  height: 100px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+#gR-goal-car {
+  position: absolute;
+  bottom: 10px;
+  font-size: 3.2rem;
+  animation: gRCarRun 3s linear infinite;
+  white-space: nowrap;
+  line-height: 1;
+}
+#gR-goal-banner {
+  position: absolute;
+  bottom: 14px;
+  right: -200px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #e53935;
+  background: rgba(255,255,255,0.9);
+  padding: 4px 14px;
+  border-radius: 6px;
+  border: 2px dashed #e53935;
+  white-space: nowrap;
+  animation: gRBannerSlide 3s linear infinite;
+}
+@keyframes gRCarRun {
+  0%   { left: -80px; }
+  100% { left: 110%; }
+}
+@keyframes gRBannerSlide {
+  0%   { right: -200px; }
+  100% { right: 110%; }
+}
+#gR-goal-msg {
+  font-size: 1.15rem;
+  color: #5d4037;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  letter-spacing: 0.06em;
+}
+#gR-goal-stars {
+  font-size: 2rem;
+  letter-spacing: 6px;
+  margin-bottom: 24px;
+}
+#gR-goal-replay {
+  padding: 16px 40px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #ffca28 0%, #ffa726 100%);
+  color: #5d4037;
+  box-shadow: 0 5px 18px rgba(255,167,38,0.5);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s;
+}
+#gR-goal-replay:active { transform: scale(0.95); }
+
+/* フィードバックラベル */
+#gR-feedback {
+  font-size: 1.3rem;
+  font-weight: bold;
+  min-height: 2rem;
+  text-align: center;
+  color: #e65100;
+  text-shadow: 0 1px 4px rgba(255,255,255,0.9);
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+  padding: 0 0 2px;
+  transition: opacity 0.3s;
+}
+</style>
 </head>
 <body>
 <canvas id="confetti"></canvas>
@@ -419,8 +740,66 @@
         <div class="pm-title">YES / NO</div>
         <div class="pm-desc">ルーレットで<br>きめよう！</div>
       </div>
+      <div class="papa-menu-card" id="papaAnalyticsCard">
+        <div class="pm-icon">📊</div>
+        <div class="pm-title">ぶんせき</div>
+        <div class="pm-desc">こどもが なにを<br>たのしんでいるか みよう！</div>
+      </div>
     </div>
   </div>
+  <!-- 分析画面 -->
+  <div class="screen" id="analyticsScreen">
+    <div class="an-title">📊 あそびのきろく</div>
+    <div class="an-sub">こどもがあそんだ ゲームの きろくだよ</div>
+    <div class="an-cards" id="anCardsList"></div>
+    <button class="an-clear-btn" id="anClearBtn">きろくを けす</button>
+  </div>
+<div class="screen" id="gRScreen">
+
+  <!-- 進行表示（絵のドット） -->
+  <div id="gR-progress"></div>
+
+  <!-- お題ゾーン -->
+  <div id="gR-question-area">
+    <div id="gR-question-label">どれかな？</div>
+    <div id="gR-question-frame">
+      <span class="gR-sparkle">✨</span>
+      <span class="gR-sparkle">⭐</span>
+      <span class="gR-sparkle">✨</span>
+      <span class="gR-sparkle">⭐</span>
+      <span class="gR-sparkle">✨</span>
+      <span class="gR-sparkle">⭐</span>
+      <div id="gR-question-inner">
+        <span id="gR-question-emoji">🚗</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- フィードバック -->
+  <div id="gR-feedback"></div>
+
+  <!-- 選択肢ゾーン -->
+  <div id="gR-choices-area"></div>
+
+  <!-- 星パーティクル -->
+  <div id="gR-stars-container"></div>
+
+  <!-- ゴール画面 -->
+  <div id="gR-goal-screen">
+    <div id="gR-goal-title">🎉 ゴール！ 🎉</div>
+    <div id="gR-goal-road">
+      <span id="gR-goal-car">🚙💨</span>
+      <span id="gR-goal-banner">🏁 ぜんぶできたよ！ 🏁</span>
+    </div>
+    <div id="gR-goal-stars">⭐⭐⭐⭐⭐</div>
+    <div id="gR-goal-msg">すごーい！のりものはかせだね！</div>
+    <button id="gR-goal-replay">もういちど 🚗</button>
+  </div>
+
+  <!-- 戻るボタン -->
+  <button class="back-btn" onclick="if(typeof gRStop==='function')gRStop();showScreen('menuScreen');">もどる</button>
+
+</div>
   <!-- メニュー -->
   <div class="screen" id="menuScreen">
     <div class="menu-title">🎮 キッズ ゲーム</div>
@@ -436,6 +815,7 @@
       <div class="game-card" id="cardGM"><div class="card-icon">🔨</div><div class="card-title">もぐら たたき</div><div class="card-desc">でてきた もぐらを<br>すばやく たたこう！</div></div>
       <div class="game-card" id="cardGV"><div class="card-icon">🚂</div><div class="card-title">のりもの わけわけ</div><div class="card-desc">でんしゃ と くるま を<br>わけてみよう！</div></div>
       <div class="game-card" id="cardGS"><div class="card-icon">🛒</div><div class="card-title">おつかい ゲーム</div><div class="card-desc">おかあさんに たのまれた<br>ものを かってこよう！</div></div>
+      <div class="game-card" id="cardGR"><div class="card-icon">🚗</div><div class="card-title">のりもの ならべっこ！</div><div class="card-desc">のりものを ならべて<br>あそぼう！</div></div>
     </div>
   </div>
 
@@ -873,9 +1253,9 @@
 // ============================================================
 //  共通
 // ============================================================
-const allScreens=['ageSelectScreen','papaScreen','menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','gDScreen','gDResultScreen','g3Screen','g5Screen','g6Screen','g6ResultScreen','g8Screen','g8ResultScreen','gKScreen','gMScreen','gVScreen','gSScreen'];
+const allScreens=['ageSelectScreen','papaScreen','analyticsScreen','menuScreen','g1StartScreen','g1GameScreen','g1ResultScreen','g1BookScreen','gDScreen','gDResultScreen','g3Screen','g5Screen','g6Screen','g6ResultScreen','g8Screen','g8ResultScreen','gKScreen','gMScreen','gVScreen','gSScreen','gRScreen'];
 function showScreen(id){allScreens.forEach(s=>document.getElementById(s).classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('backBtn').classList.toggle('visible',id!=='ageSelectScreen');}
-function goHome(){showScreen('menuScreen');if(typeof g1Stop==='function')g1Stop();if(typeof g3Stop==='function')g3Stop();if(typeof gDStop==='function')gDStop();if(typeof g5Stop==='function')g5Stop();if(typeof g6Stop==='function')g6Stop();if(typeof g8Stop==='function')g8Stop();if(typeof gKStop==='function')gKStop();if(typeof gMStop==='function')gMStop();if(typeof gVStop==='function')gVStop();if(typeof gSStop==='function')gSStop();}
+function goHome(){showScreen('menuScreen');if(typeof gRStop==='function')gRStop();if(typeof g1Stop==='function')g1Stop();if(typeof g3Stop==='function')g3Stop();if(typeof gDStop==='function')gDStop();if(typeof g5Stop==='function')g5Stop();if(typeof g6Stop==='function')g6Stop();if(typeof g8Stop==='function')g8Stop();if(typeof gKStop==='function')gKStop();if(typeof gMStop==='function')gMStop();if(typeof gVStop==='function')gVStop();if(typeof gSStop==='function')gSStop();}
 function startGame1(){showScreen('g1StartScreen');g1RenderAnimalSelect();}
 function startGameD(){showScreen('gDScreen');if(typeof gDInit==='function')gDInit();}
 function startGame3(){showScreen('g3Screen');if(typeof g3Init==='function')g3Init();}
@@ -892,13 +1272,15 @@ document.getElementById('backBtn').addEventListener('click',function(){
     showScreen('ageSelectScreen');
   }else if(document.getElementById('papaScreen').classList.contains('active')){
     showScreen('ageSelectScreen');
+  }else if(document.getElementById('analyticsScreen').classList.contains('active')){
+    showScreen('papaScreen');
   }else{
     goHome();
   }
 });
 var selectedAge='bo';
 function applyAgeFilter(){
-  var bo=['cardG1','cardG8','cardGK','cardGM','cardGV'];
+  var bo=['cardG1','cardG8','cardGK','cardGM','cardGV','cardGR'];
   var kan=['cardG8','cardGD','cardG3','cardG5','cardGK','cardGM','cardGS'];
   var show=selectedAge==='bo'?bo:kan;
   ['cardG1','cardGD','cardG3','cardG5','cardG6','cardG8','cardGK','cardGM','cardGV','cardGS'].forEach(function(id){
@@ -910,6 +1292,7 @@ document.getElementById('ageCard2').addEventListener('click',function(){selected
 document.getElementById('ageCard4').addEventListener('click',function(){selectedAge='kan';applyAgeFilter();showScreen('menuScreen');});
 document.getElementById('ageCardPapa').addEventListener('click',function(){showScreen('papaScreen');});
 document.getElementById('papaRouletteCard').addEventListener('click',function(){rouletteOpen();});
+document.getElementById('papaAnalyticsCard').addEventListener('click',function(){showScreen('analyticsScreen');renderAnalytics();});
 document.getElementById('cardG1').addEventListener('click',startGame1);
 document.getElementById('cardGD').addEventListener('click',startGameD);
 document.getElementById('cardG3').addEventListener('click',startGame3);
@@ -921,6 +1304,7 @@ document.getElementById('cardGM').addEventListener('click',startGameM);
 document.getElementById('cardGV').addEventListener('click',startGameV);
 document.getElementById('cardGS').addEventListener('click',startGameS);
 
+document.getElementById('cardGR').addEventListener('click',function(){showScreen('gRScreen');if(typeof gRInit==='function')gRInit();});
 // TTS (Google翻訳TTS優先、ネイティブTTSにフォールバック)
 let _ttsAudio=null,_nativeVoice=null;
 (function(){
@@ -3318,6 +3702,418 @@ function playCry(animal,cb){if(animal.soundFile){const a=new Audio(animal.soundF
   spinBtn.addEventListener('click',spin);
   closeBtn.addEventListener('click',function(){overlay.style.display='none';spinning=false;});
   drawWheel(0);
+})();
+
+// のりもの ならべっこ！
+(function(){
+
+  /* ---- データ定義 ---- */
+  var VEHICLES = [
+    { emoji: '🚗',  label: 'くるま' },
+    { emoji: '🚌',  label: 'バス' },
+    { emoji: '🚂',  label: 'でんしゃ' },
+    { emoji: '✈️',  label: 'ひこうき' },
+    { emoji: '🚒',  label: 'しょうぼうしゃ' },
+    { emoji: '🚑',  label: 'きゅうきゅうしゃ' },
+    { emoji: '🚢',  label: 'ふね' },
+    { emoji: '🏍️',  label: 'バイク' },
+    { emoji: '🚜',  label: 'トラクター' },
+    { emoji: '🚁',  label: 'ヘリコプター' }
+  ];
+
+  var TOTAL_ROUNDS = 5;       // 全問数
+  var START_CHOICES = 2;      // 最初の選択肢数
+
+  /* ---- state ---- */
+  var timers   = [];
+  var rounds   = [];          // 出題順リスト
+  var current  = 0;           // 現在の問題インデックス
+  var locked   = false;       // 連打防止
+  var choiceCount = START_CHOICES;
+
+  /* ---- AudioContext (Web Audio API) ---- */
+  var _ac = null;
+  function getAC(){
+    if(!_ac){
+      try{ _ac = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){}
+    }
+    return _ac;
+  }
+
+  function playTone(freq, type, duration, vol, delay){
+    var ac = getAC(); if(!ac) return;
+    var t = ac.currentTime + (delay||0);
+    var osc  = ac.createOscillator();
+    var gain = ac.createGain();
+    osc.connect(gain); gain.connect(ac.destination);
+    osc.type = type || 'sine';
+    osc.frequency.setValueAtTime(freq, t);
+    gain.gain.setValueAtTime(vol||0.4, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+    osc.start(t); osc.stop(t + duration + 0.05);
+  }
+
+  function soundCorrect(){
+    // ぴんぽーん風：明るい和音＋上昇
+    playTone(523, 'sine', 0.18, 0.35, 0.00);
+    playTone(659, 'sine', 0.18, 0.30, 0.00);
+    playTone(784, 'sine', 0.22, 0.30, 0.18);
+    playTone(1047,'sine', 0.25, 0.28, 0.36);
+  }
+
+  function soundWrong(){
+    // あれれ〜：やわらかい下降
+    playTone(440, 'sine', 0.20, 0.20, 0.00);
+    playTone(370, 'sine', 0.22, 0.18, 0.18);
+    playTone(330, 'sine', 0.28, 0.16, 0.38);
+  }
+
+  function soundGoal(){
+    // ゴール fanfare
+    var melody = [523,659,784,1047,784,1047];
+    var times  = [0, 0.12, 0.24, 0.36, 0.50, 0.58];
+    for(var i=0;i<melody.length;i++){
+      playTone(melody[i],'sine',0.18,0.32,times[i]);
+    }
+  }
+
+  /* ---- ユーティリティ ---- */
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    }
+    return a;
+  }
+
+  function addTimer(id){ timers.push(id); return id; }
+
+  /* ---- 進行ドット描画 ---- */
+  function renderProgress(){
+    var prog = document.getElementById('gR-progress');
+    if(!prog) return;
+    prog.innerHTML = '';
+    for(var i=0;i<TOTAL_ROUNDS;i++){
+      var dot = document.createElement('div');
+      dot.className = 'gR-dot';
+      if(i < current)       dot.classList.add('done');
+      else if(i === current) dot.classList.add('current');
+      prog.appendChild(dot);
+    }
+  }
+
+  /* ---- 問題セットアップ ---- */
+  function buildRounds(){
+    var pool = shuffle(VEHICLES);
+    rounds = [];
+    for(var i=0;i<TOTAL_ROUNDS;i++){
+      rounds.push(pool[i % pool.length]);
+    }
+  }
+
+  function choicesForRound(correct, n){
+    // correct + (n-1)個のダミー（重複なし）
+    var pool = VEHICLES.filter(function(v){ return v.emoji !== correct.emoji; });
+    var shuffled = shuffle(pool);
+    var choices = [correct];
+    for(var i=0;i<n-1;i++){
+      choices.push(shuffled[i]);
+    }
+    return shuffle(choices);
+  }
+
+  function showRound(){
+    if(current >= TOTAL_ROUNDS){ showGoal(); return; }
+
+    locked = false;
+    // 問数が増えるほど選択肢を増やす（最大3択）
+    choiceCount = (current >= 3) ? 3 : 2;
+
+    var q = rounds[current];
+
+    // お題
+    var qEmoji = document.getElementById('gR-question-emoji');
+    if(qEmoji) qEmoji.textContent = q.emoji;
+
+    // フィードバッククリア
+    var fb = document.getElementById('gR-feedback');
+    if(fb){ fb.textContent = ''; fb.style.opacity = '0'; }
+
+    // 進行
+    renderProgress();
+
+    // 選択肢生成
+    var area = document.getElementById('gR-choices-area');
+    if(!area) return;
+    area.innerHTML = '';
+
+    var choices = choicesForRound(q, choiceCount);
+    choices.forEach(function(v){
+      var btn = document.createElement('button');
+      btn.className = 'gR-choice-btn';
+      btn.setAttribute('aria-label', v.label);
+
+      var em = document.createElement('span');
+      em.className = 'gR-choice-emoji';
+      em.textContent = v.emoji;
+      btn.appendChild(em);
+
+      var isCorrect = (v.emoji === q.emoji);
+      btn.addEventListener('click', function(){ onChoiceTap(btn, isCorrect); });
+      area.appendChild(btn);
+    });
+  }
+
+  /* ---- タップ処理 ---- */
+  function onChoiceTap(btn, isCorrect){
+    if(locked) return;
+    locked = true;
+
+    // AudioContextをユーザージェスチャーで起動
+    var ac = getAC();
+    if(ac && ac.state === 'suspended'){ ac.resume(); }
+
+    if(isCorrect){
+      btn.classList.add('correct');
+      soundCorrect();
+      showFeedback('ぴんぽーん！ すごい！ 🎉', '#e65100');
+      spawnStars(btn);
+      addTimer(setTimeout(function(){
+        btn.classList.remove('correct');
+        current++;
+        showRound();
+      }, 1200));
+    } else {
+      btn.classList.add('wrong');
+      soundWrong();
+      showFeedback('あれれ〜？ もういちど！ 🙈', '#7b5e57');
+      addTimer(setTimeout(function(){
+        btn.classList.remove('wrong');
+        locked = false;
+      }, 700));
+    }
+  }
+
+  function showFeedback(msg, color){
+    var fb = document.getElementById('gR-feedback');
+    if(!fb) return;
+    fb.textContent = msg;
+    fb.style.color  = color || '#e65100';
+    fb.style.opacity = '1';
+  }
+
+  /* ---- 星パーティクル ---- */
+  function spawnStars(refBtn){
+    var container = document.getElementById('gR-stars-container');
+    if(!container) return;
+
+    var rect    = refBtn.getBoundingClientRect();
+    var cRect   = container.getBoundingClientRect();
+    var cx = rect.left - cRect.left + rect.width  / 2;
+    var cy = rect.top  - cRect.top  + rect.height / 2;
+
+    var icons = ['⭐','🌟','✨','💛','🎊'];
+    for(var i=0;i<12;i++){
+      (function(idx){
+        var star = document.createElement('span');
+        star.className = 'gR-star-particle';
+        star.textContent = icons[idx % icons.length];
+        var angle = (idx / 12) * 360;
+        var dist  = 40 + Math.random() * 60;
+        var tx = cx + Math.cos(angle * Math.PI/180) * dist;
+        var ty = cy + Math.sin(angle * Math.PI/180) * dist - 60;
+        star.style.left = cx + 'px';
+        star.style.top  = cy + 'px';
+        star.style.setProperty('--tx', (tx - cx) + 'px');
+        star.style.setProperty('--ty', (ty - cy) + 'px');
+        // 個別に方向をつける
+        star.style.animation = 'none';
+        container.appendChild(star);
+        // reflow
+        star.getBoundingClientRect();
+        star.style.transition = 'transform 1s ease, opacity 1s ease';
+        star.style.opacity    = '0';
+        star.style.transform  = 'translate('+(tx-cx)+'px,'+(ty-cy)+'px) scale(0.3) rotate('+angle+'deg)';
+        addTimer(setTimeout(function(){
+          if(star.parentNode) star.parentNode.removeChild(star);
+        }, 1100));
+      })(i);
+    }
+  }
+
+  /* ---- ゴール画面 ---- */
+  function showGoal(){
+    soundGoal();
+    renderProgress();
+    var gs = document.getElementById('gR-goal-screen');
+    if(gs) gs.classList.add('show');
+
+    var replay = document.getElementById('gR-goal-replay');
+    if(replay){
+      // イベント重複防止
+      var newBtn = replay.cloneNode(true);
+      replay.parentNode.replaceChild(newBtn, replay);
+      newBtn.addEventListener('click', function(){
+        var gs2 = document.getElementById('gR-goal-screen');
+        if(gs2) gs2.classList.remove('show');
+        gRInit();
+      });
+    }
+  }
+
+  /* ---- 公開API ---- */
+  window.gRInit = function(){
+    // タイマークリア
+    gRStop();
+    timers = [];
+    locked = false;
+    current = 0;
+    choiceCount = START_CHOICES;
+
+    // ゴール画面非表示
+    var gs = document.getElementById('gR-goal-screen');
+    if(gs) gs.classList.remove('show');
+
+    // 星コンテナクリア
+    var sc = document.getElementById('gR-stars-container');
+    if(sc) sc.innerHTML = '';
+
+    // 問題構築・表示
+    buildRounds();
+    showRound();
+  };
+
+  window.gRStop = function(){
+    timers.forEach(function(id){ clearTimeout(id); clearInterval(id); });
+    timers = [];
+  };
+
+})();
+
+// ============================================================
+//  プレイログ & 分析
+// ============================================================
+(function(){
+  var LOG_KEY='animaru_play_log';
+  var GAME_NAMES={
+    g1:'なまえあてゲーム',gD:'きおくゲーム',g3:'ひらがなおぼえよう',
+    g5:'めくりあわせ',g6:'おおきさくらべ',g8:'どうぶつピアノ',
+    gK:'どうぶつさがし',gM:'もぐらたたき',gV:'のりものわけわけ',
+    gS:'おつかいゲーム',gR:'のりものならべっこ'
+  };
+  var GAME_ICONS={
+    g1:'🎯',gD:'🧠',g3:'✏️',g5:'🃏',g6:'📏',g8:'🎹',
+    gK:'🔍',gM:'🔨',gV:'🚂',gS:'🛒',gR:'🚗'
+  };
+
+  // ログ読み書き
+  function getLogs(){try{return JSON.parse(localStorage.getItem(LOG_KEY)||'[]');}catch(e){return[];}}
+  function saveLogs(arr){try{localStorage.setItem(LOG_KEY,JSON.stringify(arr));}catch(e){}}
+
+  // ゲーム開始を記録
+  window.logGameStart=function(gameId,age){
+    var logs=getLogs();
+    logs.push({type:'start',gameId:gameId,age:age||selectedAge,ts:Date.now()});
+    if(logs.length>1000)logs=logs.slice(-1000);
+    saveLogs(logs);
+  };
+
+  // スコア記録（任意）
+  window.logGameScore=function(gameId,score,total){
+    var logs=getLogs();
+    logs.push({type:'score',gameId:gameId,score:score,total:total,ts:Date.now()});
+    saveLogs(logs);
+  };
+
+  // ── 分析画面レンダリング ──
+  window.renderAnalytics=function(){
+    var list=document.getElementById('anCardsList');
+    if(!list)return;
+    list.textContent='';
+    var logs=getLogs().filter(function(l){return l.type==='start';});
+    if(!logs.length){
+      var empty=document.createElement('div');
+      empty.className='an-empty';
+      empty.textContent='まだ きろくが ありません。あそんでみてね！';
+      list.appendChild(empty);
+      return;
+    }
+    // 集計
+    var counts={},lastPlay={},boCount={},kanCount={};
+    logs.forEach(function(l){
+      counts[l.gameId]=(counts[l.gameId]||0)+1;
+      if(!lastPlay[l.gameId]||l.ts>lastPlay[l.gameId])lastPlay[l.gameId]=l.ts;
+      if(l.age==='bo')boCount[l.gameId]=(boCount[l.gameId]||0)+1;
+      else kanCount[l.gameId]=(kanCount[l.gameId]||0)+1;
+    });
+    var maxCount=Math.max.apply(null,Object.values(counts));
+    // ゲームIDを多い順にソート
+    var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];});
+    sorted.forEach(function(gid){
+      var card=document.createElement('div');
+      card.className='an-card';
+      // ヘッダー
+      var header=document.createElement('div');
+      header.className='an-card-header';
+      var icon=document.createElement('div');
+      icon.className='an-card-icon';
+      icon.textContent=GAME_ICONS[gid]||'🎮';
+      var name=document.createElement('div');
+      name.className='an-card-name';
+      name.textContent=GAME_NAMES[gid]||gid;
+      var cnt=document.createElement('div');
+      cnt.className='an-card-count';
+      cnt.textContent=counts[gid]+'かい';
+      header.appendChild(icon);header.appendChild(name);header.appendChild(cnt);
+      // バー
+      var wrap=document.createElement('div');wrap.className='an-bar-wrap';
+      var bar=document.createElement('div');bar.className='an-bar';
+      bar.style.width=Math.round(counts[gid]/maxCount*100)+'%';
+      wrap.appendChild(bar);
+      // メタ情報
+      var meta=document.createElement('div');meta.className='an-meta';
+      var d=new Date(lastPlay[gid]);
+      var dateStr=d.getMonth()+1+'/'+(d.getDate())+' '+(d.getHours())+':'+(('0'+d.getMinutes()).slice(-2));
+      var lastEl=document.createElement('span');lastEl.textContent='さいごに: '+dateStr;
+      var boEl=document.createElement('span');
+      boEl.textContent='👶 '+(boCount[gid]||0)+' / 🧒 '+(kanCount[gid]||0);
+      meta.appendChild(lastEl);meta.appendChild(boEl);
+      card.appendChild(header);card.appendChild(wrap);card.appendChild(meta);
+      list.appendChild(card);
+    });
+  };
+
+  // けすボタン
+  var clearBtn=document.getElementById('anClearBtn');
+  if(clearBtn){
+    clearBtn.addEventListener('click',function(){
+      if(confirm('きろくを けしますか？')){
+        localStorage.removeItem(LOG_KEY);
+        renderAnalytics();
+      }
+    });
+  }
+
+  // startGameX をフックしてログを自動記録
+  var origStartGame1=window.startGame1;
+  function hookStart(origFn,gid){
+    return function(){logGameStart(gid);if(origFn)origFn.apply(this,arguments);};
+  }
+  // 各 startGame 関数にフックを仕掛ける（定義済みのものだけ）
+  ['g1','gD','g3','g5','g6','g8','gK','gM','gV','gS','gR'].forEach(function(gid){
+    var fnName='startGame'+gid.replace('g','');
+    // startGame1 → startGame1, startGameD → startGameD 等
+    var original=window[fnName];
+    if(typeof original==='function'){
+      window[fnName]=hookStart(original,gid);
+    }
+  });
+  // cardGR はIIFEのリスナー経由のため個別対応
+  var cardGR=document.getElementById('cardGR');
+  if(cardGR){
+    cardGR.addEventListener('click',function(){logGameStart('gR');});
+  }
 })();
 
 </script>
